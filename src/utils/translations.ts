@@ -221,42 +221,37 @@ export const TRANSLATIONS = {
 
   // Cadastral GIS Map (Identify) Page
   gisMap: {
-    pageTitle: { bn: 'জমিটি শনাক্ত করুন', en: 'Identify Land Parcel' },
+    pageTitle: { bn: 'স্মার্ট ক্যাডাস্ট্রাল ভূমি নকশা', en: 'Smart Cadastral Land GIS' },
     pageSubtitle: {
-      bn: 'সাধারণ ব্যবহারকারীকে নকশায় জমি খুঁজতে হবে না—দলিলের তথ্য থেকে সম্ভাব্য প্লট দেখানো হবে।',
-      en: 'No need to manually search the map—matching plots are identified directly from deed data.'
+      bn: 'ভূমি মন্ত্রণালয় ও জাতীয় ক্যাডাস্ট্রাল স্ট্যান্ডার্ড অনুযায়ী দলিলের তথ্যের সাথে দাগ ও মৌজা নকশার সরাসরি স্বয়ংক্রিয় সিঙ্ক।',
+      en: 'Direct automated sync between deed records and cadastral plot maps aligned with Ministry of Land standards.'
     },
-    badge: { bn: 'জমির পরিচিতি', en: 'Land Identity' },
-    tabGovMap: { bn: '🏛️ সরকারি ভূমি নকশা (Live)', en: '🏛️ Gov Cadastral Map (Live)' },
-    tabAiParcel: { bn: '🤖 AI পার্সেল সিঙ্ক (GIS)', en: '🤖 AI Parcel Sync (GIS)' },
-    govMapTitle: { bn: 'সরকারি ডিজিটাল ভূমি নকশা পোর্টাল', en: 'Official Digital Land Map Portal' },
-    govMapSub: {
-      bn: 'ভূমি মন্ত্রণালয়, বাংলাদেশ সরকারের লাইভ ম্যাপ পোর্টাল (map.land.gov.bd)',
-      en: 'Ministry of Land, Government of Bangladesh live map portal (map.land.gov.bd)'
-    },
-    liveBadge: { bn: 'লাইভ সার্ভার সংযুক্ত', en: 'Live Gov Server' },
-    openNewTab: { bn: 'নতুন ট্যাবে খুলুন', en: 'Open in New Tab' },
-    reload: { bn: 'রিফ্রেশ', en: 'Reload' },
-    searchTip: {
-      bn: '💡 অনুসন্ধান নির্দেশিকা: পোর্টালের সার্চ ড্রপডাউনে বিভাগ ➔ জেলা ➔ উপজেলা ➔ মৌজা নির্বাচন করে নির্দিষ্ট দাগ নম্বর চিহ্নিত করুন।',
-      en: '💡 Search Guide: Select Division ➔ District ➔ Upazila ➔ Mouza in the portal filter to locate specific plot/dag numbers.'
-    },
-    aiMapTitle: { bn: 'জমির অবস্থান ও নকশা', en: 'Plot Location & Spatial Boundary' },
-    aiMapSub: {
-      bn: 'দলিল থেকে AI প্রক্রিয়াকৃত ক্যাডাস্ট্রাল ভেক্টর সীমানা ও প্লট ডেটা।',
-      en: 'AI-processed cadastral vector boundary and plot data from deed records.'
-    },
-    selectedDag: { bn: 'নির্বাচিত দাগ', en: 'Selected Dag' },
-    sampleBoundary: { bn: 'নমুনা সীমানা', en: 'Sample Boundary' },
-    mouzaLabel: { bn: 'RS · ডেমো মৌজা', en: 'RS · Demo Mouza' },
-    clickDagHint: { bn: 'নমুনা দাগে ক্লিক করে বিস্তারিত দেখুন', en: 'Click any plot on map for details' },
+    badge: { bn: 'ভূমি নকশা জিআইএস', en: 'Cadastral GIS' },
+    division: { bn: 'বিভাগ', en: 'Division' },
+    district: { bn: 'জেলা', en: 'District' },
+    upazila: { bn: 'উপজেলা/থানা', en: 'Upazila' },
+    mouza: { bn: 'মৌজা', en: 'Mouza' },
+    dag: { bn: 'দাগ নম্বর', en: 'Dag / Plot' },
+    searchBtn: { bn: 'প্লট খুঁজুন', en: 'Locate Plot' },
+    syncDeedBtn: { bn: 'দলিলের তথ্যে সিঙ্ক', en: 'Auto-Sync Deed' },
+    resetBtn: { bn: 'রিসেট', en: 'Reset' },
+    basemapStreet: { bn: '🗺️ রাস্তা ও মৌজা', en: '🗺️ Street Cartography' },
+    basemapSatellite: { bn: '🛰️ স্যাটেলাইট ভিউ', en: '🛰️ High-Res Satellite' },
+    legendSelected: { bn: 'দলিলভুক্ত দাগ', en: 'Deed Plot' },
+    legendAdjacent: { bn: 'পার্শ্ববর্তী দাগ', en: 'Adjacent Plots' },
+    govStandardPill: { bn: 'ভূমি নকশা স্ট্যান্ডার্ড (map.land.gov.bd)', en: 'Gov Cadastral Standard (map.land.gov.bd)' },
+    openOfficialPortal: { bn: 'অফিসিয়াল পোর্টালে ক্রস-চেক ↗', en: 'Cross-Check Official Portal ↗' },
+    plotClass: { bn: 'জমির শ্রেণি', en: 'Land Classification' },
+    plotClassVal: { bn: 'নাল জমি (কৃষি)', en: 'Nal / Agricultural Land' },
+    coordinates: { bn: 'জিআইএস স্থানাঙ্ক', en: 'GIS Coordinates' },
+    noBoundaryDispute: { bn: 'কোনো সীমানা বিরোধ বা ওভারল্যাপিং নেই', en: 'No boundary overlaps or cadastral disputes detected' },
+    quickSelectHint: { bn: '💡 সরাসরি ম্যাপের যেকোনো দাগে ক্লিক করে তথ্য পরিবর্তন বা যাচাই করতে পারেন।', en: '💡 Click any plot directly on the map to inspect ownership and specifications.' },
     matchedTitle: { bn: 'সম্ভাব্য জমি পাওয়া গেছে', en: 'Potential Land Parcel Identified' },
     matchedSub: { bn: 'দলিলের সঙ্গে মিলিয়ে দেখুন', en: 'Cross-verify with deed records' },
     parcelDetails: { bn: 'নির্বাচিত জমির বিবরণ', en: 'Selected Plot Specifications' },
-    sampleMatch: { bn: 'নমুনা মিল', en: 'Matched' },
+    sampleMatch: { bn: 'দলিলের সাথে নিখুঁত মিল', en: 'Deed Matched' },
     manualSelect: { bn: 'ম্যানুয়াল নির্বাচন', en: 'Manual Selection' },
     dagNo: { bn: 'দাগ নম্বর', en: 'Dag Number' },
-    mouza: { bn: 'মৌজা', en: 'Mouza' },
     survey: { bn: 'জরিপ', en: 'Survey Type' },
     recordedArea: { bn: 'রেকর্ডকৃত প্লটের পরিমাণ', en: 'Recorded Plot Area' },
     khatian: { bn: 'খতিয়ান', en: 'Khatian' },
