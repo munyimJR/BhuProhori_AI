@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Topbar from './components/Topbar';
@@ -11,12 +12,28 @@ import TrackPage from './pages/TrackPage';
 import OfficerPage from './pages/OfficerPage';
 
 export default function App() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
     <BrowserRouter>
       <div className="app">
-        <Sidebar />
+        {/* Mobile Backdrop Overlay */}
+        <div
+          className={`mobile-backdrop ${mobileMenuOpen ? 'open' : ''}`}
+          onClick={() => setMobileMenuOpen(false)}
+          aria-hidden={!mobileMenuOpen}
+        />
+
+        {/* Sidebar Navigation */}
+        <Sidebar
+          isOpen={mobileMenuOpen}
+          onClose={() => setMobileMenuOpen(false)}
+        />
+
         <div className="main">
-          <Topbar />
+          {/* Topbar with hamburger toggle */}
+          <Topbar onToggleMobileMenu={() => setMobileMenuOpen(!mobileMenuOpen)} />
+
           <main className="content" id="main-content">
             <Routes>
               <Route path="/" element={<HomePage />} />
@@ -33,7 +50,7 @@ export default function App() {
               <Route path="/report" element={<TrackPage />} />
               <Route path="/officer" element={<OfficerPage />} />
               <Route path="*" element={
-                <div style={{ textAlign: 'center', padding: '4rem' }}>
+                <div style={{ textAlign: 'center', padding: '4rem 1rem' }}>
                   <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🗺️</div>
                   <h2 style={{ marginBottom: '0.5rem' }}>পেজটি পাওয়া যায়নি</h2>
                   <p style={{ color: 'var(--muted)', marginBottom: '1.5rem' }}>এই ঠিকানায় কোনো পেজ নেই।</p>
@@ -41,6 +58,7 @@ export default function App() {
                 </div>
               } />
             </Routes>
+
             <footer className="footnote no-print">
               © BhuProhori AI — LandTech Innovation Hackathon 2026. Geo-Integrated Smart e-Mutation & Land Verification System.
             </footer>

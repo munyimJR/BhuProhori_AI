@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Shield } from 'lucide-react';
+import { Shield, Menu } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
 
 const TITLES: Record<string, { title: string; subtitle: string }> = {
@@ -13,7 +13,11 @@ const TITLES: Record<string, { title: string; subtitle: string }> = {
   '/track': { title: 'চূড়ান্ত রিপোর্ট', subtitle: 'আবেদন, নথি এবং যাচাইয়ের সারসংক্ষেপ এক জায়গায়' },
 };
 
-export default function Topbar() {
+interface TopbarProps {
+  onToggleMobileMenu?: () => void;
+}
+
+export default function Topbar({ onToggleMobileMenu }: TopbarProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const { currentRole, setRole } = useAppStore();
@@ -30,6 +34,16 @@ export default function Topbar() {
   return (
     <header className="topbar no-print">
       <div className="topbar-left">
+        {onToggleMobileMenu && (
+          <button
+            type="button"
+            className="mobile-menu-btn"
+            onClick={onToggleMobileMenu}
+            aria-label="মেনু খুলুন"
+          >
+            <Menu size={20} />
+          </button>
+        )}
         <div>
           <strong className="top-text">{info.title}</strong>
           <div className="tiny subtle">{info.subtitle}</div>
@@ -44,7 +58,7 @@ export default function Topbar() {
           style={{ gap: 6 }}
         >
           <Shield size={14} />
-          {currentRole === 'officer' ? 'কর্মকর্তা মোড' : 'নাগরিক মোড'}
+          <span className="role-btn-label">{currentRole === 'officer' ? 'কর্মকর্তা' : 'নাগরিক'}</span>
         </button>
 
         <span className="pill demo-pill">

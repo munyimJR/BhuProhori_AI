@@ -94,7 +94,7 @@ export default function IdentifyPage() {
             <span>RS · ডেমো মৌজা</span>
           </div>
 
-          <div className="map-wrap" style={{ height: 380 }}>
+          <div className="map-wrap" style={{ height: 'clamp(280px, 45vh, 400px)' }}>
             <MapContainer
               center={mapCenter}
               zoom={mapZoom}
