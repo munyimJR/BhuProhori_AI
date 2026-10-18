@@ -1531,8 +1531,309 @@ img {
 }
 
 /* ── Native Cadastral GIS Portal Styles ─────────────────────── */
-.native-gis-page {
-  animation: come 0.18s ease;
+/* ── Main Mode Switcher ─────────────────────────────────────── */
+.gis-main-mode-switcher {
+  display: inline-flex;
+  background: #edf5f1;
+  border: 1px solid #cbe2d5;
+  border-radius: 99px;
+  padding: 4px;
+  gap: 5px;
+  margin-bottom: 18px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.gis-main-mode-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: transparent;
+  color: #4a675e;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 8px 16px;
+  border-radius: 99px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: inherit;
+}
+
+.gis-main-mode-tab:hover {
+  color: var(--green);
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.gis-main-mode-tab.active {
+  background: #ffffff;
+  color: var(--deep);
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(18, 59, 48, 0.12);
+}
+
+.live-pulse-badge {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  background: #176b56;
+  color: #ffffff;
+  padding: 2px 7px;
+  border-radius: 99px;
+}
+
+/* ── Full-Width Live Government Portal Section ──────────────── */
+.live-gov-full-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.live-gov-control-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 10px 16px;
+  box-shadow: 0 1px 4px rgba(18, 59, 48, 0.03);
+  flex-wrap: wrap;
+}
+
+.live-gov-status-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.live-gov-deed-chips {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.deed-quick-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f0faf4;
+  border: 1px solid #c9ebd8;
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 11.5px;
+  color: #21604c;
+  cursor: pointer;
+  transition: all 0.16s ease;
+  user-select: none;
+}
+
+.deed-quick-chip:hover:not(.static) {
+  background: #e1f5eb;
+  border-color: #9cd4b5;
+  transform: translateY(-1px);
+}
+
+.deed-quick-chip.static {
+  cursor: default;
+  background: #f7faf8;
+  border-color: #dbe8e1;
+  color: #4a685e;
+}
+
+.copied-bubble {
+  position: absolute;
+  top: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #176b56;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+  animation: popIn 0.15s ease;
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: translate(-50%, 4px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.live-gov-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* ── Live Canvas Container & Frame ─────────────────────────── */
+.live-gov-canvas-container {
+  position: relative;
+  width: 100%;
+  height: clamp(560px, calc(100vh - 210px), 820px);
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(18, 59, 48, 0.06);
+}
+
+.live-gov-canvas-container.is-fullscreen-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 99999;
+  border-radius: 0;
+  border: none;
+}
+
+.live-gov-full-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+/* ── Floating Smart Deed Inspector Card ─────────────────────── */
+.floating-deed-card {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  z-index: 100;
+  width: 290px;
+  max-width: calc(100% - 40px);
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(23, 107, 86, 0.28);
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgba(18, 59, 48, 0.16), 0 2px 6px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.floating-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, rgba(23, 107, 86, 0.08) 0%, rgba(23, 107, 86, 0.14) 100%);
+  border-bottom: 1px solid rgba(23, 107, 86, 0.18);
+  cursor: pointer;
+  user-select: none;
+}
+
+.floating-card-header strong {
+  font-size: 12px;
+  color: var(--deep);
+}
+
+.collapse-btn {
+  background: transparent;
+  border: none;
+  color: #176b56;
+  font-size: 11px;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+
+.floating-card-body {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.floating-spec-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.floating-spec-item {
+  background: #f8faf9;
+  border: 1px solid #e2ece6;
+  border-radius: 8px;
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.spec-lbl {
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.spec-val {
+  font-size: 12.5px;
+  color: var(--deep);
+}
+
+.spec-val.highlight {
+  color: var(--green);
+  font-size: 14px;
+}
+
+.floating-match-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #eef9f3;
+  border: 1px solid #c0e8d3;
+  border-radius: 8px;
+  padding: 5px 9px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #176b56;
+}
+
+.floating-proceed-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-weight: 700;
+}
+
+/* ── Live Gov Bottom Bar ───────────────────────────────────── */
+.live-gov-bottom-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px 18px;
+  box-shadow: 0 1px 4px rgba(18, 59, 48, 0.03);
+  flex-wrap: wrap;
+}
+
+.live-gov-hint-text {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12px;
+  color: #3b5a50;
+  flex: 1;
+  min-width: 280px;
+}
+
+.live-gov-bottom-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .gis-filter-card {

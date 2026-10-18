@@ -227,6 +227,16 @@ export const TRANSLATIONS = {
       en: 'Direct automated sync between deed records and cadastral plot maps aligned with Ministry of Land standards.'
     },
     badge: { bn: 'ভূমি নকশা জিআইএস', en: 'Cadastral GIS' },
+    tabLiveGov: { bn: '🏛️ সরকারি লাইভ ভূমি নকশা (Live National Portal)', en: '🏛️ Live National Portal (map.land.gov.bd)' },
+    tabAiOverlay: { bn: '🤖 AI পার্সেল সিঙ্ক ও স্যাটেলাইট', en: '🤖 AI Parcel Sync & Satellite' },
+    livePortalConnected: { bn: 'লাইভ সরকারি সার্ভার সংযুক্ত (৬৪ জেলা সম্পূর্ণ কার্যকর)', en: 'Live Gov Server Active (All 64 Districts)' },
+    floatingCardTitle: { bn: 'ভূপ্রহরী AI — দলিল পার্সেল সিঙ্ক', en: 'BhuProhori AI — Deed Parcel Sync' },
+    floatingCardSub: { bn: 'আপলোডকৃত দলিলের সাথে প্রস্তুতকৃত তথ্য', en: 'Verified records from uploaded deed' },
+    copyDeedDag: { bn: 'দলিলের দাগ কপি করুন', en: 'Copy Deed Dag No.' },
+    searchHintBanner: {
+      bn: '💡 জাতীয় ভূমি নকশা পোর্টাল: বাংলাদেশের যেকোনো বিভাগ, জেলা, উপজেলা, মৌজা ও দাগ নম্বর সরাসরি অনুসন্ধান করতে পারেন।',
+      en: '💡 Fully functional nationwide cadastral portal: search any division, district, upazila, mouza, and plot across Bangladesh.'
+    },
     division: { bn: 'বিভাগ', en: 'Division' },
     district: { bn: 'জেলা', en: 'District' },
     upazila: { bn: 'উপজেলা/থানা', en: 'Upazila' },
