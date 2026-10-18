@@ -55,6 +55,10 @@ export const TRANSLATIONS = {
         title: { bn: 'চূড়ান্ত রিপোর্ট', en: 'Status & Audit Report' },
         subtitle: { bn: 'আবেদন, নথি এবং যাচাইয়ের সারসংক্ষেপ এক জায়গায়', en: 'Application tracking, audit log, and certified summary' }
       },
+      '/signin': {
+        title: { bn: 'সাইন ইন ও একাউন্ট', en: 'Sign In & Account' },
+        subtitle: { bn: 'নাগরিক ও কর্মকর্তা পোর্টাল — ১-ক্লিক ডেমো এক্সেস', en: 'Citizen & Officer Portals — 1-Click Showcase Demo' }
+      },
     },
     defaultTitle: { bn: 'ভূপ্রহরী AI', en: 'BhuProhori AI' },
     defaultSubtitle: { bn: 'স্মার্ট নামজারি প্ল্যাটফর্ম', en: 'Smart Land Mutation System' },
@@ -66,6 +70,8 @@ export const TRANSLATIONS = {
       bn: 'বর্তমান ইউজার: ',
       en: 'Current role: '
     },
+    signInBtn: { bn: 'সাইন ইন', en: 'Sign In' },
+    signOutBtn: { bn: 'লগ আউট', en: 'Sign Out' },
     languageLabel: { bn: 'ভাষা', en: 'Language' },
     banglaShort: { bn: 'বাং', en: 'বাং' },
     englishShort: { bn: 'EN', en: 'EN' },
@@ -211,6 +217,52 @@ export const TRANSLATIONS = {
       bn: 'এটি একটি হ্যাকাথন প্রোটোটাইপ। সব রেকর্ড কাল্পনিক; কোনো সরকারি সিস্টেমে আবেদন জমা হয় না।',
       en: 'This is a hackathon innovation prototype. All records are fictional; no filings are submitted to live gov registries.'
     },
+  },
+
+  // Authentication & Demo Sign In
+  auth: {
+    showcaseTitle: { bn: '🏆 হ্যাকাথন শোকেস ১-ক্লিক ডেমো এক্সেস', en: '🏆 Hackathon Showcase 1-Click Demo Access' },
+    showcaseSub: {
+      bn: 'বিচারক ও মূল্যায়কদের সুবিধার জন্য পাসওয়ার্ড ছাড়া সরাসরি ডেমো প্রোফাইলে প্রবেশ করুন।',
+      en: 'Instant 1-click evaluation access with pre-configured personas for judges & evaluators.'
+    },
+    demoCitizenTitle: { bn: '১-ক্লিক ডেমো নাগরিক সাইন ইন', en: '1-Click Demo Citizen Sign In' },
+    demoCitizenSubtitle: { bn: 'মোঃ রফিকুল ইসলাম (নাগরিক আবেদনকারী)', en: 'Md. Rafiqul Islam (Citizen Applicant)' },
+    demoCitizenDetails: { bn: 'এনআইডি: ১৯৮৮২৬৯২৫১০০০০০১২৩ · মোবাইল: ০১৭১১-২৩৪৫৬৭', en: 'NID: 19882692510000123 · Mobile: 01711-234567' },
+    demoOfficerTitle: { bn: '১-ক্লিক ডেমো কর্মকর্তা সাইন ইন', en: '1-Click Demo Officer Sign In' },
+    demoOfficerSubtitle: { bn: 'তাহমিনা আক্তার — সহকারী কমিশনার (ভূমি)', en: 'Tahmina Akhter — Assistant Commissioner (Land)' },
+    demoOfficerDetails: { bn: 'আইডি: AC-LAND-SAVAR-04 · সাভার উপজেলা রাজস্ব সার্কেল, ঢাকা', en: 'Gov ID: AC-LAND-SAVAR-04 · Savar Circle, Dhaka' },
+    citizenTab: { bn: 'নাগরিক পোর্টাল', en: 'Citizen Portal' },
+    officerTab: { bn: 'কর্মকর্তা পোর্টাল', en: 'Officer Portal' },
+    signInTab: { bn: 'সাইন ইন (লগইন)', en: 'Sign In (Login)' },
+    signUpTab: { bn: 'নতুন নিবন্ধন (সাইন আপ)', en: 'Sign Up (Register)' },
+    citizenSignInHead: { bn: 'নাগরিক একাউন্টে প্রবেশ', en: 'Citizen Portal Sign In' },
+    citizenSignInDesc: { bn: 'জাতীয় পরিচয়পত্র বা মোবাইল নম্বর দিয়ে প্রবেশ করুন', en: 'Sign in with your National ID or registered mobile' },
+    officerSignInHead: { bn: 'ভূমি প্রশাসন কর্মকর্তা প্রবেশ', en: 'Land Administration Officer Sign In' },
+    officerSignInDesc: { bn: 'সরকারি ই-নথি বা কর্মকর্তা পরিচিতি নম্বর দিয়ে প্রবেশ করুন', en: 'Sign in with your Gov e-Nothi or Officer ID' },
+    nidOrPhone: { bn: 'এনআইডি (১০/১৭ ডিজিট) বা মোবাইল নম্বর', en: 'National ID (10/17 digit) or Mobile' },
+    password: { bn: 'পাসওয়ার্ড', en: 'Password' },
+    govId: { bn: 'সরকারি কর্মকর্তা আইডি / সার্ভিস নম্বর', en: 'Gov Official ID / Service Number' },
+    designation: { bn: 'অফিসিয়াল পদবি', en: 'Official Designation' },
+    acLand: { bn: 'সহকারী কমিশনার (ভূমি) / AC Land', en: 'Assistant Commissioner (Land) / AC Land' },
+    kanungo: { bn: 'কানুনগো / Kanungo', en: 'Kanungo / Revenue Officer' },
+    surveyor: { bn: 'সার্ভেয়ার / ইউনিয়ন ভূমি সহকারী কর্মকর্তা', en: 'Surveyor / Union Land Sub-Officer' },
+    fullName: { bn: 'পূর্ণ নাম (জাতীয় পরিচয়পত্র অনুযায়ী)', en: 'Full Name (as per NID)' },
+    confirmPassword: { bn: 'পাসওয়ার্ড নিশ্চিত করুন', en: 'Confirm Password' },
+    district: { bn: 'জেলা', en: 'District' },
+    upazila: { bn: 'উপজেলা', en: 'Upazila' },
+    rememberMe: { bn: 'আমাকে মনে রাখুন', en: 'Remember me on this browser' },
+    forgotPassword: { bn: 'পাসওয়ার্ড ভুলে গেছেন?', en: 'Forgot password?' },
+    submitSignIn: { bn: 'সাইন ইন করুন', en: 'Sign In Now' },
+    submitSignUp: { bn: 'একাউন্ট তৈরি করুন', en: 'Create Account' },
+    noAccountPrompt: { bn: 'কোনো একাউন্ট নেই?', en: "Don't have an account?" },
+    hasAccountPrompt: { bn: 'ইতিমধ্যে একাউন্ট আছে?', en: 'Already have an account?' },
+    createAccountLink: { bn: 'নতুন একাউন্ট খুলুন', en: 'Create an account' },
+    signInLink: { bn: 'লগইন করুন', en: 'Sign in here' },
+    demoNotice: {
+      bn: '💡 এটি ল্যান্ডটেক হ্যাকাথন ২০২৬ এর প্রোটোটাইপ। দ্রুত মূল্যায়নের জন্য উপরের ১-ক্লিক ডেমো বাটন ব্যবহার করুন।',
+      en: '💡 This is a LandTech Hackathon 2026 prototype. Use the 1-Click Demo buttons above for instant access.'
+    }
   },
 
   // Footer

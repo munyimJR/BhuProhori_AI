@@ -10,6 +10,7 @@ import VerificationPage from './pages/VerificationPage';
 import ApplicationPage from './pages/ApplicationPage';
 import TrackPage from './pages/TrackPage';
 import OfficerPage from './pages/OfficerPage';
+import SignInPage from './pages/SignInPage';
 import useAppStore from './store/useAppStore';
 import { TRANSLATIONS } from './utils/translations';
 
@@ -52,6 +53,10 @@ export default function App() {
               <Route path="/track/:id" element={<TrackPage />} />
               <Route path="/report" element={<TrackPage />} />
               <Route path="/officer" element={<OfficerPage />} />
+              <Route path="/signin" element={<SignInPage />} />
+              <Route path="/login" element={<SignInPage />} />
+              <Route path="/signup" element={<SignInPage isSignUpInitial={true} />} />
+              <Route path="/officer/login" element={<SignInPage />} />
               <Route path="*" element={
                 <div style={{ textAlign: 'center', padding: '4rem 1rem' }}>
                   <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🗺️</div>

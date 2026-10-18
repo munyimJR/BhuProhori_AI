@@ -17,6 +17,18 @@ export type MutationStatus =
 
 export type UserRole = 'citizen' | 'officer' | 'admin';
 
+export interface UserProfile {
+  id: string;
+  name: string;
+  nameBn: string;
+  role: 'citizen' | 'officer';
+  phone?: string;
+  nid?: string;
+  designation?: string;
+  office?: string;
+  avatarLetter: string;
+}
+
 export interface District {
   id: string;
   name: string;

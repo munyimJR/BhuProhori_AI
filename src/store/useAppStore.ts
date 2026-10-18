@@ -3,10 +3,32 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type {
   Language, UploadedDocument, DeedExtraction, Parcel, ExtractedField,
-  MutationApplication, MutationStatus, VerificationResult, StatusHistoryEntry
+  MutationApplication, MutationStatus, VerificationResult, StatusHistoryEntry,
+  UserProfile
 } from '../types';
 import { buildDemoExtraction, PARCELS, MOUZAS, DEMO_APPLICATIONS } from '../data/demoData';
 import { runVerification, runVerificationForScenario } from '../services/verificationEngine';
+
+export const DEMO_CITIZEN_PROFILE: UserProfile = {
+  id: 'usr-citizen-demo',
+  name: 'Md. Rafiqul Islam',
+  nameBn: 'মোঃ রফিকুল ইসলাম',
+  role: 'citizen',
+  phone: '01711-234567',
+  nid: '19882692510000123',
+  avatarLetter: 'R',
+};
+
+export const DEMO_OFFICER_PROFILE: UserProfile = {
+  id: 'usr-officer-demo',
+  name: 'Tahmina Akhter (AC Land)',
+  nameBn: 'তাহমিনা আক্তার (এসি ল্যান্ড)',
+  role: 'officer',
+  designation: 'সহকারী কমিশনার (ভূমি) / Assistant Commissioner (Land)',
+  office: 'সাভার উপজেলা রাজস্ব সার্কেল, ঢাকা',
+  nid: 'AC-LAND-SAVAR-04',
+  avatarLetter: 'T',
+};
 
 interface AppStore {
   // Current journey state
@@ -24,6 +46,8 @@ interface AppStore {
   // Auth & Settings
   currentRole: 'citizen' | 'officer';
   language: Language;
+  isAuthenticated: boolean;
+  currentUser: UserProfile | null;
 
   // Actions
   setStep: (step: number) => void;
@@ -41,6 +65,8 @@ interface AppStore {
   setRole: (role: 'citizen' | 'officer') => void;
   setLanguage: (lang: Language) => void;
   toggleLanguage: () => void;
+  login: (role: 'citizen' | 'officer', customUser?: Partial<UserProfile>) => void;
+  logout: () => void;
 }
 
 let appCounter = 5;
@@ -59,6 +85,8 @@ const useAppStore = create<AppStore>()(
       allApplications: DEMO_APPLICATIONS,
       currentRole: 'citizen',
       language: 'bn',
+      isAuthenticated: false,
+      currentUser: null,
 
       setStep: (step) => set({ currentStep: step }),
 
@@ -268,6 +296,24 @@ const useAppStore = create<AppStore>()(
       setRole: (role) => set({ currentRole: role }),
       setLanguage: (lang) => set({ language: lang }),
       toggleLanguage: () => set((state) => ({ language: state.language === 'bn' ? 'en' : 'bn' })),
+
+      login: (role, customUser) => {
+        const base = role === 'officer' ? DEMO_OFFICER_PROFILE : DEMO_CITIZEN_PROFILE;
+        const user: UserProfile = { ...base, ...customUser, role };
+        set({
+          isAuthenticated: true,
+          currentRole: role,
+          currentUser: user,
+        });
+      },
+
+      logout: () => {
+        set({
+          isAuthenticated: false,
+          currentUser: null,
+          currentRole: 'citizen',
+        });
+      },
     }),
     {
       name: 'bhuprohori-store',
@@ -275,6 +321,8 @@ const useAppStore = create<AppStore>()(
         allApplications: state.allApplications,
         currentRole: state.currentRole,
         language: state.language,
+        isAuthenticated: state.isAuthenticated,
+        currentUser: state.currentUser,
       }),
     }
   )
