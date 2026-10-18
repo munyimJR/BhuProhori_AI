@@ -34,7 +34,10 @@ function MapFocus({ center, zoom }: { center: [number, number]; zoom: number }) 
 
 export default function IdentifyPage() {
   const navigate = useNavigate();
-  const { extraction, setSelectedParcel, selectedParcel, setStep, language } = useAppStore();
+  const {
+    extraction, setSelectedParcel, selectedParcel, setStep, language,
+    aiAuditResult, geminiVerificationResult
+  } = useAppStore();
   const isBn = language === 'bn';
 
   // GIS View Mode: 'liveGov' (100% functional live national portal) vs 'aiOverlay' (vector cadastre)
@@ -674,6 +677,37 @@ export default function IdentifyPage() {
                   </span>
                 </div>
               </div>
+
+              {(aiAuditResult || geminiVerificationResult) && (
+                <div
+                  style={{
+                    margin: '12px 0',
+                    padding: '8px 10px',
+                    borderRadius: 8,
+                    background:
+                      (aiAuditResult?.isMortgaged || geminiVerificationResult?.isMortgaged || aiAuditResult?.isDoubleSellingRisk || geminiVerificationResult?.isDoubleSellingRisk)
+                        ? '#fff5f5'
+                        : '#f0fdf4',
+                    border:
+                      (aiAuditResult?.isMortgaged || geminiVerificationResult?.isMortgaged || aiAuditResult?.isDoubleSellingRisk || geminiVerificationResult?.isDoubleSellingRisk)
+                        ? '1px solid #fca5a5'
+                        : '1px solid #86efac',
+                    fontSize: 12,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6
+                  }}
+                >
+                  <Sparkles size={14} color={(aiAuditResult?.isMortgaged || geminiVerificationResult?.isMortgaged) ? '#dc2626' : '#16a34a'} />
+                  <span>
+                    {(aiAuditResult?.isMortgaged || geminiVerificationResult?.isMortgaged)
+                      ? (isBn ? '🚨 এআই সতর্কতা: জমিটি সোনালী ব্যাংকে দায়বদ্ধ/বন্ধক!' : '🚨 AI Alert: Bank mortgage lien detected on plot!')
+                      : (aiAuditResult?.isDoubleSellingRisk || geminiVerificationResult?.isDoubleSellingRisk)
+                      ? (isBn ? '⚠️ এআই সতর্কতা: অতিরিক্ত জমি বা দ্বৈত বিক্রয়ের অমিল!' : '⚠️ AI Alert: Double selling / over-share discrepancy!')
+                      : (isBn ? '✓ Gemini Flash AI যাচাই: দাগ ও সীমানা নির্ভেজাল' : '✓ Gemini Flash AI: Clean & verified title')}
+                  </span>
+                </div>
+              )}
 
               <div className="gis-conflict-assurance">
                 <Check size={14} color="#176b56" />

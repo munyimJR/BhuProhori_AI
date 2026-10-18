@@ -1,15 +1,24 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Award, Printer, Home, CheckCircle, Search } from 'lucide-react';
+import { Award, Printer, Home, CheckCircle, Search, Sparkles, ShieldCheck, AlertTriangle, RefreshCw } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
 import paddyImage from '../assets/paddy-green-to-gold.png';
 
 export default function TrackPage() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const { allApplications, currentApplication, verificationResult, extraction } = useAppStore();
+  const {
+    allApplications,
+    currentApplication,
+    verificationResult,
+    extraction,
+    geminiVerificationResult,
+    runLiveGeminiVerificationCheck,
+    isVerifyingAi,
+  } = useAppStore();
 
   const [searchQuery, setSearchQuery] = useState('');
+  const [localAiRunning, setLocalAiRunning] = useState(false);
 
   // Priority: URL id -> store currentApplication -> first in allApplications
   const app =
@@ -19,6 +28,21 @@ export default function TrackPage() {
 
   const handlePrint = () => {
     window.print();
+  };
+
+  const handleRunAiForReport = async () => {
+    setLocalAiRunning(true);
+    try {
+      const scenarioNum = (app as unknown as { scenarioNumber?: number })?.scenarioNumber || 1;
+      await runLiveGeminiVerificationCheck(
+        scenarioNum,
+        `Track report live verification for deed: ${app?.deedNumber || 'DEMO-2026-001'}, dag: ${app?.dagNumber || '125'}`
+      );
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLocalAiRunning(false);
+    }
   };
 
   const getFieldValue = (fieldName: keyof NonNullable<typeof extraction>['fields']) => {
@@ -33,6 +57,8 @@ export default function TrackPage() {
   const dagNo = app?.dagNumber || getFieldValue('dagNumber') || '125';
   const areaVal = app?.transferArea || 5;
   const statusLabel = app?.status === 'approved' ? 'অনুমোদিত' : 'প্রাথমিক যাচাই সম্পন্ন';
+
+  const aiLoading = isVerifyingAi || localAiRunning;
 
   return (
     <div>
@@ -165,6 +191,126 @@ export default function TrackPage() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Gemini 1.5 Flash AI Verification Seal & Audit Section */}
+        <div style={{
+          marginTop: 24,
+          padding: 16,
+          background: geminiVerificationResult?.isOverLimit || geminiVerificationResult?.isMortgaged || geminiVerificationResult?.isDoubleSellingRisk
+            ? 'linear-gradient(135deg, rgba(254, 242, 242, 0.95), rgba(255, 237, 213, 0.8))'
+            : 'linear-gradient(135deg, rgba(236, 253, 245, 0.95), rgba(240, 253, 250, 0.8))',
+          borderRadius: 14,
+          border: geminiVerificationResult?.isOverLimit || geminiVerificationResult?.isMortgaged || geminiVerificationResult?.isDoubleSellingRisk
+            ? '1.5px solid #f87171'
+            : '1.5px solid #34d399',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10, marginBottom: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{
+                width: 38,
+                height: 38,
+                borderRadius: 10,
+                background: geminiVerificationResult?.isOverLimit || geminiVerificationResult?.isMortgaged
+                  ? '#ef4444'
+                  : '#059669',
+                color: 'white',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+              }}>
+                <Sparkles size={20} />
+              </div>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <h4 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: 'var(--deep)' }}>
+                    Gemini 1.5 Flash এআই অডিট সিল
+                  </h4>
+                  <span style={{
+                    fontSize: 11,
+                    padding: '2px 8px',
+                    borderRadius: 999,
+                    fontWeight: 600,
+                    background: geminiVerificationResult?.isOverLimit || geminiVerificationResult?.isMortgaged || geminiVerificationResult?.isDoubleSellingRisk
+                      ? '#fee2e2'
+                      : '#d1fae5',
+                    color: geminiVerificationResult?.isOverLimit || geminiVerificationResult?.isMortgaged || geminiVerificationResult?.isDoubleSellingRisk
+                      ? '#b91c1c'
+                      : '#065f46',
+                  }}>
+                    {geminiVerificationResult
+                      ? (geminiVerificationResult.isOverLimit || geminiVerificationResult.isMortgaged || geminiVerificationResult.isDoubleSellingRisk
+                          ? 'উচ্চ ঝুঁকি শনাক্ত'
+                          : 'স্বচ্ছ ও নিরাপদ')
+                      : 'লাইভ যাচাইয়ের জন্য প্রস্তুত'}
+                  </span>
+                </div>
+                <div style={{ fontSize: 12, color: 'var(--muted)' }}>
+                  ডিজিটাল দলিল স্ক্যান, ব্যাংকিং বন্ধক ও খতিয়ান হিস্যা স্বয়ংক্রিয় যাচাই
+                </div>
+              </div>
+            </div>
+
+            <button
+              className="no-print btn-secondary"
+              onClick={handleRunAiForReport}
+              disabled={aiLoading}
+              style={{
+                fontSize: 12,
+                padding: '6px 14px',
+                borderRadius: 8,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                background: 'white',
+                cursor: aiLoading ? 'not-allowed' : 'pointer',
+                border: '1px solid var(--line)'
+              }}
+            >
+              <RefreshCw size={14} className={aiLoading ? 'spin' : ''} />
+              {aiLoading ? 'Gemini AI বিশ্লেষণ চলছে...' : (geminiVerificationResult ? 'পুনরায় AI অডিট করুন' : '⚡ লাইভ AI অডিট সিল তৈরি করুন')}
+            </button>
+          </div>
+
+          {geminiVerificationResult ? (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10, fontSize: 12 }}>
+              <div style={{ background: 'white', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(0,0,0,0.06)' }}>
+                <div style={{ color: 'var(--muted)', marginBottom: 2 }}>ব্যাংক বন্ধক / লিয়েন</div>
+                <strong style={{ color: geminiVerificationResult.isMortgaged ? '#dc2626' : '#059669', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  {geminiVerificationResult.isMortgaged ? <AlertTriangle size={14} /> : <ShieldCheck size={14} />}
+                  {geminiVerificationResult.isMortgaged ? 'সতর্কতা: বন্ধকি দায় পাওয়া গেছে' : 'কোনো ব্যাংক দায় বা বন্ধক নেই'}
+                </strong>
+              </div>
+              <div style={{ background: 'white', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(0,0,0,0.06)' }}>
+                <div style={{ color: 'var(--muted)', marginBottom: 2 }}>মালিকানা অংশ ও বিক্রয় সীমা</div>
+                <strong style={{ color: geminiVerificationResult.isOverLimit ? '#dc2626' : '#059669', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  {geminiVerificationResult.isOverLimit ? <AlertTriangle size={14} /> : <ShieldCheck size={14} />}
+                  {geminiVerificationResult.isOverLimit ? 'অতিরিক্ত জমি দাবি / অমিল' : 'খতিয়ানের প্রাপ্য সীমার ভেতর বৈধ'}
+                </strong>
+              </div>
+              <div style={{ background: 'white', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(0,0,0,0.06)' }}>
+                <div style={{ color: 'var(--muted)', marginBottom: 2 }}>দ্বৈত বিক্রয় ঝুঁকি</div>
+                <strong style={{ color: geminiVerificationResult.isDoubleSellingRisk ? '#dc2626' : '#059669', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  {geminiVerificationResult.isDoubleSellingRisk ? <AlertTriangle size={14} /> : <ShieldCheck size={14} />}
+                  {geminiVerificationResult.isDoubleSellingRisk ? 'সম্ভাব্য দ্বৈত রেজিস্ট্রি ঝুঁকি' : 'কোনো দ্বৈত দলিল পাওয়া যায়নি'}
+                </strong>
+              </div>
+              <div style={{ gridColumn: '1 / -1', background: 'white', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(0,0,0,0.06)' }}>
+                <div style={{ color: 'var(--muted)', marginBottom: 4 }}>Gemini 1.5 Flash অডিট সারসংক্ষেপ:</div>
+                <div style={{ lineHeight: 1.5, color: 'var(--deep)' }}>{geminiVerificationResult.summaryBn}</div>
+                {geminiVerificationResult.officerRecommendationBn && (
+                  <div style={{ marginTop: 6, fontSize: 11, color: '#4b5563', fontStyle: 'italic' }}>
+                    <strong>এসি ল্যান্ডের জন্য AI সুপারিশ:</strong> {geminiVerificationResult.officerRecommendationBn}
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div style={{ fontSize: 12, color: 'var(--muted)', background: 'white', padding: 12, borderRadius: 8, border: '1px dashed var(--line)' }}>
+              এই আবেদনের জন্য Gemini 1.5 Flash লাইভ অডিট এখনও সম্পন্ন হয়নি। উপরের বাটনে ক্লিক করে সরাসরি গুগল জেমিনি এআই দিয়ে ব্যাংক দায়, দ্বৈত বিক্রয় ও খতিয়ান হিস্যা যাচাই করুন।
+            </div>
+          )}
         </div>
 
         {/* Timeline representation */}

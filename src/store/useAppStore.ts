@@ -4,11 +4,18 @@ import { persist } from 'zustand/middleware';
 import type {
   Language, UploadedDocument, DeedExtraction, Parcel, ExtractedField,
   MutationApplication, MutationStatus, VerificationResult, StatusHistoryEntry,
-  UserProfile, GeminiFraudAudit
+  UserProfile, GeminiFraudAudit, GeminiVerificationResult, GeminiOfficerCaseAudit
 } from '../types';
 import { buildDemoExtraction, PARCELS, MOUZAS, DEMO_APPLICATIONS } from '../data/demoData';
 import { runVerification, runVerificationForScenario } from '../services/verificationEngine';
-import { getStoredGeminiKey, saveGeminiKey, runGeminiAnalysis, convertToAppExtraction } from '../services/geminiService';
+import {
+  getStoredGeminiKey,
+  saveGeminiKey,
+  runGeminiAnalysis,
+  convertToAppExtraction,
+  runGeminiVerification,
+  auditOfficerCaseWithGemini
+} from '../services/geminiService';
 
 export const DEMO_CITIZEN_PROFILE: UserProfile = {
   id: 'usr-citizen-demo',
@@ -53,7 +60,10 @@ interface AppStore {
   // AI & Gemini Live Engine
   geminiApiKey: string;
   aiAuditResult: GeminiFraudAudit | null;
+  geminiVerificationResult: GeminiVerificationResult | null;
+  geminiOfficerAudits: Record<string, GeminiOfficerCaseAudit>;
   isAiLoading: boolean;
+  isVerifyingAi: boolean;
   aiError: string | null;
   lastAiInputText: string;
 
@@ -61,6 +71,8 @@ interface AppStore {
   setGeminiApiKey: (key: string) => void;
   setAiAuditResult: (audit: GeminiFraudAudit | null) => void;
   runLiveGeminiExtraction: (text?: string, base64?: string, mimeType?: string) => Promise<void>;
+  runLiveGeminiVerificationCheck: (customScenarioNumber?: number, customNotes?: string) => Promise<GeminiVerificationResult>;
+  runLiveOfficerAudit: (appId: string) => Promise<GeminiOfficerCaseAudit>;
   setStep: (step: number) => void;
   setDocument: (doc: UploadedDocument) => void;
   loadDemoScenario: (scenario: number) => void;
@@ -102,7 +114,10 @@ const useAppStore = create<AppStore>()(
       // Gemini AI Engine
       geminiApiKey: getStoredGeminiKey(),
       aiAuditResult: null,
+      geminiVerificationResult: null,
+      geminiOfficerAudits: {},
       isAiLoading: false,
+      isVerifyingAi: false,
       aiError: null,
       lastAiInputText: '',
 
@@ -112,6 +127,92 @@ const useAppStore = create<AppStore>()(
       },
 
       setAiAuditResult: (audit) => set({ aiAuditResult: audit }),
+
+      runLiveGeminiVerificationCheck: async (customScenarioNumber, customNotes) => {
+        const { extraction, selectedParcel, geminiApiKey, currentApplication } = get();
+        set({ isVerifyingAi: true, aiError: null });
+        try {
+          const getVal = (fieldName: keyof DeedExtraction['fields']) => {
+            if (!extraction) return '';
+            const f = extraction.fields[fieldName];
+            return f?.userCorrectedValue ?? f?.value ?? '';
+          };
+
+          const isScenario6 = customScenarioNumber === 6;
+          const deedData = {
+            deedNumber: currentApplication?.deedNumber || getVal('deedNumber') || (isScenario6 ? 'দলিল-২০২৬-০০২' : 'দলিল-২০২৬-০০১'),
+            grantor: currentApplication?.grantorName || getVal('grantor') || (isScenario6 ? 'ফাতেমা বেগম' : 'রহিম উদ্দিন'),
+            grantee: currentApplication?.applicantNameBn || getVal('grantee') || 'মোহাম্মদ ইউসুফ',
+            dagNumber: currentApplication?.dagNumber || getVal('dagNumber') || (isScenario6 ? '২৩৪' : '৪৫৬'),
+            khatianNumber: currentApplication?.khatianNumber || getVal('khatianNumber') || (isScenario6 ? 'খ-০৪৫' : 'খ-০১২'),
+            mouza: currentApplication?.mouza?.nameBn || getVal('mouza') || (isScenario6 ? 'আশুলিয়া' : 'পাথালিয়া'),
+            landArea: currentApplication?.transferArea || getVal('landArea') || (isScenario6 ? '১০ শতক' : '৫ শতক'),
+            surveyType: currentApplication?.surveyType || getVal('surveyType') || 'RS',
+          };
+
+          const parcelData = {
+            dagNumber: selectedParcel?.dagNumber || deedData.dagNumber,
+            area: selectedParcel?.area || 33,
+            currentKhatian: selectedParcel?.currentKhatian || deedData.khatianNumber,
+            availableShare: isScenario6 ? 8 : (selectedParcel?.area ? Math.min(selectedParcel.area, 8) : 8),
+          };
+
+          let note = customNotes || '';
+          if (customScenarioNumber === 3) {
+            note = 'সোনালী ব্যাংক সাভার শাখায় ৫ লক্ষ টাকা কৃষি ঋণের বিপরীতে জমিটি বন্ধক রয়েছে।';
+          } else if (customScenarioNumber === 4) {
+            note = 'সহকারী জজ আদালতে দেওয়ানি মামলা ৪২/২০২৫ বিচারাধীন ও অস্থায়ী নিষেধাজ্ঞার আদেশ বলবৎ।';
+          } else if (customScenarioNumber === 5) {
+            note = 'অর্পিত ও সরকারি খাস জমি হিসেবে রেকর্ডভুক্ত।';
+          } else if (customScenarioNumber === 6) {
+            note = 'খতিয়ানে বিক্রেতার অংশ ৮ শতক কিন্তু বিক্রির দাবি ১০ শতক (২ শতক বেশি)। ইতিপূর্বে ৪ শতক বিক্রি হয়েছিল।';
+          }
+
+          const result = await runGeminiVerification({
+            deedData,
+            parcelData,
+            contextNote: note,
+            apiKey: geminiApiKey,
+          });
+
+          set({
+            geminiVerificationResult: result,
+            isVerifyingAi: false,
+          });
+          return result;
+        } catch (err: any) {
+          set({
+            isVerifyingAi: false,
+            aiError: err?.message || 'Gemini Verification API কল ব্যর্থ হয়েছে।',
+          });
+          throw err;
+        }
+      },
+
+      runLiveOfficerAudit: async (appId: string) => {
+        const { allApplications, geminiApiKey, geminiOfficerAudits } = get();
+        const app = allApplications.find(a => a.id === appId) || allApplications[0];
+        if (!app) throw new Error('Application not found');
+
+        set({ isAiLoading: true, aiError: null });
+        try {
+          const audit = await auditOfficerCaseWithGemini(app, geminiApiKey);
+          set({
+            geminiOfficerAudits: {
+              ...geminiOfficerAudits,
+              [appId]: audit,
+            },
+            isAiLoading: false,
+          });
+          return audit;
+        } catch (err: any) {
+          set({
+            isAiLoading: false,
+            aiError: err?.message || 'Gemini Officer Audit API কল ব্যর্থ হয়েছে।',
+          });
+          throw err;
+        }
+      },
 
       runLiveGeminiExtraction: async (text, base64, mimeType) => {
         const { geminiApiKey } = get();

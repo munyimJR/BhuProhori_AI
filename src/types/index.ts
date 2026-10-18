@@ -289,3 +289,41 @@ export interface GeminiFraudAudit {
   extractedAt?: string;
   modelUsed?: string;
 }
+
+export interface GeminiVerificationRuleCheck {
+  nameBn: string;
+  passed: boolean;
+  severity: 'safe' | 'warning' | 'critical';
+  messageBn: string;
+}
+
+export interface GeminiVerificationResult {
+  availableShare: number;
+  claimedShare: number;
+  isOverLimit: boolean;
+  overLimitDifference: number;
+  isMortgaged: boolean;
+  mortgageDetails: string;
+  isDoubleSellingRisk: boolean;
+  doubleSellingDetails: string;
+  isKhasOrDisputed: boolean;
+  khasOrDisputedDetails: string;
+  overallScore: number;
+  category: 'no_inconsistency' | 'clarification_required' | 'review_required';
+  summaryBn: string;
+  officerRecommendationBn: string;
+  rules: Record<string, GeminiVerificationRuleCheck>;
+  verifiedAt: string;
+  modelUsed: string;
+}
+
+export interface GeminiOfficerCaseAudit {
+  applicationId: string;
+  riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  suggestedAction: 'clarification_required' | 'field_verification_requested' | 'officer_review' | 'approved' | 'rejected';
+  suggestedActionBn: string;
+  reasoningBn: string;
+  officerNoteDraftBn: string;
+  keyFindings: string[];
+  auditedAt: string;
+}

@@ -1,7 +1,13 @@
 // Gemini AI Service for BhuProhori AI
 // Connects directly to Google Gemini 1.5 Flash API for real OCR extraction and fraud/mortgage detection
 
-import type { GeminiFraudAudit, DeedExtraction } from '../types';
+import type {
+  GeminiFraudAudit,
+  DeedExtraction,
+  GeminiVerificationResult,
+  GeminiOfficerCaseAudit,
+  MutationApplication
+} from '../types';
 
 export const DEFAULT_GEMINI_KEY = (import.meta.env.VITE_GEMINI_API_KEY as string) || '';
 const STORAGE_KEY = 'bhuprohori_gemini_api_key';
@@ -304,5 +310,247 @@ export function convertToAppExtraction(result: GeminiExtractionResult, docId: st
       ),
       grantee: mkField('grantee', 'গ্রহীতা', result.grantee),
     }
+  };
+}
+
+/**
+ * Runs a deep 7-rule cadastral and fraud verification check using Google Gemini Flash
+ */
+export async function runGeminiVerification(options: {
+  deedData: {
+    deedNumber?: string;
+    grantor?: string;
+    grantee?: string;
+    dagNumber?: string;
+    khatianNumber?: string;
+    mouza?: string;
+    landArea?: string | number;
+    surveyType?: string;
+  };
+  parcelData?: {
+    dagNumber?: string;
+    area?: number;
+    currentKhatian?: string;
+    ownerName?: string;
+    availableShare?: number;
+  };
+  contextNote?: string;
+  apiKey?: string;
+}): Promise<GeminiVerificationResult> {
+  const apiKey = (options.apiKey || getStoredGeminiKey()).trim();
+  if (!apiKey) {
+    throw new Error('Gemini API Key is missing. Please provide a valid Google Gemini API Key.');
+  }
+
+  const prompt = `You are BhuProhori AI, the official Bangladesh Land Mutation & Cadastral Verification Engine.
+Evaluate this mutation proposal against the cadastral parcel record and the 7 Bangladesh Land Administration Verification Rules.
+
+APPLICATION DATA:
+- Deed Number: ${options.deedData.deedNumber || 'দলিল-২০২৬-০০১'}
+- Grantor / Seller: ${options.deedData.grantor || 'রহিম উদ্দিন'}
+- Grantee / Buyer: ${options.deedData.grantee || 'মোহাম্মদ ইউসুফ'}
+- Transferred Land Area: ${options.deedData.landArea || '৩৩'} শতক (decimals)
+- Mouza: ${options.deedData.mouza || 'পাথালিয়া'}, Dag / Plot: ${options.deedData.dagNumber || '৪৫৬'}, Khatian: ${options.deedData.khatianNumber || 'খ-০১২'}
+- Survey Type: ${options.deedData.surveyType || 'RS'}
+- Cadastral Parcel: Dag ${options.parcelData?.dagNumber || '৪৫৬'}, Total Dag Area: ${options.parcelData?.area || 33} শতক
+- Seller's recorded available share in khatian: ${options.parcelData?.availableShare ?? 8} শতক
+- Context / Incident notes: ${options.contextNote || 'None'}
+
+EVALUATE THE 7 CORE CADASTRAL RULES:
+1. R01 (Ownership Share & Double Selling): Does the transfer area exceed the seller's recorded available share?
+2. R02 (Deed vs Parcel Record Mismatch): Does the dag, khatian, or survey type mismatch with cadastral records?
+3. R03 (Duplicate Application): Is there any indication of duplicate selling or prior application on the same plot?
+4. R04 (Bank Mortgage & Lien): Does the land have an active bank mortgage or loan lien?
+5. R05 (Supporting Documents): Are mandatory title chain documents present?
+6. R06 (Parcel Cadastral Identification): Is the plot clearly identifiable on the cadastral mouza map?
+7. R07 (Court Injunction & Khas Land): Is there any court stay order, civil suit, or government khas/vested status?
+
+Return strictly valid JSON:
+{
+  "availableShare": number (e.g. 8),
+  "claimedShare": number (e.g. 10 or 5),
+  "isOverLimit": boolean,
+  "overLimitDifference": number,
+  "isMortgaged": boolean,
+  "mortgageDetails": "string",
+  "isDoubleSellingRisk": boolean,
+  "doubleSellingDetails": "string",
+  "isKhasOrDisputed": boolean,
+  "khasOrDisputedDetails": "string",
+  "overallScore": number (0 to 100),
+  "category": "'no_inconsistency' | 'clarification_required' | 'review_required'",
+  "summaryBn": "string (natural Bengali summary of verification)",
+  "officerRecommendationBn": "string (direct recommendation for AC Land officer)",
+  "rules": {
+    "R01": { "nameBn": "মালিকানার অংশ ও দ্বৈত বিক্রয়", "passed": boolean, "severity": "'safe' | 'warning' | 'critical'", "messageBn": "..." },
+    "R02": { "nameBn": "দলিল ও দাগের তথ্য মিল", "passed": boolean, "severity": "'safe' | 'warning' | 'critical'", "messageBn": "..." },
+    "R03": { "nameBn": "একই দলিলে পুনরায় আবেদন", "passed": boolean, "severity": "'safe' | 'warning' | 'critical'", "messageBn": "..." },
+    "R04": { "nameBn": "ব্যাংক দায়বদ্ধতা ও বন্ধক", "passed": boolean, "severity": "'safe' | 'warning' | 'critical'", "messageBn": "..." },
+    "R05": { "nameBn": "প্রয়োজনীয় কাগজপত্র যাচাই", "passed": boolean, "severity": "'safe' | 'warning' | 'critical'", "messageBn": "..." },
+    "R06": { "nameBn": "মৌজা নকশায় দাগ চিহ্নিতকরণ", "passed": boolean, "severity": "'safe' | 'warning' | 'critical'", "messageBn": "..." },
+    "R07": { "nameBn": "আদালতে মামলা বা খাস জমি", "passed": boolean, "severity": "'safe' | 'warning' | 'critical'", "messageBn": "..." }
+  }
+}
+CRITICAL: Return strictly ONLY the raw JSON string without markdown quotes.`;
+
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`;
+
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-goog-api-key': apiKey,
+    },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }]
+    })
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Gemini Verification API Error (${response.status}): ${errorText}`);
+  }
+
+  const jsonResponse = await response.json();
+  const rawText = jsonResponse?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+  if (!rawText) {
+    throw new Error('Gemini Flash did not return any verification text.');
+  }
+
+  let cleaned = rawText.trim();
+  if (cleaned.startsWith('```json')) cleaned = cleaned.replace(/^```json/, '');
+  else if (cleaned.startsWith('```')) cleaned = cleaned.replace(/^```/, '');
+  if (cleaned.endsWith('```')) cleaned = cleaned.replace(/```$/, '');
+  cleaned = cleaned.trim();
+
+  let parsed: any;
+  try {
+    parsed = JSON.parse(cleaned);
+  } catch {
+    const match = cleaned.match(/\{[\s\S]*\}/);
+    if (match) parsed = JSON.parse(match[0]);
+    else throw new Error('Failed to parse Gemini verification response into JSON.');
+  }
+
+  const availableShare = Number(parsed.availableShare) || options.parcelData?.availableShare || 8;
+  const claimedShare = Number(parsed.claimedShare) || (parseFloat(String(options.deedData.landArea).replace(/[^\d.]/g, '')) || 5);
+  const isOverLimit = parsed.isOverLimit ?? (claimedShare > availableShare);
+  const overLimitDifference = parsed.overLimitDifference ?? (isOverLimit ? Math.abs(claimedShare - availableShare) : 0);
+
+  return {
+    availableShare,
+    claimedShare,
+    isOverLimit,
+    overLimitDifference,
+    isMortgaged: !!parsed.isMortgaged,
+    mortgageDetails: parsed.mortgageDetails || '',
+    isDoubleSellingRisk: !!parsed.isDoubleSellingRisk || isOverLimit,
+    doubleSellingDetails: parsed.doubleSellingDetails || (isOverLimit ? `বিক্রেতার উপলব্ধ অংশ ${availableShare} শতক, কিন্তু বিক্রির দাবি ${claimedShare} শতক।` : ''),
+    isKhasOrDisputed: !!parsed.isKhasOrDisputed,
+    khasOrDisputedDetails: parsed.khasOrDisputedDetails || '',
+    overallScore: typeof parsed.overallScore === 'number' ? parsed.overallScore : (isOverLimit || parsed.isMortgaged ? 45 : 95),
+    category: parsed.category || (isOverLimit || parsed.isMortgaged ? 'review_required' : 'no_inconsistency'),
+    summaryBn: parsed.summaryBn || 'স্বয়ংক্রিয় এআই যাচাই সম্পন্ন হয়েছে।',
+    officerRecommendationBn: parsed.officerRecommendationBn || 'নথি ও রেকর্ড বিবেচনাপূর্বক ব্যবস্থা গ্রহণ করুন।',
+    rules: parsed.rules || {},
+    verifiedAt: new Date().toISOString(),
+    modelUsed: 'gemini-flash-latest'
+  };
+}
+
+/**
+ * Runs an AC Land Officer case audit on an application using Google Gemini Flash
+ */
+export async function auditOfficerCaseWithGemini(
+  app: MutationApplication,
+  apiKey?: string
+): Promise<GeminiOfficerCaseAudit> {
+  const activeKey = (apiKey || getStoredGeminiKey()).trim();
+  if (!activeKey) {
+    throw new Error('Gemini API Key is missing. Please provide a valid Google Gemini API Key.');
+  }
+
+  const prompt = `You are BhuProhori AI Assistant Commissioner (Land) / AC Land Expert Officer Assistant for Bangladesh e-Mutation.
+Perform an official case audit for this mutation application and provide an executive hearing recommendation:
+
+APPLICATION DETAILS:
+- Application ID: ${app.id}
+- Applicant: ${app.applicantNameBn || app.applicantName}
+- Deed Number: ${app.deedNumber}
+- Grantor / Seller: ${app.grantorName}
+- Land Area: ${app.transferArea} ${app.transferAreaUnit}
+- Dag / Plot: ${app.dagNumber}, Khatian: ${app.khatianNumber}, Mouza: ${app.mouza?.nameBn || 'পাথালিয়া'}
+- Supporting Documents: ${app.supportingDocuments.map(d => `${d.documentTypeBn}: ${d.isProvided ? 'জমা আছে' : 'অনুপস্থিত'}`).join(', ')}
+- Current Status: ${app.status}
+
+TASK:
+1. Determine overall risk level: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
+2. Recommend the best officer action: 'clarification_required' | 'field_verification_requested' | 'officer_review' | 'approved' | 'rejected'
+3. Write official legal reasoning in Bengali for AC Land.
+4. Draft a professional officer order note in formal Bengali (উপজেলা রাজস্ব সার্কেলের আদর্শ ফরম্যাট).
+5. Extract key bullet points for the hearing.
+
+Output strictly valid JSON:
+{
+  "applicationId": "${app.id}",
+  "riskLevel": "'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'",
+  "suggestedAction": "'clarification_required' | 'field_verification_requested' | 'officer_review' | 'approved' | 'rejected'",
+  "suggestedActionBn": "string (e.g. 'অতিরিক্ত তথ্য ও নথি তলব' or 'অনুমোদনযোগ্য')",
+  "reasoningBn": "string (Comprehensive legal justification in Bengali)",
+  "officerNoteDraftBn": "string (Professional order sheet entry draft in Bengali)",
+  "keyFindings": ["string", "string"]
+}
+CRITICAL: Output strictly ONLY valid raw JSON without markdown formatting.`;
+
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${activeKey}`;
+
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-goog-api-key': activeKey,
+    },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }]
+    })
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Gemini Officer Audit API Error (${response.status}): ${errorText}`);
+  }
+
+  const jsonResponse = await response.json();
+  const rawText = jsonResponse?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+  if (!rawText) {
+    throw new Error('Gemini Flash did not return any officer audit text.');
+  }
+
+  let cleaned = rawText.trim();
+  if (cleaned.startsWith('```json')) cleaned = cleaned.replace(/^```json/, '');
+  else if (cleaned.startsWith('```')) cleaned = cleaned.replace(/^```/, '');
+  if (cleaned.endsWith('```')) cleaned = cleaned.replace(/```$/, '');
+  cleaned = cleaned.trim();
+
+  let parsed: any;
+  try {
+    parsed = JSON.parse(cleaned);
+  } catch {
+    const match = cleaned.match(/\{[\s\S]*\}/);
+    if (match) parsed = JSON.parse(match[0]);
+    else throw new Error('Failed to parse Gemini officer audit response into JSON.');
+  }
+
+  return {
+    applicationId: app.id,
+    riskLevel: parsed.riskLevel || 'LOW',
+    suggestedAction: parsed.suggestedAction || 'officer_review',
+    suggestedActionBn: parsed.suggestedActionBn || 'পর্যালোচনাধীন রাখুন',
+    reasoningBn: parsed.reasoningBn || 'নথি ও রেকর্ডপত্র বিবেচনাপূর্বক পরবর্তী ব্যবস্থা গ্রহণ করা সমীচীন।',
+    officerNoteDraftBn: parsed.officerNoteDraftBn || 'আবেদনটির নথি পর্যালোচনা করা হলো।',
+    keyFindings: Array.isArray(parsed.keyFindings) ? parsed.keyFindings : [],
+    auditedAt: new Date().toISOString()
   };
 }
