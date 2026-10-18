@@ -328,8 +328,8 @@ export const TRANSLATIONS = {
   // Footer
   footer: {
     text: {
-      bn: '© ভূপ্রহরী AI — ল্যান্ডটেক ইনোভেশন হ্যাকাথন ২০২৬। ভূ-স্থানিক স্মার্ট ই-নামজারি ও জমি যাচাইকরণ ব্যবস্থা।',
-      en: '© BhuProhori AI — LandTech Innovation Hackathon 2026. Geo-Integrated Smart e-Mutation & Land Verification System.'
+      bn: '© ভূপ্রহরী AI — ভূ-স্থানিক স্মার্ট ই-নামজারি ও জমি যাচাইকরণ ব্যবস্থা।',
+      en: '© BhuProhori AI — Geo-Integrated Smart e-Mutation & Land Verification System.'
     }
   }
 };

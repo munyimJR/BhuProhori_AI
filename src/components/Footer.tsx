@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, ShieldCheck, Code2, X, Mail, ExternalLink } from 'lucide-react';
+import { Sparkles, Code2, X, Mail, ExternalLink } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
 import logoImg from '../assets/logo.png';
 import munyimImg from '../assets/developers/photo_2026-01-15_12-37-18.jpg';
@@ -139,11 +139,6 @@ export default function Footer() {
             <span className="app-footer-copy">
               © {isBn ? '২০২৬' : '2026'} {isBn ? 'ভূপ্রহরী AI' : 'BhuProhori AI'}
             </span>
-
-            <span className="app-footer-badge">
-              <ShieldCheck size={11} />
-              {isBn ? 'ল্যান্ডটেক ২০২৬' : 'LandTech 2026'}
-            </span>
           </div>
         </div>
       </footer>
@@ -250,14 +245,14 @@ export default function Footer() {
               ))}
             </div>
 
-            {/* Modal Footer Note */}
+            {/* Modal Footer */}
             <div className="app-dev-modal-foot">
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11.5, color: 'var(--muted)' }}>
                 <Sparkles size={13} color="var(--green)" />
                 <span>
                   {isBn
-                    ? 'ল্যান্ডটেক ইনোভেশন হ্যাকাথন ২০২৬-এর জন্য নির্মিত স্মার্ট ভূমি সমাধান।'
-                    : 'Crafted for LandTech Innovation Hackathon 2026.'}
+                    ? 'স্মার্ট ই-নামজারি ও ক্যাডাস্ট্রাল ভেরিফিকেশন প্ল্যাটফর্ম'
+                    : 'Smart e-Mutation & Cadastral Verification Platform'}
                 </span>
               </div>
 
