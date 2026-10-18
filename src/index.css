@@ -1530,6 +1530,174 @@ img {
   font-weight: normal;
 }
 
+/* ── Dual-Mode GIS Map Switcher & Gov Map Embed ─────────────── */
+.map-view-switcher {
+  display: inline-flex;
+  background: #edf5f1;
+  border: 1px solid #cce2d6;
+  border-radius: 99px;
+  padding: 3px;
+  gap: 4px;
+  margin-bottom: 16px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.map-view-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: none;
+  background: transparent;
+  color: #48695f;
+  font-weight: 600;
+  font-size: 12.5px;
+  padding: 7px 14px;
+  border-radius: 99px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: inherit;
+}
+
+.map-view-tab:hover {
+  color: var(--green);
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.map-view-tab.active {
+  background: #ffffff;
+  color: var(--deep);
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(18, 59, 48, 0.12);
+}
+
+.gov-map-container {
+  border: 1px solid #d4e5dc;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 4px 18px rgba(18, 59, 48, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.gov-map-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #f7faf8;
+  border-bottom: 1px solid #e1ece5;
+  padding: 8px 14px;
+  flex-wrap: wrap;
+}
+
+.gov-domain-badge {
+  font-size: 11px;
+  font-family: monospace;
+  font-weight: 600;
+  color: #176b56;
+  background: #eaf4ef;
+  border: 1px solid #cbe4d6;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.gov-map-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.gov-tool-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #ffffff;
+  border: 1px solid #d2e4db;
+  border-radius: 8px;
+  padding: 4px 9px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #3b574f;
+  cursor: pointer;
+  transition: all 0.16s ease;
+  text-decoration: none;
+  font-family: inherit;
+}
+
+.gov-tool-btn:hover {
+  background: #eef6f2;
+  border-color: #bad6c8;
+  color: var(--green);
+  text-decoration: none;
+}
+
+.gov-iframe-wrapper {
+  position: relative;
+  width: 100%;
+  height: clamp(380px, 56vh, 520px);
+  background: #f5f9f6;
+}
+
+.gov-iframe-wrapper.is-fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  background: #ffffff;
+}
+
+.gov-fullscreen-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 10000;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(18, 59, 48, 0.88);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(8px);
+  padding: 8px 16px;
+  border-radius: 99px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.gov-fullscreen-close-btn:hover {
+  background: #176b56;
+  transform: scale(1.03);
+}
+
+.gov-map-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+.gov-map-guide-hint {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #f0faf5 0%, #e9f6ef 100%);
+  border: 1px solid #cde8da;
+  border-radius: 12px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #276553;
+}
+
 /* ── Map Wrap ─────────────────────────────────────────────── */
 .map-wrap {
   border: 1px solid #d8e6dc;
