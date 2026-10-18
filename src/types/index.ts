@@ -275,3 +275,17 @@ export interface ParcelMatchResult {
 }
 
 export type DemoScenario = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
+
+export interface GeminiFraudAudit {
+  riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  isMortgaged: boolean;
+  mortgageDetails?: string;
+  isDoubleSellingRisk: boolean;
+  doubleSellingDetails?: string;
+  isKhasOrDisputed: boolean;
+  khasOrDisputedDetails?: string;
+  summaryBn: string;
+  recommendationBn: string;
+  extractedAt?: string;
+  modelUsed?: string;
+}

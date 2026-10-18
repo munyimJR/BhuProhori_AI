@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShieldCheck, ArrowRight, ChevronLeft, ChevronDown, ChevronUp } from 'lucide-react';
+import { ShieldCheck, ArrowRight, ChevronLeft, ChevronDown, ChevronUp, Sparkles, Landmark, AlertTriangle } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
 import { VERIFICATION_RULES } from '../data/demoData';
 
@@ -8,8 +8,10 @@ export default function VerificationPage() {
   const navigate = useNavigate();
   const {
     runVerificationCheck, verificationResult,
-    currentScenario, loadDemoScenario, setStep
+    currentScenario, loadDemoScenario, setStep,
+    aiAuditResult, language
   } = useAppStore();
+  const isBn = language === 'bn';
 
   const [scenarioVal, setScenarioVal] = useState<number>(currentScenario || 1);
   const [expandedRules, setExpandedRules] = useState(false);
@@ -78,6 +80,42 @@ export default function VerificationPage() {
               </div>
             </div>
           </div>
+
+          {aiAuditResult && (
+            <div
+              style={{
+                marginTop: 14,
+                padding: '12px 14px',
+                borderRadius: 10,
+                background: aiAuditResult.riskLevel === 'CRITICAL' ? '#fff5f5' : '#f0fdf4',
+                border: aiAuditResult.riskLevel === 'CRITICAL' ? '1.5px solid #f87171' : '1.5px solid #86efac',
+                fontSize: 13
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 700, marginBottom: 4, color: aiAuditResult.riskLevel === 'CRITICAL' ? '#991b1b' : '#166534' }}>
+                <Sparkles size={15} />
+                <span>{isBn ? 'Gemini 1.5 Flash লাইভ AI ফ্রড অডিট:' : 'Gemini 1.5 Flash AI Fraud Audit:'}</span>
+                <span style={{ fontSize: 11, padding: '1px 6px', borderRadius: 8, background: aiAuditResult.riskLevel === 'CRITICAL' ? '#ef4444' : '#10b981', color: '#fff' }}>
+                  {aiAuditResult.riskLevel}
+                </span>
+              </div>
+              <div style={{ fontSize: 12, lineHeight: 1.5, color: '#374151' }}>
+                {aiAuditResult.summaryBn}
+              </div>
+              {aiAuditResult.isMortgaged && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6, color: '#dc2626', fontWeight: 700, fontSize: 12 }}>
+                  <Landmark size={14} />
+                  <span>{isBn ? 'ব্যাংক বন্ধকী জমি শনাক্ত' : 'Bank Mortgage Lien Detected'}</span>
+                </div>
+              )}
+              {aiAuditResult.isDoubleSellingRisk && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4, color: '#dc2626', fontWeight: 700, fontSize: 12 }}>
+                  <AlertTriangle size={14} />
+                  <span>{isBn ? 'দ্বৈত বিক্রয় বা অতিরিক্ত অংশ দাবি' : 'Double Selling / Over-Share Claim'}</span>
+                </div>
+              )}
+            </div>
+          )}
 
           <div style={{ marginTop: 19 }}>
             <div className="check">

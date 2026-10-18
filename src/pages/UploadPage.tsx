@@ -9,7 +9,7 @@ import paddyImage from '../assets/paddy-green-to-gold.png';
 
 export default function UploadPage() {
   const navigate = useNavigate();
-  const { setDocument, loadDemoScenario, setStep, language } = useAppStore();
+  const { setDocument, loadDemoScenario, setStep, language, runLiveGeminiExtraction } = useAppStore();
   const [dragActive, setDragActive] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [selectedFileName, setSelectedFileName] = useState('');
@@ -18,9 +18,6 @@ export default function UploadPage() {
   const processFile = useCallback(async (f: File) => {
     setSelectedFileName(f.name);
     setUploading(true);
-
-    // Simulate OCR processing time
-    await new Promise(r => setTimeout(r, 1500));
 
     const ext = f.name.split('.').pop()?.toLowerCase() as UploadedDocument['fileType'];
     const doc: UploadedDocument = {
@@ -34,10 +31,28 @@ export default function UploadPage() {
       source: 'upload',
     };
     setDocument(doc);
+
+    // If image, perform real Gemini 1.5 Flash Vision Multimodal Extraction
+    if (f.type.startsWith('image/')) {
+      try {
+        const base64 = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(f);
+        });
+        await runLiveGeminiExtraction(undefined, base64, f.type);
+      } catch (err) {
+        console.warn('Gemini vision extraction fallback to manual review:', err);
+      }
+    } else {
+      await new Promise(r => setTimeout(r, 1000));
+    }
+
     setUploading(false);
     setStep(2);
     navigate('/review');
-  }, [setDocument, setStep, navigate]);
+  }, [setDocument, setStep, navigate, runLiveGeminiExtraction]);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();

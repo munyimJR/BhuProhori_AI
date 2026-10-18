@@ -4,10 +4,11 @@ import { persist } from 'zustand/middleware';
 import type {
   Language, UploadedDocument, DeedExtraction, Parcel, ExtractedField,
   MutationApplication, MutationStatus, VerificationResult, StatusHistoryEntry,
-  UserProfile
+  UserProfile, GeminiFraudAudit
 } from '../types';
 import { buildDemoExtraction, PARCELS, MOUZAS, DEMO_APPLICATIONS } from '../data/demoData';
 import { runVerification, runVerificationForScenario } from '../services/verificationEngine';
+import { getStoredGeminiKey, saveGeminiKey, runGeminiAnalysis, convertToAppExtraction } from '../services/geminiService';
 
 export const DEMO_CITIZEN_PROFILE: UserProfile = {
   id: 'usr-citizen-demo',
@@ -49,7 +50,17 @@ interface AppStore {
   isAuthenticated: boolean;
   currentUser: UserProfile | null;
 
+  // AI & Gemini Live Engine
+  geminiApiKey: string;
+  aiAuditResult: GeminiFraudAudit | null;
+  isAiLoading: boolean;
+  aiError: string | null;
+  lastAiInputText: string;
+
   // Actions
+  setGeminiApiKey: (key: string) => void;
+  setAiAuditResult: (audit: GeminiFraudAudit | null) => void;
+  runLiveGeminiExtraction: (text?: string, base64?: string, mimeType?: string) => Promise<void>;
   setStep: (step: number) => void;
   setDocument: (doc: UploadedDocument) => void;
   loadDemoScenario: (scenario: number) => void;
@@ -87,6 +98,59 @@ const useAppStore = create<AppStore>()(
       language: 'bn',
       isAuthenticated: false,
       currentUser: null,
+
+      // Gemini AI Engine
+      geminiApiKey: getStoredGeminiKey(),
+      aiAuditResult: null,
+      isAiLoading: false,
+      aiError: null,
+      lastAiInputText: '',
+
+      setGeminiApiKey: (key) => {
+        saveGeminiKey(key);
+        set({ geminiApiKey: key });
+      },
+
+      setAiAuditResult: (audit) => set({ aiAuditResult: audit }),
+
+      runLiveGeminiExtraction: async (text, base64, mimeType) => {
+        const { geminiApiKey } = get();
+        set({ isAiLoading: true, aiError: null });
+        try {
+          const result = await runGeminiAnalysis({
+            text,
+            base64Image: base64,
+            mimeType,
+            apiKey: geminiApiKey,
+          });
+          const docId = `gemini-doc-${Date.now()}`;
+          const extraction = convertToAppExtraction(result, docId);
+
+          const doc: UploadedDocument = {
+            id: docId,
+            filename: result.deedNumber ? `দলিল_${result.deedNumber}.txt` : 'লাইভ_AI_বিশ্লেষিত_দলিল.txt',
+            fileType: 'pdf',
+            fileSize: (text?.length || 500) * 2,
+            uploadedAt: new Date().toISOString(),
+            status: 'ready',
+            source: 'upload',
+          };
+
+          set({
+            extraction,
+            aiAuditResult: result.fraudAudit,
+            isAiLoading: false,
+            document: doc,
+            lastAiInputText: text || '',
+          });
+        } catch (err: any) {
+          set({
+            isAiLoading: false,
+            aiError: err?.message || 'Gemini API কল করতে ব্যর্থ হয়েছে।',
+          });
+          throw err;
+        }
+      },
 
       setStep: (step) => set({ currentStep: step }),
 
@@ -323,6 +387,8 @@ const useAppStore = create<AppStore>()(
         language: state.language,
         isAuthenticated: state.isAuthenticated,
         currentUser: state.currentUser,
+        geminiApiKey: state.geminiApiKey,
+        aiAuditResult: state.aiAuditResult,
       }),
     }
   )
