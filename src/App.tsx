@@ -11,12 +11,10 @@ import ApplicationPage from './pages/ApplicationPage';
 import TrackPage from './pages/TrackPage';
 import OfficerPage from './pages/OfficerPage';
 import SignInPage from './pages/SignInPage';
-import useAppStore from './store/useAppStore';
-import { TRANSLATIONS } from './utils/translations';
+import Footer from './components/Footer';
 
 export default function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { language } = useAppStore();
 
   return (
     <BrowserRouter>
@@ -66,11 +64,9 @@ export default function App() {
                 </div>
               } />
             </Routes>
-
-            <footer className="footnote no-print">
-              {TRANSLATIONS.footer.text[language]}
-            </footer>
           </main>
+
+          <Footer />
         </div>
       </div>
     </BrowserRouter>
