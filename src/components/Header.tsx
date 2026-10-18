@@ -1,11 +1,13 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Map, FileText, Search, LayoutDashboard, Home, Shield, AlertTriangle } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
+import LanguageToggle from './LanguageToggle';
+import { TRANSLATIONS } from '../utils/translations';
 
 export default function Header() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { currentRole, setRole } = useAppStore();
+  const { currentRole, setRole, language } = useAppStore();
 
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/');
 
@@ -22,37 +24,38 @@ export default function Header() {
           </div>
           <div>
             <div className="logo-text">ভূপ্রহরী AI</div>
-            <div className="logo-tagline">দলিল দিন, জমি খুঁজে নিন</div>
+            <div className="logo-tagline">{TRANSLATIONS.nav.brandSub[language]}</div>
           </div>
         </Link>
 
         {/* Nav */}
         <nav style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
           <Link to="/" className={`nav-link ${isActive('/') && location.pathname === '/' ? 'active' : ''}`}>
-            <Home size={14} style={{ display: 'inline', marginRight: 4 }} />হোম
+            <Home size={14} style={{ display: 'inline', marginRight: 4 }} />{TRANSLATIONS.nav.home[language]}
           </Link>
           <Link to="/upload" className={`nav-link ${isActive('/upload') ? 'active' : ''}`}>
-            <FileText size={14} style={{ display: 'inline', marginRight: 4 }} />দলিল আপলোড
+            <FileText size={14} style={{ display: 'inline', marginRight: 4 }} />{TRANSLATIONS.nav.upload[language]}
           </Link>
           <Link to="/track" className={`nav-link ${isActive('/track') ? 'active' : ''}`}>
-            <Search size={14} style={{ display: 'inline', marginRight: 4 }} />অবস্থা দেখুন
+            <Search size={14} style={{ display: 'inline', marginRight: 4 }} />{TRANSLATIONS.nav.track[language]}
           </Link>
           <Link to="/officer" className={`nav-link ${isActive('/officer') ? 'active' : ''}`}>
-            <LayoutDashboard size={14} style={{ display: 'inline', marginRight: 4 }} />কর্মকর্তা
+            <LayoutDashboard size={14} style={{ display: 'inline', marginRight: 4 }} />{TRANSLATIONS.nav.officer[language]}
           </Link>
         </nav>
 
-        {/* Role switcher */}
+        {/* Right side tools */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <LanguageToggle />
           <div className="demo-banner" style={{ padding: '0.25rem 0.75rem', fontSize: '0.75rem' }}>
-            <AlertTriangle size={12} />নমুনা
+            <AlertTriangle size={12} />{TRANSLATIONS.common.sample[language]}
           </div>
           <button
             className={`btn btn-sm ${currentRole === 'officer' ? 'btn-navy' : 'btn-secondary'}`}
             onClick={() => { setRole(currentRole === 'officer' ? 'citizen' : 'officer'); navigate(currentRole === 'officer' ? '/' : '/officer'); }}
           >
             <Shield size={14} />
-            {currentRole === 'officer' ? 'নাগরিক মোড' : 'কর্মকর্তা মোড'}
+            {currentRole === 'officer' ? TRANSLATIONS.topbar.officerRole[language] : TRANSLATIONS.topbar.citizenRole[language]}
           </button>
         </div>
       </div>

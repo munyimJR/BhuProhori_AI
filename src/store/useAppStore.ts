@@ -2,7 +2,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type {
-  UploadedDocument, DeedExtraction, Parcel, ExtractedField,
+  Language, UploadedDocument, DeedExtraction, Parcel, ExtractedField,
   MutationApplication, MutationStatus, VerificationResult, StatusHistoryEntry
 } from '../types';
 import { buildDemoExtraction, PARCELS, MOUZAS, DEMO_APPLICATIONS } from '../data/demoData';
@@ -21,8 +21,9 @@ interface AppStore {
   // All applications (demo database)
   allApplications: MutationApplication[];
 
-  // Auth
+  // Auth & Settings
   currentRole: 'citizen' | 'officer';
+  language: Language;
 
   // Actions
   setStep: (step: number) => void;
@@ -38,6 +39,8 @@ interface AppStore {
   getApplication: (id: string) => MutationApplication | undefined;
   resetJourney: () => void;
   setRole: (role: 'citizen' | 'officer') => void;
+  setLanguage: (lang: Language) => void;
+  toggleLanguage: () => void;
 }
 
 let appCounter = 5;
@@ -55,6 +58,7 @@ const useAppStore = create<AppStore>()(
       currentScenario: 1,
       allApplications: DEMO_APPLICATIONS,
       currentRole: 'citizen',
+      language: 'bn',
 
       setStep: (step) => set({ currentStep: step }),
 
@@ -262,10 +266,16 @@ const useAppStore = create<AppStore>()(
       }),
 
       setRole: (role) => set({ currentRole: role }),
+      setLanguage: (lang) => set({ language: lang }),
+      toggleLanguage: () => set((state) => ({ language: state.language === 'bn' ? 'en' : 'bn' })),
     }),
     {
       name: 'bhuprohori-store',
-      partialize: (state) => ({ allApplications: state.allApplications, currentRole: state.currentRole }),
+      partialize: (state) => ({
+        allApplications: state.allApplications,
+        currentRole: state.currentRole,
+        language: state.language,
+      }),
     }
   )
 );

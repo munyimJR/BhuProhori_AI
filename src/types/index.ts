@@ -1,5 +1,4 @@
-// Core Types for BhuProhori AI
-
+export type Language = 'bn' | 'en';
 export type SurveyType = 'BS' | 'SA' | 'CS' | 'RS' | 'BRS';
 export type DocumentStatus = 'uploading' | 'processing' | 'ready' | 'error';
 export type FieldSource = 'ocr' | 'manual' | 'demo' | 'computed';

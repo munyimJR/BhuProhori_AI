@@ -10,9 +10,12 @@ import VerificationPage from './pages/VerificationPage';
 import ApplicationPage from './pages/ApplicationPage';
 import TrackPage from './pages/TrackPage';
 import OfficerPage from './pages/OfficerPage';
+import useAppStore from './store/useAppStore';
+import { TRANSLATIONS } from './utils/translations';
 
 export default function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { language } = useAppStore();
 
   return (
     <BrowserRouter>
@@ -60,7 +63,7 @@ export default function App() {
             </Routes>
 
             <footer className="footnote no-print">
-              © BhuProhori AI — LandTech Innovation Hackathon 2026. Geo-Integrated Smart e-Mutation & Land Verification System.
+              {TRANSLATIONS.footer.text[language]}
             </footer>
           </main>
         </div>

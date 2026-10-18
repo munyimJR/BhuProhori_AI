@@ -4,18 +4,23 @@ import useAppStore from '../store/useAppStore';
 
 export default function ReviewPage() {
   const navigate = useNavigate();
-  const { extraction, updateExtractionField, setStep, loadDemoScenario } = useAppStore();
+  const { extraction, updateExtractionField, setStep, loadDemoScenario, language } = useAppStore();
+  const isBn = language === 'bn';
 
   if (!extraction) {
     return (
       <div style={{ textAlign: 'center', padding: '4rem 1rem' }}>
         <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📄</div>
-        <h2 style={{ marginBottom: '0.5rem', color: 'var(--deep)' }}>কোনো দলিল পাওয়া যায়নি</h2>
+        <h2 style={{ marginBottom: '0.5rem', color: 'var(--deep)' }}>
+          {isBn ? 'কোনো দলিল পাওয়া যায়নি' : 'No Deed Document Found'}
+        </h2>
         <p style={{ color: 'var(--muted)', marginBottom: '1.5rem' }}>
-          একটি দলিল আপলোড করুন অথবা নমুনা দলিল নির্বাচন করে শুরু করুন।
+          {isBn
+            ? 'একটি দলিল আপলোড করুন অথবা নমুনা দলিল নির্বাচন করে শুরু করুন।'
+            : 'Upload a deed document or select a demo scenario to begin.'}
         </p>
         <button className="btn" onClick={() => { loadDemoScenario(1); }}>
-          নমুনা দলিল লোড করুন
+          {isBn ? 'নমুনা দলিল লোড করুন' : 'Load Demo Deed'}
         </button>
       </div>
     );
@@ -38,27 +43,33 @@ export default function ReviewPage() {
             <FileCheck size={22} />
           </div>
           <div>
-            <h1 className="title">দলিল থেকে পাওয়া তথ্য যাচাই করুন</h1>
+            <h1 className="title">
+              {isBn ? 'দলিল থেকে পাওয়া তথ্য যাচাই করুন' : 'Verify Extracted Deed Data'}
+            </h1>
             <p className="desc" style={{ margin: 0 }}>
-              বাম পাশে নমুনা দলিল, ডানে সম্পাদনাযোগ্য তথ্য। ভুল থাকলে সংশোধন করুন।
+              {isBn
+                ? 'বাম পাশে নমুনা দলিল, ডানে সম্পাদনাযোগ্য তথ্য। ভুল থাকলে সংশোধন করুন।'
+                : 'Sample deed on left, editable extracted data on right. Edit if needed.'}
             </p>
           </div>
         </div>
-        <span className="workspace-label">তথ্য নিশ্চিতকরণ</span>
+        <span className="workspace-label">
+          {isBn ? 'তথ্য নিশ্চিতকরণ' : 'Data Confirmation'}
+        </span>
       </div>
 
       {/* Stepper */}
       <div className="steps">
         <span className="step">
-          <span className="num">✓</span> দলিল
+          <span className="num">✓</span> {isBn ? 'দলিল' : 'Deed'}
         </span>
         <span className="sep"></span>
         <span className="step current">
-          <span className="num">2</span> তথ্য যাচাই
+          <span className="num">2</span> {isBn ? 'তথ্য যাচাই' : 'Verify Data'}
         </span>
         <span className="sep"></span>
         <span className="step">
-          <span className="num">3</span> আবেদন
+          <span className="num">3</span> {isBn ? 'আবেদন' : 'Application'}
         </span>
       </div>
 
@@ -67,40 +78,40 @@ export default function ReviewPage() {
         {/* Left: Simulated Deed Paper */}
         <div className="card pad">
           <div className="panel-head">
-            <h2>মূল দলিল (ডেমো)</h2>
+            <h2>{isBn ? 'মূল দলিল (ডেমো)' : 'Original Deed (Demo)'}</h2>
             <span className="pill">SAMPLE ONLY</span>
           </div>
 
           <div className="document-toolbar">
             <span>{getVal('deedNumber') || 'DEMO-2026-001'}</span>
-            <span>নমুনা · ১ পৃষ্ঠা</span>
+            <span>{isBn ? 'নমুনা · ১ পৃষ্ঠা' : 'Sample · 1 Page'}</span>
           </div>
 
           <div className="doc-preview">
             <div className="paper">
-              <div className="document-ribbon">শুধুমাত্র নমুনা</div>
+              <div className="document-ribbon">{isBn ? 'শুধুমাত্র নমুনা' : 'DEMO SAMPLE'}</div>
               <span className="seal">{getVal('surveyType') || 'RS'}</span>
-              <h4>নমুনা জমি হস্তান্তর দলিল</h4>
+              <h4>{isBn ? 'নমুনা জমি হস্তান্তর দলিল' : 'Land Conveyance Deed'}</h4>
               <small>NOT A REAL LEGAL DOCUMENT</small>
 
               <div className="faux-text">
-                দলিল নম্বর: <b>{getVal('deedNumber')}</b><br />
-                রেজিস্ট্রি তারিখ: <b>{getVal('registrationDate')}</b><br />
-                রেজিস্ট্রি অফিস: <b>{getVal('registryOffice')}</b><br />
-                মৌজা: <b>{getVal('mouza')}</b><br />
-                জরিপ: <b>{getVal('surveyType')}</b><br />
-                খতিয়ান: <b>{getVal('khatianNumber')}</b><br />
-                দাগ: <b>{getVal('dagNumber')}</b><br />
-                জমির পরিমাণ: <b>{getVal('landArea')}</b><br />
-                দাতা: <b>{getVal('grantor')}</b><br />
-                গ্রহীতা: <b>{getVal('grantee')}</b>
+                {isBn ? 'দলিল নম্বর' : 'Deed No'}: <b>{getVal('deedNumber')}</b><br />
+                {isBn ? 'রেজিস্ট্রি তারিখ' : 'Reg Date'}: <b>{getVal('registrationDate')}</b><br />
+                {isBn ? 'রেজিস্ট্রি অফিস' : 'Sub-Registry'}: <b>{getVal('registryOffice')}</b><br />
+                {isBn ? 'মৌজা' : 'Mouza'}: <b>{getVal('mouza')}</b><br />
+                {isBn ? 'জরিপ' : 'Survey'}: <b>{getVal('surveyType')}</b><br />
+                {isBn ? 'খতিয়ান' : 'Khatian'}: <b>{getVal('khatianNumber')}</b><br />
+                {isBn ? 'দাগ' : 'Dag / Plot'}: <b>{getVal('dagNumber')}</b><br />
+                {isBn ? 'জমির পরিমাণ' : 'Land Area'}: <b>{getVal('landArea')}</b><br />
+                {isBn ? 'দাতা' : 'Grantor / Seller'}: <b>{getVal('grantor')}</b><br />
+                {isBn ? 'গ্রহীতা' : 'Grantee / Buyer'}: <b>{getVal('grantee')}</b>
                 <div className="line"></div>
                 <div className="line mid"></div>
                 <div className="line small"></div>
               </div>
 
               <small style={{ display: 'block', marginTop: 16 }}>
-                কাল্পনিক তথ্য • Only for the hackathon
+                {isBn ? 'কাল্পনিক তথ্য • Only for the hackathon' : 'Fictional demo data • Hackathon prototype'}
               </small>
             </div>
           </div>
@@ -110,16 +121,16 @@ export default function ReviewPage() {
         <div className="card pad">
           <div className="panel-head">
             <div>
-              <h2>পূরণ করা তথ্য</h2>
-              <p>ডেমো এক্সট্রাকশন • বাস্তব AI সংযুক্ত নয়</p>
+              <h2>{isBn ? 'পূরণ করা তথ্য' : 'Extracted Entities'}</h2>
+              <p>{isBn ? 'ডেমো এক্সট্রাকশন • বাস্তব AI সংযুক্ত নয়' : 'Demo Extraction • Sandboxed mock AI'}</p>
             </div>
-            <span className="pill">সংশোধনযোগ্য</span>
+            <span className="pill">{isBn ? 'সংশোধনযোগ্য' : 'Editable'}</span>
           </div>
 
           <div className="fieldgrid">
             <div className="field">
               <label htmlFor="fDeed">
-                দলিল নম্বর <span className="confidence">Sample</span>
+                {isBn ? 'দলিল নম্বর' : 'Deed Number'} <span className="confidence">Sample</span>
               </label>
               <input
                 id="fDeed"
@@ -129,7 +140,7 @@ export default function ReviewPage() {
             </div>
 
             <div className="field">
-              <label htmlFor="fSurvey">জরিপের ধরন</label>
+              <label htmlFor="fSurvey">{isBn ? 'জরিপের ধরন' : 'Survey Type'}</label>
               <select
                 id="fSurvey"
                 value={getVal('surveyType')}
@@ -143,7 +154,7 @@ export default function ReviewPage() {
             </div>
 
             <div className="field">
-              <label htmlFor="fMouza">মৌজা</label>
+              <label htmlFor="fMouza">{isBn ? 'মৌজা' : 'Mouza'}</label>
               <input
                 id="fMouza"
                 value={getVal('mouza')}
@@ -152,7 +163,7 @@ export default function ReviewPage() {
             </div>
 
             <div className="field">
-              <label htmlFor="fKhatian">খতিয়ান নম্বর</label>
+              <label htmlFor="fKhatian">{isBn ? 'খতিয়ান নম্বর' : 'Khatian Number'}</label>
               <input
                 id="fKhatian"
                 value={getVal('khatianNumber')}
@@ -161,7 +172,7 @@ export default function ReviewPage() {
             </div>
 
             <div className="field">
-              <label htmlFor="fDag">দাগ নম্বর</label>
+              <label htmlFor="fDag">{isBn ? 'দাগ নম্বর' : 'Plot / Dag Number'}</label>
               <input
                 id="fDag"
                 value={getVal('dagNumber')}
@@ -170,7 +181,7 @@ export default function ReviewPage() {
             </div>
 
             <div className="field">
-              <label htmlFor="fArea">বিক্রিত জমির পরিমাণ (শতাংশ)</label>
+              <label htmlFor="fArea">{isBn ? 'বিক্রিত জমির পরিমাণ (শতাংশ)' : 'Transferred Area (Decimals)'}</label>
               <input
                 id="fArea"
                 type="text"
@@ -180,7 +191,7 @@ export default function ReviewPage() {
             </div>
 
             <div className="field">
-              <label htmlFor="fSeller">বিক্রেতা / দাতা</label>
+              <label htmlFor="fSeller">{isBn ? 'বিক্রেতা / দাতা' : 'Seller / Grantor'}</label>
               <input
                 id="fSeller"
                 value={getVal('grantor')}
@@ -189,7 +200,7 @@ export default function ReviewPage() {
             </div>
 
             <div className="field">
-              <label htmlFor="fBuyer">ক্রেতা / গ্রহীতা</label>
+              <label htmlFor="fBuyer">{isBn ? 'ক্রেতা / গ্রহীতা' : 'Buyer / Grantee'}</label>
               <input
                 id="fBuyer"
                 value={getVal('grantee')}
@@ -201,16 +212,18 @@ export default function ReviewPage() {
           <div className="hintbox">
             <CheckCircle size={16} />
             <div>
-              বাস্তব সংস্করণে AI শনাক্ত করা প্রতিটি তথ্য ব্যবহারকারীকে নিশ্চিত করতে হবে।
+              {isBn
+                ? 'বাস্তব সংস্করণে AI শনাক্ত করা প্রতিটি তথ্য ব্যবহারকারীকে নিশ্চিত করতে হবে।'
+                : 'In production, citizens review and confirm each extracted entity before proceeding.'}
             </div>
           </div>
 
           <div className="btn-row">
             <button className="btn" onClick={handleProceed}>
-              তথ্য নিশ্চিত করুন → জমি দেখুন <ArrowRight size={14} />
+              {isBn ? 'তথ্য নিশ্চিত করুন → জমি দেখুন' : 'Confirm Data → View Land Map'} <ArrowRight size={14} />
             </button>
             <button className="btn secondary" onClick={() => navigate('/upload')}>
-              <ChevronLeft size={14} /> পেছনে যান
+              <ChevronLeft size={14} /> {isBn ? 'পেছনে যান' : 'Back'}
             </button>
           </div>
         </div>

@@ -9,7 +9,7 @@ import paddyImage from '../assets/paddy-green-to-gold.png';
 
 export default function UploadPage() {
   const navigate = useNavigate();
-  const { setDocument, loadDemoScenario, setStep } = useAppStore();
+  const { setDocument, loadDemoScenario, setStep, language } = useAppStore();
   const [dragActive, setDragActive] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [selectedFileName, setSelectedFileName] = useState('');
@@ -57,6 +57,8 @@ export default function UploadPage() {
     navigate('/review');
   };
 
+  const isBn = language === 'bn';
+
   return (
     <div>
       {/* Workspace Heading */}
@@ -66,27 +68,29 @@ export default function UploadPage() {
             <Upload size={22} />
           </div>
           <div>
-            <h1 className="title">দলিল আপলোড করুন</h1>
+            <h1 className="title">{isBn ? 'দলিল আপলোড করুন' : 'Upload Land Deed'}</h1>
             <p className="desc" style={{ margin: 0 }}>
-              কাগজের তথ্য হাতে না লিখে, একটি দলিল দিয়ে শুরু করুন।
+              {isBn
+                ? 'কাগজের তথ্য হাতে না লিখে, একটি দলিল দিয়ে শুরু করুন।'
+                : 'Start with a deed without manually typing paper details.'}
             </p>
           </div>
         </div>
-        <span className="workspace-label">দলিল থেকে শুরু</span>
+        <span className="workspace-label">{isBn ? 'দলিল থেকে শুরু' : 'Start with Deed'}</span>
       </div>
 
       {/* Stepper */}
       <div className="steps">
         <span className="step current">
-          <span className="num">1</span> দলিল
+          <span className="num">1</span> {isBn ? 'দলিল' : 'Deed'}
         </span>
         <span className="sep"></span>
         <span className="step">
-          <span className="num">2</span> তথ্য যাচাই
+          <span className="num">2</span> {isBn ? 'তথ্য যাচাই' : 'Verify Data'}
         </span>
         <span className="sep"></span>
         <span className="step">
-          <span className="num">3</span> আবেদন
+          <span className="num">3</span> {isBn ? 'আবেদন' : 'Application'}
         </span>
       </div>
 
@@ -96,8 +100,8 @@ export default function UploadPage() {
         <div className="card pad">
           <div className="panel-head">
             <div>
-              <h2>আপনার দলিল দিন</h2>
-              <p>এই ডিজাইন পরীক্ষার জন্য আপলোডটি শুধুই UI ডেমো।</p>
+              <h2>{isBn ? 'আপনার দলিল দিন' : 'Provide Your Deed'}</h2>
+              <p>{isBn ? 'এই ডিজাইন পরীক্ষার জন্য আপলোডটি শুধুই UI ডেমো।' : 'Interactive prototype demonstrating client-side document processing.'}</p>
             </div>
           </div>
 
@@ -122,10 +126,13 @@ export default function UploadPage() {
             </div>
 
             <h2>
-              একটি দলিল।<br />
-              আবেদনের প্রথম ধাপ।
+              {isBn ? (
+                <>একটি দলিল।<br />আবেদনের প্রথম ধাপ।</>
+              ) : (
+                <>One deed.<br />First step to mutation.</>
+              )}
             </h2>
-            <p>JPG, PNG বা PDF • কোনো ফাইল সার্ভারে পাঠানো হয় না</p>
+            <p>{isBn ? 'JPG, PNG বা PDF • কোনো ফাইল সার্ভারে পাঠানো হয় না' : 'JPG, PNG, or PDF • Zero server upload privacy'}</p>
 
             <input
               ref={fileRef}
@@ -141,25 +148,33 @@ export default function UploadPage() {
               disabled={uploading}
               onClick={() => fileRef.current?.click()}
             >
-              {uploading ? 'প্রসেসিং হচ্ছে...' : 'ফাইল বাছাই করুন'}
+              {uploading
+                ? (isBn ? 'প্রসেসিং হচ্ছে...' : 'Processing...')
+                : (isBn ? 'ফাইল বাছাই করুন' : 'Browse File')}
             </button>
 
             <div className="hint" style={{ marginTop: 14 }}>
-              {selectedFileName ? `নির্বাচিত: ${selectedFileName}` : 'কোনো ফাইল নির্বাচন করা হয়নি'}
+              {selectedFileName
+                ? (isBn ? `নির্বাচিত: ${selectedFileName}` : `Selected: ${selectedFileName}`)
+                : (isBn ? 'কোনো ফাইল নির্বাচন করা হয়নি' : 'No file selected')}
             </div>
           </div>
 
           <div className="btn-row" style={{ justifyContent: 'space-between' }}>
-            <span style={{ fontSize: '13px', color: 'var(--muted)' }}>হাতে দলিল নেই?</span>
+            <span style={{ fontSize: '13px', color: 'var(--muted)' }}>
+              {isBn ? 'হাতে দলিল নেই?' : "Don't have a deed?"}
+            </span>
             <button className="btn" type="button" onClick={() => handleLoadSample(1)}>
-              নমুনা দলিল ব্যবহার করুন →
+              {isBn ? 'নমুনা দলিল ব্যবহার করুন →' : 'Use Demo Deed →'}
             </button>
           </div>
 
           <div className="hintbox">
             <CheckCircle size={16} />
             <div>
-              ডেমোতে একটি কাল্পনিক দলিল থেকে পূর্বনির্ধারিত তথ্য দেখানো হবে। আপলোড করা ফাইলে প্রকৃত OCR বা AI বিশ্লেষণ করা হচ্ছে না।
+              {isBn
+                ? 'ডেমোতে একটি কাল্পনিক দলিল থেকে পূর্বনির্ধারিত তথ্য দেখানো হবে। আপলোড করা ফাইলে প্রকৃত OCR বা AI বিশ্লেষণ করা হচ্ছে না।'
+                : 'The demo loads pre-configured mock deed scenarios. Uploaded files do not transmit private data to external servers.'}
             </div>
           </div>
         </div>
@@ -169,12 +184,12 @@ export default function UploadPage() {
           <figure className="paddy-panel-photo">
             <img
               src={paddyImage}
-              alt="সবুজ ধান ও পাকা সোনালি ধানের কল্পিত দৃশ্য"
+              alt={isBn ? 'সবুজ ধান ও পাকা সোনালি ধানের কল্পিত দৃশ্য' : 'Green and golden paddy field'}
               loading="lazy"
               width="1536"
               height="1024"
             />
-            <figcaption>মাটির সঙ্গে সম্পর্ক, তথ্যের সঙ্গে আস্থা।</figcaption>
+            <figcaption>{isBn ? 'মাটির সঙ্গে সম্পর্ক, তথ্যের সঙ্গে আস্থা।' : 'Rooted in the soil, trusted through verified data.'}</figcaption>
           </figure>
 
           <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', marginBottom: 16 }}>
@@ -183,10 +198,16 @@ export default function UploadPage() {
             </div>
             <div>
               <h2 style={{ fontSize: '18px', color: 'var(--deep)', margin: '0 0 4px' }}>
-                দলিলের তথ্য,<br />গুছিয়ে এক জায়গায়।
+                {isBn ? (
+                  <>দলিলের তথ্য,<br />গুছিয়ে এক জায়গায়।</>
+                ) : (
+                  <>Deed records,<br />organized in one place.</>
+                )}
               </h2>
               <p style={{ margin: 0, color: 'var(--muted)', fontSize: '12px' }}>
-                নমুনা দলিল দিয়ে নিচের তথ্যগুলো পর্যালোচনা করতে পারবেন।
+                {isBn
+                  ? 'নমুনা দলিল দিয়ে নিচের তথ্যগুলো পর্যালোচনা করতে পারবেন।'
+                  : 'Review the following data points extracted from the deed.'}
               </p>
             </div>
           </div>
@@ -194,53 +215,53 @@ export default function UploadPage() {
           <div className="check">
             <span className="badge-dot">✓</span>
             <div>
-              <strong>দলিল নম্বর ও তারিখ</strong>
-              <small>Deed number & registration date</small>
+              <strong>{isBn ? 'দলিল নম্বর ও তারিখ' : 'Deed Number & Registration Date'}</strong>
+              <small>{isBn ? 'Deed number & registration date' : 'Registration volume and date'}</small>
             </div>
           </div>
 
           <div className="check">
             <span className="badge-dot">✓</span>
             <div>
-              <strong>মৌজা, খতিয়ান ও দাগ</strong>
-              <small>Land identifiers</small>
+              <strong>{isBn ? 'মৌজা, খতিয়ান ও দাগ' : 'Mouza, Khatian & Dag (Plot)'}</strong>
+              <small>{isBn ? 'Land identifiers' : 'Cadastral land identifiers'}</small>
             </div>
           </div>
 
           <div className="check">
             <span className="badge-dot">✓</span>
             <div>
-              <strong>বিক্রেতা, ক্রেতা ও জমির পরিমাণ</strong>
-              <small>Transaction details</small>
+              <strong>{isBn ? 'বিক্রেতা, ক্রেতা ও জমির পরিমাণ' : 'Parties & Transferred Area'}</strong>
+              <small>{isBn ? 'Transaction details' : 'Buyer, seller & decimal land area'}</small>
             </div>
           </div>
 
           <div className="check">
             <span className="badge-dot warning">!</span>
             <div>
-              <strong>ভুল ও অসম্পূর্ণ তথ্য শনাক্তকরণ</strong>
-              <small>Items needing human confirmation</small>
+              <strong>{isBn ? 'ভুল ও অসম্পূর্ণ তথ্য শনাক্তকরণ' : 'Discrepancy & Risk Detection'}</strong>
+              <small>{isBn ? 'Items needing human confirmation' : 'Automated flag checks for human review'}</small>
             </div>
           </div>
 
           {/* Quick Scenario Picker */}
           <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid var(--line)' }}>
             <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--deep)', marginBottom: 8 }}>
-              অন্য কোনো নমুনা পরীক্ষা করতে চান?
+              {isBn ? 'অন্য কোনো নমুনা পরীক্ষা করতে চান?' : 'Want to test another demo scenario?'}
             </div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               {[
-                { id: 1, label: 'স্বাভাবিক (৫ শতক)' },
-                { id: 6, label: 'বেশি পরিমাণ (১০ শতক)' },
-                { id: 3, label: 'বন্ধকী জমি' },
-                { id: 5, label: 'খাস জমি' },
+                { id: 1, labelBn: 'স্বাভাবিক (৫ শতক)', labelEn: 'Standard (5 Dec)' },
+                { id: 6, labelBn: 'বেশি পরিমাণ (১০ শতক)', labelEn: 'Area Mismatch (10 Dec)' },
+                { id: 3, labelBn: 'বন্ধকী জমি', labelEn: 'Mortgage Warning' },
+                { id: 5, labelBn: 'খাস জমি', labelEn: 'Khas Land Alert' },
               ].map(sc => (
                 <button
                   key={sc.id}
                   className="btn secondary sm"
                   onClick={() => handleLoadSample(sc.id)}
                 >
-                  {sc.label}
+                  {isBn ? sc.labelBn : sc.labelEn}
                 </button>
               ))}
             </div>

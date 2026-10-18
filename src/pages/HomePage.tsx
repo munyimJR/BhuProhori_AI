@@ -4,11 +4,13 @@ import {
   MapPin, Shield, CheckCircle, AlertTriangle, FileText, ChevronRight
 } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
+import { TRANSLATIONS } from '../utils/translations';
 import paddyImage from '../assets/paddy-green-to-gold.png';
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const { loadDemoScenario, resetJourney } = useAppStore();
+  const { loadDemoScenario, resetJourney, language } = useAppStore();
+  const tHome = TRANSLATIONS.home;
 
   const handleStartUpload = () => {
     resetJourney();
@@ -20,37 +22,48 @@ export default function HomePage() {
     navigate('/review');
   };
 
+  const scenarioIcons: Record<number, React.ReactNode> = {
+    1: <CheckCircle size={18} color="var(--green)" />,
+    2: <AlertTriangle size={18} color="var(--amber)" />,
+    3: <AlertTriangle size={18} color="var(--amber)" />,
+    4: <AlertTriangle size={18} color="var(--red)" />,
+    5: <Shield size={18} color="var(--red)" />,
+    6: <AlertTriangle size={18} color="var(--amber)" />,
+    7: <FileText size={18} color="var(--red)" />,
+    8: <AlertTriangle size={18} color="var(--amber)" />,
+  };
+
   return (
     <div>
       {/* Welcome line */}
       <div className="welcome-line">
-        <span>ভূমির তথ্য থেকে আবেদনের প্রস্তুতি</span>
-        <span className="welcome-meta">LANDTECH INNOVATION · 2026</span>
+        <span>{tHome.welcomeLine[language]}</span>
+        <span className="welcome-meta">{tHome.hackathonTag}</span>
       </div>
 
       {/* Hero Card */}
       <div className="hero card">
         <div className="hero-copy">
           <h1>
-            জমির নামজারি,<br />
-            এবার <span>আরও সহজ।</span>
+            {tHome.heroH1Pre[language]}<br />
+            <span>{tHome.heroH1Bold[language]}</span>
           </h1>
           <p>
-            আপনার দলিল আপলোড করুন। প্রয়োজনীয় তথ্য যাচাই করুন। সহজেই নামজারির আবেদন প্রস্তুত করুন।
+            {tHome.heroDesc[language]}
           </p>
 
           <div className="btn-row">
             <button className="btn" onClick={handleStartUpload}>
-              দলিল দিয়ে শুরু করুন <ArrowRight size={16} />
+              {tHome.startWithDeed[language]} <ArrowRight size={16} />
             </button>
             <button className="hero-link" onClick={() => handleStartDemo(1)}>
-              নমুনা দিয়ে দেখুন <ArrowUpRight size={15} />
+              {tHome.trySample[language]} <ArrowUpRight size={15} />
             </button>
           </div>
 
           <div className="hero-assurance">
             <Lock size={14} color="#176b56" />
-            <span>কোনো ফাইল সার্ভারে পাঠানো হয় না · শুধুমাত্র ডেমো</span>
+            <span>{tHome.noServerNote[language]}</span>
           </div>
         </div>
 
@@ -58,14 +71,14 @@ export default function HomePage() {
           <img
             className="paddy-hero-image"
             src={paddyImage}
-            alt="সবুজ থেকে সোনালি হয়ে ওঠা ধানক্ষেতের কল্পিত দৃশ্য"
+            alt={tHome.photoCredit[language]}
             width="1536"
             height="1024"
           />
-          <span className="photo-credit">AI-নির্মিত ধানক্ষেতের দৃশ্য</span>
+          <span className="photo-credit">{tHome.photoCredit[language]}</span>
           <span className="map-demo-label">
             <Layers size={14} />
-            সবুজ থেকে সোনালি
+            {tHome.growthLabel[language]}
           </span>
 
           <div className="plot-preview">
@@ -74,18 +87,23 @@ export default function HomePage() {
                 <MapPin size={16} />
               </span>
               <div>
-                <strong>আপনার জমির পরিচিতি</strong>
-                <small style={{ color: 'var(--muted)', display: 'block', fontSize: '10px' }}>ডেমো মৌজা · আরএস জরিপ</small>
+                <strong>{tHome.plotPreviewTitle[language]}</strong>
+                <small style={{ color: 'var(--muted)', display: 'block', fontSize: '10px' }}>
+                  {tHome.plotPreviewSub[language]}
+                </small>
               </div>
-              <span className="sample-tag">নমুনা</span>
+              <span className="sample-tag">{language === 'bn' ? 'নমুনা' : 'Sample'}</span>
             </div>
             <div className="plot-preview-data">
-              <div><small>দাগ নম্বর</small><b>১২৫</b></div>
-              <div><small>খতিয়ান</small><b>২৫৬</b></div>
-              <div><small>জমির পরিমাণ</small><b>২০ <em>শতাংশ</em></b></div>
+              <div><small>{tHome.dagNo[language]}</small><b>{language === 'bn' ? '১২৫' : '125'}</b></div>
+              <div><small>{tHome.khatianNo[language]}</small><b>{language === 'bn' ? '২৫৬' : '256'}</b></div>
+              <div>
+                <small>{tHome.landArea[language]}</small>
+                <b>{language === 'bn' ? '২০' : '20'} <em>{tHome.decimalUnit[language]}</em></b>
+              </div>
             </div>
             <button className="plot-link" onClick={() => navigate('/identify')}>
-              নমুনা নকশা দেখুন <ArrowRight size={12} />
+              {tHome.viewSampleMap[language]} <ArrowRight size={12} />
             </button>
           </div>
         </div>
@@ -93,8 +111,8 @@ export default function HomePage() {
 
       {/* Action / Services grid */}
       <div className="section-heading">
-        <h2 className="section-title">আপনি কী করতে চান?</h2>
-        <span>আপনার প্রয়োজন অনুযায়ী শুরু করুন</span>
+        <h2 className="section-title">{tHome.sectionTitle[language]}</h2>
+        <span>{tHome.sectionSub[language]}</span>
       </div>
 
       <div className="grid three services">
@@ -107,10 +125,10 @@ export default function HomePage() {
               <ArrowUpRight size={18} />
             </span>
           </div>
-          <h3>দলিল আপলোড করুন</h3>
-          <p>ছবি বা PDF দিয়ে শুরু করুন। নমুনা তথ্য থেকে আবেদনের ধাপগুলো দেখুন।</p>
+          <h3>{tHome.service1Title[language]}</h3>
+          <p>{tHome.service1Desc[language]}</p>
           <span className="service-foot">
-            শুরু করার সহজ উপায় <ArrowRight size={14} />
+            {tHome.service1Action[language]} <ArrowRight size={14} />
           </span>
         </div>
 
@@ -123,10 +141,10 @@ export default function HomePage() {
               <ArrowUpRight size={18} />
             </span>
           </div>
-          <h3>জমির তথ্য দেখুন</h3>
-          <p>নমুনা দাগ, খতিয়ান ও মৌজা নকশায় জমির পরিচিতি মিলিয়ে নিন।</p>
+          <h3>{tHome.service2Title[language]}</h3>
+          <p>{tHome.service2Desc[language]}</p>
           <span className="service-foot">
-            নমুনা নকশা খুলুন <ArrowRight size={14} />
+            {tHome.service2Action[language]} <ArrowRight size={14} />
           </span>
         </div>
 
@@ -139,10 +157,10 @@ export default function HomePage() {
               <ArrowUpRight size={18} />
             </span>
           </div>
-          <h3>আবেদনের অবস্থা দেখুন</h3>
-          <p>ডেমো আবেদনের অগ্রগতি ও যাচাইয়ের সারসংক্ষেপ এক জায়গায় দেখুন।</p>
+          <h3>{tHome.service3Title[language]}</h3>
+          <p>{tHome.service3Desc[language]}</p>
           <span className="service-foot">
-            ডেমো রিপোর্ট দেখুন <ArrowRight size={14} />
+            {tHome.service3Action[language]} <ArrowRight size={14} />
           </span>
         </div>
       </div>
@@ -152,14 +170,14 @@ export default function HomePage() {
         <div>
           <strong>
             <span className="growth-dot"></span>
-            সবুজে শুরু। সোনালিতে প্রস্তুতি।
+            {tHome.storyTitle[language]}
           </strong>
-          <p>ধানের বেড়ে ওঠার রঙে, দলিল থেকে আবেদনের পথ।</p>
+          <p>{tHome.storyDesc[language]}</p>
         </div>
         <div className="growth-colors" aria-label="সবুজ থেকে সোনালি রঙের ধাপ">
-          <span>শুরু</span>
-          <span>যাচাই</span>
-          <span>প্রস্তুতি</span>
+          <span>{tHome.storyStep1[language]}</span>
+          <span>{tHome.storyStep2[language]}</span>
+          <span>{tHome.storyStep3[language]}</span>
         </div>
       </div>
 
@@ -167,31 +185,31 @@ export default function HomePage() {
       <div className="how-it-works">
         <div className="how-intro">
           <h2>
-            দলিল থেকে আবেদন।<br />
-            <span>সহজ তিনটি ধাপে।</span>
+            {tHome.howTitlePre[language]}<br />
+            <span>{tHome.howTitleBold[language]}</span>
           </h2>
-          <p>প্রতিটি ধাপে তথ্য দেখুন, বুঝুন ও নিশ্চিত করুন।</p>
+          <p>{tHome.howSub[language]}</p>
         </div>
         <ol className="journey">
           <li>
-            <span className="journey-number">০১</span>
+            <span className="journey-number">{language === 'bn' ? '০১' : '01'}</span>
             <div>
-              <h3>দলিল দিন</h3>
-              <p>ছবি, PDF অথবা নমুনা দলিল বেছে নিন।</p>
+              <h3>{tHome.step1Title[language]}</h3>
+              <p>{tHome.step1Desc[language]}</p>
             </div>
           </li>
           <li>
-            <span className="journey-number">০২</span>
+            <span className="journey-number">{language === 'bn' ? '০২' : '02'}</span>
             <div>
-              <h3>তথ্য যাচাই করুন</h3>
-              <p>দলিলের তথ্য ও জমির পরিচিতি মিলিয়ে নিন।</p>
+              <h3>{tHome.step2Title[language]}</h3>
+              <p>{tHome.step2Desc[language]}</p>
             </div>
           </li>
           <li>
-            <span className="journey-number">০৩</span>
+            <span className="journey-number">{language === 'bn' ? '০৩' : '03'}</span>
             <div>
-              <h3>আবেদন প্রস্তুত করুন</h3>
-              <p>তথ্য নিশ্চিত করে ডেমো আবেদন তৈরি করুন।</p>
+              <h3>{tHome.step3Title[language]}</h3>
+              <p>{tHome.step3Desc[language]}</p>
             </div>
           </li>
         </ol>
@@ -200,21 +218,12 @@ export default function HomePage() {
       {/* Interactive Hackathon Scenarios Picker */}
       <div style={{ marginTop: '2.5rem' }}>
         <div className="section-heading">
-          <h2 className="section-title">হ্যাকাথন মূল্যায়ন পরিস্থিতি (৮টি নমুনা কেস)</h2>
-          <span>যেকোনো একটি নির্বাচন করে সরাসরি AI ও GIS ফলাফল পরীক্ষা করুন</span>
+          <h2 className="section-title">{tHome.scenariosTitle[language]}</h2>
+          <span>{tHome.scenariosSub[language]}</span>
         </div>
 
         <div className="grid two">
-          {[
-            { id: 1, title: '১. সম্পূর্ণ সঠিক দলিল ও রেকর্ড (Clean Match)', desc: 'সব তথ্য মিলে যায়, কোনো বিবাদ নেই, পূর্ণ অধিকার বিদ্যমান।', icon: <CheckCircle size={18} color="var(--green)" /> },
-            { id: 2, title: '২. একাধিক মালিক ও অংশ বিক্রয় (Multiple Owners)', desc: 'খতিয়ানে একাধিক শরিক, নির্দিষ্ট অংশের বৈধ সীমানা যাচাই।', icon: <AlertTriangle size={18} color="var(--amber)" /> },
-            { id: 3, title: '৩. ব্যাংকে বন্ধক রাখা জমি (Mortgage Warning)', desc: 'জমিটির উপর রাষ্ট্রায়ত্ত ব্যাংকের লিয়েন/বন্ধক বিদ্যমান।', icon: <AlertTriangle size={18} color="var(--amber)" /> },
-            { id: 4, title: '৪. আদালতে মামলা ও স্থগিতাদেশ (Legal Injunction)', desc: 'জমিটির উপর দেওয়ানি আদালতের নিষেধাজ্ঞা বিদ্যমান।', icon: <AlertTriangle size={18} color="var(--red)" /> },
-            { id: 5, title: '৫. অর্পিত / খাস সরকারি জমি (Khas Land Alert)', desc: 'সরকারি ১নং খাস খতিয়ানভুক্ত জমি বিক্রির চেষ্টা শনাক্ত।', icon: <Shield size={18} color="var(--red)" /> },
-            { id: 6, title: '৬. জমির পরিমাণের অসামঞ্জস্য (Area Mismatch)', desc: 'দলিলে ১০ শতাংশ দাবি, কিন্তু বিক্রেতার রেকর্ডে আছে ৮ শতাংশ।', icon: <AlertTriangle size={18} color="var(--amber)" /> },
-            { id: 7, title: '৭. সাব-রেজিস্ট্রার অফিসের তথ্যে অমিল', desc: 'দলিল নম্বর সাব-রেজিস্ট্রি আর্কাইভের মূল বহির সাথে অমিল।', icon: <FileText size={18} color="var(--red)" /> },
-            { id: 8, title: '৮. জলাশয় / শ্রেণি পরিবর্তন সতর্কতা', desc: 'জমির শ্রেণি জলাশয়/নদীগর্ভ, ভরাট ও মিউটেশন আইনত সীমাবদ্ধ।', icon: <AlertTriangle size={18} color="var(--amber)" /> },
-          ].map(s => (
+          {tHome.scenarios.map(s => (
             <div
               key={s.id}
               className="card pad"
@@ -223,10 +232,14 @@ export default function HomePage() {
               role="button"
               tabIndex={0}
             >
-              <div style={{ marginTop: 2 }}>{s.icon}</div>
+              <div style={{ marginTop: 2 }}>{scenarioIcons[s.id]}</div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--deep)', marginBottom: 4 }}>{s.title}</div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--muted)', lineHeight: 1.5 }}>{s.desc}</div>
+                <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--deep)', marginBottom: 4 }}>
+                  {s.title[language]}
+                </div>
+                <div style={{ fontSize: '0.8rem', color: 'var(--muted)', lineHeight: 1.5 }}>
+                  {s.desc[language]}
+                </div>
               </div>
               <ChevronRight size={16} color="var(--muted)" style={{ marginTop: 4 }} />
             </div>
@@ -238,7 +251,7 @@ export default function HomePage() {
       <div className="demo-disclosure">
         <Shield size={24} />
         <p>
-          <strong>স্বচ্ছতা থেকেই আস্থা।</strong> এটি একটি হ্যাকাথন প্রোটোটাইপ। সব রেকর্ড কাল্পনিক; কোনো সরকারি সিস্টেমে আবেদন জমা হয় না।
+          <strong>{tHome.transparencyTitle[language]}</strong> {tHome.transparencyDesc[language]}
         </p>
       </div>
     </div>
