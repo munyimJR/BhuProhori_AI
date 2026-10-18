@@ -170,7 +170,7 @@ export const TRANSLATIONS = {
     step3Title: { bn: 'আবেদন প্রস্তুত করুন', en: 'Submit Mutation' },
     step3Desc: { bn: 'তথ্য নিশ্চিত করে ডেমো আবেদন তৈরি করুন।', en: 'Confirm verified details and generate application.' },
 
-    scenariosTitle: { bn: 'হ্যাকাথন মূল্যায়ন পরিস্থিতি (৮টি নমুনা কেস)', en: 'Hackathon Evaluation Scenarios (8 Test Cases)' },
+    scenariosTitle: { bn: 'ভূমি রেকর্ড ও দলিল যাচাই পরিস্থিতি (৮টি নমুনা কেস)', en: 'Land Record & Deed Verification Scenarios (8 Sample Cases)' },
     scenariosSub: { bn: 'যেকোনো একটি নির্বাচন করে সরাসরি AI ও GIS ফলাফল পরীক্ষা করুন', en: 'Select any case to test real-time AI extraction and GIS risk engine' },
 
     scenarios: [
