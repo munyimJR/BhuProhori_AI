@@ -65,6 +65,34 @@ export default function HomePage() {
             <Lock size={14} color="#176b56" />
             <span>{tHome.noServerNote[language]}</span>
           </div>
+
+          <div className="hero-plot-preview-bar">
+            <div className="plot-preview-top">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span className="plot-symbol">
+                  <MapPin size={14} />
+                </span>
+                <div>
+                  <strong>{tHome.plotPreviewTitle[language]}</strong>
+                  <span style={{ color: 'var(--muted)', marginLeft: 6, fontSize: '11px' }}>
+                    ({tHome.plotPreviewSub[language]})
+                  </span>
+                </div>
+              </div>
+              <span className="sample-tag">{language === 'bn' ? 'নমুনা' : 'Sample'}</span>
+            </div>
+            <div className="plot-preview-data">
+              <div><small>{tHome.dagNo[language]}</small><b>{language === 'bn' ? '১২৫' : '125'}</b></div>
+              <div><small>{tHome.khatianNo[language]}</small><b>{language === 'bn' ? '২৫৬' : '256'}</b></div>
+              <div>
+                <small>{tHome.landArea[language]}</small>
+                <b>{language === 'bn' ? '২০' : '20'} <em>{tHome.decimalUnit[language]}</em></b>
+              </div>
+              <button type="button" className="plot-link" onClick={() => navigate('/identify')}>
+                {tHome.viewSampleMap[language]} <ArrowRight size={12} />
+              </button>
+            </div>
+          </div>
         </div>
 
         <div className="hero-side">
@@ -80,32 +108,6 @@ export default function HomePage() {
             <Layers size={14} />
             {tHome.growthLabel[language]}
           </span>
-
-          <div className="plot-preview">
-            <div className="plot-preview-top">
-              <span className="plot-symbol">
-                <MapPin size={16} />
-              </span>
-              <div>
-                <strong>{tHome.plotPreviewTitle[language]}</strong>
-                <small style={{ color: 'var(--muted)', display: 'block', fontSize: '10px' }}>
-                  {tHome.plotPreviewSub[language]}
-                </small>
-              </div>
-              <span className="sample-tag">{language === 'bn' ? 'নমুনা' : 'Sample'}</span>
-            </div>
-            <div className="plot-preview-data">
-              <div><small>{tHome.dagNo[language]}</small><b>{language === 'bn' ? '১২৫' : '125'}</b></div>
-              <div><small>{tHome.khatianNo[language]}</small><b>{language === 'bn' ? '২৫৬' : '256'}</b></div>
-              <div>
-                <small>{tHome.landArea[language]}</small>
-                <b>{language === 'bn' ? '২০' : '20'} <em>{tHome.decimalUnit[language]}</em></b>
-              </div>
-            </div>
-            <button className="plot-link" onClick={() => navigate('/identify')}>
-              {tHome.viewSampleMap[language]} <ArrowRight size={12} />
-            </button>
-          </div>
         </div>
       </div>
 
