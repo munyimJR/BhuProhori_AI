@@ -1,78 +1,40 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, ChevronRight, ChevronLeft, CheckCircle, AlertTriangle, Info, Loader2, ExternalLink } from 'lucide-react';
+import { MapPin, Map as MapIcon, ArrowRight, ChevronLeft, CheckCircle, ExternalLink } from 'lucide-react';
 import { MapContainer, TileLayer, Polygon, Popup, useMap } from 'react-leaflet';
 import useAppStore from '../store/useAppStore';
 import { PARCELS } from '../data/demoData';
-import type { Parcel, ParcelMatchResult } from '../types';
+import type { Parcel } from '../types';
 
-// Helper to recenter map
 function MapFocus({ center, zoom }: { center: [number, number]; zoom: number }) {
   const map = useMap();
-  useEffect(() => { map.setView(center, zoom, { animate: true }); }, [center, zoom, map]);
+  useEffect(() => {
+    map.setView(center, zoom, { animate: true });
+  }, [center, zoom, map]);
   return null;
-}
-
-function matchParcels(extraction: ReturnType<typeof useAppStore.getState>['extraction']): ParcelMatchResult[] {
-  if (!extraction) return [];
-  const fields = extraction.fields;
-  const getVal = (k: keyof typeof fields) => (fields[k]?.userCorrectedValue ?? fields[k]?.value ?? '').trim();
-
-  const dag = getVal('dagNumber');
-  const khatian = getVal('khatianNumber');
-  const mouza = getVal('mouza');
-  const survey = getVal('surveyType');
-  const jl = getVal('jlNumber');
-
-  return PARCELS.map(p => {
-    const matchedFields: string[] = [];
-    const unmatchedFields: string[] = [];
-
-    if (dag && p.dagNumber === dag) matchedFields.push('দাগ নম্বর');
-    else if (dag) unmatchedFields.push(`দাগ নম্বর (দলিল: ${dag}, রেকর্ড: ${p.dagNumber})`);
-
-    if (khatian && p.currentKhatian === khatian) matchedFields.push('খতিয়ান নম্বর');
-    else if (khatian) unmatchedFields.push('খতিয়ান নম্বর');
-
-    if (mouza && p.mouza?.nameBn === mouza) matchedFields.push('মৌজা');
-    else if (mouza) unmatchedFields.push('মৌজা');
-
-    if (survey && p.surveyType === survey) matchedFields.push('জরিপের ধরন');
-    else if (survey) unmatchedFields.push('জরিপের ধরন');
-
-    if (jl && p.mouza?.jlNumber === jl) matchedFields.push('জে.এল. নম্বর');
-
-    const score = matchedFields.length / Math.max(unmatchedFields.length + matchedFields.length, 1);
-    return { parcel: p, confidence: score, matchedFields, unmatchedFields, isAmbiguous: score < 0.6 };
-  })
-    .filter(r => r.confidence > 0.3)
-    .sort((a, b) => b.confidence - a.confidence)
-    .slice(0, 5);
 }
 
 export default function IdentifyPage() {
   const navigate = useNavigate();
   const { extraction, setSelectedParcel, selectedParcel, setStep } = useAppStore();
-  const [matches, setMatches] = useState<ParcelMatchResult[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [mapCenter, setMapCenter] = useState<[number, number]>([23.8, 90.35]);
-  const [mapZoom, setMapZoom] = useState(11);
+  const [mapCenter, setMapCenter] = useState<[number, number]>([23.83, 90.38]);
+  const [mapZoom, setMapZoom] = useState(14);
+
+  const getFieldValue = (k: keyof NonNullable<typeof extraction>['fields']) =>
+    extraction?.fields[k]?.userCorrectedValue ?? extraction?.fields[k]?.value ?? '';
 
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      const results = matchParcels(extraction);
-      setMatches(results);
-      setLoading(false);
-      if (results.length > 0 && results[0].confidence > 0.7) {
-        const top = results[0].parcel;
-        setSelectedParcel(top);
-        if (top.geometry?.centroid) {
-          setMapCenter(top.geometry.centroid);
-          setMapZoom(15);
+    if (extraction) {
+      const dag = getFieldValue('dagNumber');
+      const match = PARCELS.find(p => p.dagNumber === dag) || PARCELS[0];
+      if (match) {
+        setSelectedParcel(match);
+        if (match.geometry?.centroid) {
+          setMapCenter(match.geometry.centroid);
+          setMapZoom(16);
         }
       }
-    }, 1800);
+    }
   }, [extraction]);
 
   const handleSelectParcel = (parcel: Parcel) => {
@@ -83,235 +45,171 @@ export default function IdentifyPage() {
     }
   };
 
-  const handleProceed = () => { setStep(4); navigate('/verification'); };
+  const handleProceed = () => {
+    setStep(4);
+    navigate('/verify');
+  };
 
-  if (!extraction) {
-    return (
-      <div style={{ padding: '4rem', textAlign: 'center' }}>
-        <h2 style={{ fontFamily: 'Hind Siliguri, sans-serif' }}>প্রথমে দলিল আপলোড করুন</h2>
-        <button className="btn btn-primary" style={{ marginTop: '1rem' }} onClick={() => navigate('/upload')}>আপলোড পেজে যান</button>
-      </div>
-    );
-  }
-
-  const fields = extraction.fields;
-  const getVal = (k: keyof typeof fields) => fields[k]?.userCorrectedValue ?? fields[k]?.value ?? '';
+  const activeParcel = selectedParcel || PARCELS[0];
+  const dagVal = getFieldValue('dagNumber');
+  const isMatch = activeParcel?.dagNumber === dagVal;
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--page-bg)', padding: '2rem 0' }}>
-      <div className="container" style={{ maxWidth: 1200 }}>
-        {/* Header */}
-        <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+    <div>
+      {/* Workspace Heading */}
+      <div className="workspace-heading">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <div className="workspace-symbol">
+            <MapIcon size={22} />
+          </div>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.375rem' }}>
-              <button className="btn btn-ghost btn-sm" onClick={() => navigate('/review')}><ChevronLeft size={14} />পেছনে</button>
-            </div>
-            <h1 style={{ fontFamily: 'Hind Siliguri, sans-serif', fontSize: '1.625rem' }}>জমি চিহ্নিতকরণ ও মানচিত্র</h1>
-            <p style={{ color: 'var(--gray-500)', fontFamily: 'Hind Siliguri, sans-serif', fontSize: '0.875rem' }}>
-              দলিলের তথ্য মিলিয়ে নমুনা জমির দাগ খোঁজা হচ্ছে
+            <h1 className="title">জমিটি শনাক্ত করুন</h1>
+            <p className="desc" style={{ margin: 0 }}>
+              সাধারণ ব্যবহারকারীকে নকশায় জমি খুঁজতে হবে না—দলিলের তথ্য থেকে সম্ভাব্য প্লট দেখানো হবে।
             </p>
           </div>
-          <div className="demo-banner">
-            <AlertTriangle size={12} />কাল্পনিক নমুনা দাগ — সরকারি ক্যাডাস্ট্রাল ডেটা নয়
+        </div>
+        <span className="workspace-label">জমির পরিচিতি</span>
+      </div>
+
+      {/* Map Split Layout */}
+      <div className="split map-split">
+        {/* Left: Leaflet GIS Map */}
+        <div className="card pad">
+          <div className="panel-head">
+            <div>
+              <h2>জমির অবস্থান ও নকশা</h2>
+              <p>এটি কাল্পনিক জমির নকশা; সরকারি প্লট ডেটা নয়।</p>
+            </div>
+            <span className="pill">DEMO GEOJSON</span>
+          </div>
+
+          <div className="map-legend">
+            <span>
+              <i className="legend-selected"></i> নির্বাচিত দাগ
+            </span>
+            <span>
+              <i style={{ width: 12, height: 12, background: '#dce8e2', border: '1px solid #79b69e', borderRadius: 3, display: 'inline-block' }}></i> নমুনা সীমানা
+            </span>
+            <span>RS · ডেমো মৌজা</span>
+          </div>
+
+          <div className="map-wrap" style={{ height: 380 }}>
+            <MapContainer
+              center={mapCenter}
+              zoom={mapZoom}
+              style={{ width: '100%', height: '100%' }}
+              scrollWheelZoom={false}
+            >
+              <MapFocus center={mapCenter} zoom={mapZoom} />
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+
+              {PARCELS.map(p => {
+                if (!p.geometry?.coordinates) return null;
+                const isSelected = activeParcel?.id === p.id;
+                return (
+                  <Polygon
+                    key={p.id}
+                    positions={p.geometry.coordinates as unknown as [number, number][]}
+                    pathOptions={{
+                      color: isSelected ? '#1b725c' : '#577b6c',
+                      weight: isSelected ? 4 : 2,
+                      fillColor: isSelected ? '#68b49c' : '#afd9bc',
+                      fillOpacity: isSelected ? 0.8 : 0.45,
+                    }}
+                    eventHandlers={{
+                      click: () => handleSelectParcel(p),
+                    }}
+                  >
+                    <Popup>
+                      <div style={{ fontFamily: 'Hind Siliguri, sans-serif' }}>
+                        <strong>দাগ নম্বর: {p.dagNumber}</strong>
+                        <div>খতিয়ান: {p.currentKhatian}</div>
+                        <div>জমির পরিমাণ: {p.area} শতাংশ</div>
+                      </div>
+                    </Popup>
+                  </Polygon>
+                );
+              })}
+            </MapContainer>
+          </div>
+
+          <div className="map-caption" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 10, fontSize: 11, color: 'var(--muted)' }}>
+            <span>নমুনা দাগে ক্লিক করে বিস্তারিত দেখুন</span>
+            <a
+              href="https://map.land.gov.bd/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
+            >
+              সরকারি ভূমি নকশা <ExternalLink size={11} />
+            </a>
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '340px 1fr', gap: '1.5rem' }}>
-          {/* Left: Matches */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {/* Extracted key fields */}
-            <div className="card">
-              <div className="card-header" style={{ fontFamily: 'Hind Siliguri, sans-serif', fontWeight: 700, fontSize: '0.875rem' }}>
-                দলিল থেকে পড়া তথ্য
-              </div>
-              <div className="card-body" style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
-                {[
-                  { label: 'জেলা', val: getVal('district') },
-                  { label: 'উপজেলা', val: getVal('upazila') },
-                  { label: 'মৌজা', val: getVal('mouza') },
-                  { label: 'জে.এল. নম্বর', val: getVal('jlNumber') },
-                  { label: 'জরিপের ধরন', val: getVal('surveyType') },
-                  { label: 'দাগ নম্বর', val: getVal('dagNumber') },
-                  { label: 'খতিয়ান নম্বর', val: getVal('khatianNumber') },
-                  { label: 'জমির পরিমাণ', val: getVal('landArea') },
-                ].map((row, i) => (
-                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.25rem 0', borderBottom: '1px solid var(--gray-100)' }}>
-                    <span style={{ fontSize: '0.8125rem', color: 'var(--gray-500)', fontFamily: 'Hind Siliguri, sans-serif' }}>{row.label}</span>
-                    <span style={{ fontSize: '0.875rem', fontWeight: 600, fontFamily: 'Hind Siliguri, sans-serif', color: 'var(--dark)' }}>{row.val || '—'}</span>
-                  </div>
-                ))}
-              </div>
+        {/* Right: Matched Parcel Details */}
+        <div className="card pad">
+          <div className="panel-head">
+            <div>
+              <h2>সম্ভাব্য জমি পাওয়া গেছে</h2>
+              <p>দলিলের সঙ্গে মিলিয়ে দেখুন</p>
             </div>
-
-            {/* Match results */}
-            <div className="card">
-              <div className="card-header" style={{ fontFamily: 'Hind Siliguri, sans-serif', fontWeight: 700, fontSize: '0.875rem' }}>
-                {loading ? 'মিলানো হচ্ছে...' : `${matches.length}টি সম্ভাব্য দাগ পাওয়া গেছে`}
-              </div>
-              <div className="card-body" style={{ padding: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
-                {loading ? (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '1.5rem', justifyContent: 'center' }}>
-                    <Loader2 size={20} color="var(--green)" className="animate-spin" />
-                    <span style={{ fontFamily: 'Hind Siliguri, sans-serif', color: 'var(--gray-500)' }}>দাগ মিলানো হচ্ছে...</span>
-                  </div>
-                ) : matches.length === 0 ? (
-                  <div style={{ padding: '1.5rem', textAlign: 'center' }}>
-                    <div style={{ fontFamily: 'Hind Siliguri, sans-serif', color: 'var(--gray-400)' }}>কোনো মিল পাওয়া যায়নি</div>
-                    <div style={{ fontSize: '0.8125rem', color: 'var(--gray-400)', fontFamily: 'Hind Siliguri, sans-serif', marginTop: '0.25rem' }}>তথ্য সংশোধন করে পুনরায় চেষ্টা করুন</div>
-                  </div>
-                ) : (
-                  matches.map(match => (
-                    <div
-                      key={match.parcel.id}
-                      className={`parcel-card ${selectedParcel?.id === match.parcel.id ? 'selected' : ''}`}
-                      onClick={() => handleSelectParcel(match.parcel)}
-                    >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.375rem' }}>
-                        <span style={{ fontFamily: 'Hind Siliguri, sans-serif', fontWeight: 700, fontSize: '0.9375rem' }}>
-                          দাগ: {match.parcel.dagNumber}
-                        </span>
-                        <span className={`badge ${match.confidence >= 0.8 ? 'badge-green' : match.confidence >= 0.5 ? 'badge-gold' : 'badge-red'}`}>
-                          {Math.round(match.confidence * 100)}% মিল
-                        </span>
-                      </div>
-                      <div style={{ fontSize: '0.8125rem', color: 'var(--gray-600)', fontFamily: 'Hind Siliguri, sans-serif', marginBottom: '0.5rem' }}>
-                        মৌজা: {match.parcel.mouza?.nameBn} · {match.parcel.surveyType} জরিপ · {match.parcel.area} শতাংশ
-                      </div>
-                      <div style={{ fontSize: '0.75rem', fontFamily: 'Hind Siliguri, sans-serif', color: 'var(--gray-500)' }}>
-                        মালিক: {match.parcel.ownershipInterests[0]?.owner?.nameBn ?? 'অজানা'}
-                      </div>
-                      {match.unmatchedFields.length > 0 && (
-                        <div style={{ marginTop: '0.375rem', display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}>
-                          {match.unmatchedFields.map((f, i) => (
-                            <span key={i} className="badge badge-gold" style={{ fontSize: '0.65rem' }}>⚠ {f}</span>
-                          ))}
-                        </div>
-                      )}
-                      {match.matchedFields.map((f, i) => (
-                        <span key={i} className="badge badge-green" style={{ fontSize: '0.65rem', marginRight: 2, marginTop: 2 }}>✓ {f}</span>
-                      ))}
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-
-            {selectedParcel && (
-              <div className="alert alert-green">
-                <CheckCircle size={16} style={{ flexShrink: 0 }} />
-                <div style={{ fontFamily: 'Hind Siliguri, sans-serif', fontSize: '0.875rem' }}>
-                  দাগ {selectedParcel.dagNumber} নির্বাচিত হয়েছে। নিচে মানচিত্রে দেখুন এবং নিশ্চিত করুন।
-                </div>
-              </div>
-            )}
           </div>
 
-          {/* Right: Map */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <div className="card">
-              <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontFamily: 'Hind Siliguri, sans-serif', fontWeight: 700, fontSize: '0.875rem' }}>
-                  <MapPin size={14} style={{ display: 'inline', marginRight: 4 }} />নমুনা ভূমি মানচিত্র
-                </span>
-                <a href="https://map.land.gov.bd/" target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm">
-                  <ExternalLink size={12} />সরকারি মানচিত্র
-                </a>
-              </div>
-              <div className="map-container" style={{ height: 480 }}>
-                <MapContainer
-                  center={mapCenter}
-                  zoom={mapZoom}
-                  style={{ height: '100%', width: '100%' }}
-                  scrollWheelZoom
-                >
-                  <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  />
-                  <MapFocus center={mapCenter} zoom={mapZoom} />
-
-                  {PARCELS.filter(p => p.geometry).map(parcel => (
-                    <Polygon
-                      key={parcel.id}
-                      positions={parcel.geometry!.coordinates[0].map(c => [c[1], c[0]] as [number, number])}
-                      pathOptions={{
-                        color: selectedParcel?.id === parcel.id ? '#176B56' : '#17334C',
-                        fillColor: selectedParcel?.id === parcel.id ? '#176B56' : '#17334C',
-                        fillOpacity: selectedParcel?.id === parcel.id ? 0.45 : 0.15,
-                        weight: selectedParcel?.id === parcel.id ? 3 : 1.5,
-                      }}
-                      eventHandlers={{ click: () => handleSelectParcel(parcel) }}
-                    >
-                      <Popup>
-                        <div style={{ fontFamily: 'Hind Siliguri, sans-serif', minWidth: 180 }}>
-                          <div style={{ fontWeight: 700, marginBottom: 4 }}>দাগ: {parcel.dagNumber}</div>
-                          <div style={{ fontSize: '0.8125rem', color: '#555', marginBottom: 2 }}>মৌজা: {parcel.mouza?.nameBn}</div>
-                          <div style={{ fontSize: '0.8125rem', color: '#555', marginBottom: 2 }}>জরিপ: {parcel.surveyType} · পরিমাণ: {parcel.area} শতাংশ</div>
-                          <div style={{ fontSize: '0.8125rem', color: '#555', marginBottom: 2 }}>খতিয়ান: {parcel.currentKhatian}</div>
-                          <div style={{ fontSize: '0.8125rem', color: '#555' }}>মালিক: {parcel.ownershipInterests[0]?.owner?.nameBn}</div>
-                          <div style={{ marginTop: 6, padding: '2px 6px', background: '#FFF3CD', borderRadius: 4, fontSize: '0.7rem', color: '#7C4500' }}>নমুনা/কাল্পনিক</div>
-                        </div>
-                      </Popup>
-                    </Polygon>
-                  ))}
-                </MapContainer>
-              </div>
-              <div className="card-body" style={{ padding: '0.75rem' }}>
-                <div className="alert alert-navy" style={{ padding: '0.625rem 0.875rem' }}>
-                  <Info size={14} style={{ flexShrink: 0, marginTop: 2 }} />
-                  <div style={{ fontFamily: 'Hind Siliguri, sans-serif', fontSize: '0.8rem' }}>
-                    এই মানচিত্রে দেখানো পলিগনগুলো সম্পূর্ণ কাল্পনিক। সরকারি ক্যাডাস্ট্রাল ডেটা ব্যবহার করতে অনুমোদিত API সংযোগ প্রয়োজন।
-                    <a href="https://map.land.gov.bd/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--navy)', marginLeft: 4 }}>
-                      সরকারি মানচিত্র দেখুন ↗
-                    </a>
-                  </div>
-                </div>
-              </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--green)', fontWeight: 700, fontSize: 13 }}>
+              <MapPin size={18} />
+              <span>নির্বাচিত জমির বিবরণ</span>
             </div>
+            <span className={`pill ${isMatch ? '' : 'warn'}`}>
+              {isMatch ? 'নমুনা মিল' : 'ম্যানুয়াল নির্বাচন'}
+            </span>
+          </div>
 
-            {/* Parcel detail */}
-            {selectedParcel && (
-              <div className="card animate-fade-in">
-                <div className="card-header" style={{ fontFamily: 'Hind Siliguri, sans-serif', fontWeight: 700, fontSize: '0.875rem' }}>
-                  <CheckCircle size={14} color="var(--green)" style={{ display: 'inline', marginRight: 6 }} />
-                  নির্বাচিত দাগের তথ্য
-                </div>
-                <div className="card-body">
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-                    {[
-                      { label: 'দাগ নম্বর', val: selectedParcel.dagNumber },
-                      { label: 'জরিপের ধরন', val: selectedParcel.surveyType },
-                      { label: 'জমির পরিমাণ', val: `${selectedParcel.area} শতাংশ` },
-                      { label: 'মৌজা', val: selectedParcel.mouza?.nameBn },
-                      { label: 'খতিয়ান', val: selectedParcel.currentKhatian },
-                      { label: 'উপজেলা', val: selectedParcel.upazila?.nameBn },
-                    ].map((row, i) => (
-                      <div key={i} style={{ background: 'var(--gray-50)', padding: '0.625rem', borderRadius: 8 }}>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--gray-400)', fontFamily: 'Hind Siliguri, sans-serif', marginBottom: '0.125rem' }}>{row.label}</div>
-                        <div style={{ fontWeight: 700, fontFamily: 'Hind Siliguri, sans-serif', fontSize: '0.9375rem' }}>{row.val || '—'}</div>
-                      </div>
-                    ))}
-                  </div>
-                  <div style={{ borderTop: '1px solid var(--gray-100)', paddingTop: '0.875rem' }}>
-                    <div style={{ fontFamily: 'Hind Siliguri, sans-serif', fontSize: '0.8125rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--gray-600)' }}>মালিকানার তথ্য (নমুনা)</div>
-                    {selectedParcel.ownershipInterests.map(oi => (
-                      <div key={oi.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.375rem 0', borderBottom: '1px solid var(--gray-100)', fontFamily: 'Hind Siliguri, sans-serif', fontSize: '0.875rem' }}>
-                        <span>{oi.owner?.nameBn}</span>
-                        <span style={{ color: 'var(--gray-500)' }}>{oi.shareNumerator}/{oi.shareDenominator} অংশ</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Actions */}
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <button className="btn btn-ghost" onClick={() => navigate('/review')}><ChevronLeft size={16} />পেছনে</button>
-              <button className="btn btn-primary btn-lg" onClick={handleProceed} disabled={!selectedParcel}>
-                যাচাই করুন <ChevronRight size={18} />
-              </button>
+          <div className="info-list">
+            <div className="info-line">
+              <span>দাগ নম্বর</span>
+              <span>{activeParcel?.dagNumber || '১২৫'}</span>
             </div>
+            <div className="info-line">
+              <span>মৌজা</span>
+              <span>{activeParcel?.mouza?.nameBn || 'ডেমো মৌজা'}</span>
+            </div>
+            <div className="info-line">
+              <span>জরিপ</span>
+              <span>{activeParcel?.surveyType || 'RS'}</span>
+            </div>
+            <div className="info-line">
+              <span>রেকর্ডকৃত প্লটের পরিমাণ</span>
+              <span>{activeParcel?.area || 20} শতাংশ</span>
+            </div>
+            <div className="info-line">
+              <span>খতিয়ান</span>
+              <span>{activeParcel?.currentKhatian || '২৫৬'}</span>
+            </div>
+            <div className="info-line">
+              <span>রেকর্ডকৃত মালিক</span>
+              <span>{activeParcel?.ownershipInterests?.[0]?.owner?.nameBn || 'মোঃ রহিম উদ্দিন'}</span>
+            </div>
+          </div>
+
+          <div className="hintbox" style={{ marginTop: 20 }}>
+            <CheckCircle size={16} />
+            <div>
+              নকশার চিত্রটি শুধু জমি শনাক্ত করার সহায়ক। এটি নিজে মালিকানা প্রমাণ করে না।
+            </div>
+          </div>
+
+          <div className="btn-row" style={{ marginTop: 24 }}>
+            <button className="btn" onClick={handleProceed} style={{ width: '100%' }}>
+              যাচাইয়ের ফলাফল দেখুন → <ArrowRight size={14} />
+            </button>
+            <button className="btn secondary sm" onClick={() => navigate('/review')} style={{ width: '100%' }}>
+              <ChevronLeft size={14} /> তথ্য পর্যালোচনায় ফিরুন
+            </button>
           </div>
         </div>
       </div>

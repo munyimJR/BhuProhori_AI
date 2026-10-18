@@ -1,236 +1,244 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight, ChevronLeft, Shield, AlertTriangle, CheckCircle, XCircle, Info, Loader2 } from 'lucide-react';
+import { ShieldCheck, ArrowRight, ChevronLeft, ChevronDown, ChevronUp } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
-import type { VerificationFinding, VerificationSeverity } from '../types';
-
-function SeverityIcon({ severity }: { severity: VerificationSeverity }) {
-  if (severity === 'critical') return <XCircle size={16} color="var(--red)" />;
-  if (severity === 'error') return <AlertTriangle size={16} color="#E55722" />;
-  if (severity === 'warning') return <AlertTriangle size={16} color="var(--gold)" />;
-  return <Info size={16} color="#0EA5E9" />;
-}
-
-function categoryLabel(cat: string) {
-  switch (cat) {
-    case 'no_inconsistency': return { label: 'কোনো অসামঞ্জস্য পাওয়া যায়নি', color: 'var(--green)', bg: 'var(--mint)', icon: <CheckCircle size={18} /> };
-    case 'clarification_required': return { label: 'স্পষ্টীকরণ প্রয়োজন', color: 'var(--gold)', bg: 'var(--gold-bg)', icon: <AlertTriangle size={18} /> };
-    case 'review_required': return { label: 'পর্যালোচনা প্রয়োজন', color: 'var(--red)', bg: 'var(--red-bg)', icon: <XCircle size={18} /> };
-    case 'insufficient_evidence': return { label: 'পর্যাপ্ত তথ্য নেই', color: '#7C3AED', bg: '#F3E8FF', icon: <Info size={18} /> };
-    default: return { label: '', color: '', bg: '', icon: null };
-  }
-}
-
-function FindingCard({ finding }: { finding: VerificationFinding }) {
-  const [expanded, setExpanded] = useState(false);
-  return (
-    <div className={`severity-${finding.severity}`} style={{ borderRadius: 10, padding: '0.875rem 1rem', marginBottom: '0.625rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
-        <div style={{ display: 'flex', gap: '0.625rem', alignItems: 'flex-start', flex: 1 }}>
-          <SeverityIcon severity={finding.severity} />
-          <div>
-            <div style={{ fontFamily: 'Hind Siliguri, sans-serif', fontWeight: 700, fontSize: '0.9375rem', marginBottom: '0.25rem' }}>
-              {finding.titleBn}
-            </div>
-            <div style={{ fontSize: '0.8125rem', color: 'var(--gray-600)', fontFamily: 'Hind Siliguri, sans-serif' }}>
-              {finding.descriptionBn}
-            </div>
-          </div>
-        </div>
-        <div style={{ display: 'flex', gap: '0.375rem', flexShrink: 0 }}>
-          <span className="badge badge-gray" style={{ fontSize: '0.65rem' }}>{finding.ruleCode}</span>
-          <button className="btn btn-ghost btn-sm" style={{ padding: '0.2rem 0.4rem' }} onClick={() => setExpanded(!expanded)}>
-            {expanded ? '▲' : '▼'}
-          </button>
-        </div>
-      </div>
-      {expanded && (
-        <div style={{ marginTop: '0.75rem', paddingTop: '0.625rem', borderTop: '1px solid rgba(0,0,0,0.06)' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginBottom: '0.5rem' }}>
-            <div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--gray-400)', fontFamily: 'Hind Siliguri, sans-serif', marginBottom: '0.125rem' }}>প্রভাবিত ক্ষেত্র</div>
-              {finding.affectedFields.map(f => <span key={f} className="badge badge-gray" style={{ fontSize: '0.65rem', marginRight: 2 }}>{f}</span>)}
-            </div>
-            <div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--gray-400)', fontFamily: 'Hind Siliguri, sans-serif', marginBottom: '0.125rem' }}>সূত্র রেফারেন্স</div>
-              {finding.sourceReferences.map(r => <div key={r} style={{ fontSize: '0.75rem', color: 'var(--gray-500)', fontFamily: 'Hind Siliguri, sans-serif' }}>{r}</div>)}
-            </div>
-          </div>
-          <div style={{ background: 'rgba(255,255,255,0.6)', borderRadius: 6, padding: '0.5rem 0.625rem' }}>
-            <div style={{ fontSize: '0.75rem', color: 'var(--gray-400)', fontFamily: 'Hind Siliguri, sans-serif', marginBottom: '0.125rem' }}>পরামর্শ</div>
-            <div style={{ fontSize: '0.8125rem', fontFamily: 'Hind Siliguri, sans-serif', color: 'var(--dark)' }}>{finding.recommendedActionBn}</div>
-          </div>
-          {finding.requiresHumanReview && (
-            <div style={{ marginTop: '0.375rem', display: 'flex', gap: '0.25rem', alignItems: 'center', fontSize: '0.75rem', color: 'var(--navy)', fontFamily: 'Hind Siliguri, sans-serif' }}>
-              <Shield size={11} />মানব পর্যালোচনা প্রয়োজন
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
+import { VERIFICATION_RULES } from '../data/demoData';
 
 export default function VerificationPage() {
   const navigate = useNavigate();
-  const { extraction, selectedParcel, runVerificationCheck, verificationResult, currentScenario } = useAppStore();
-  const [loading, setLoading] = useState(true);
+  const {
+    runVerificationCheck, verificationResult,
+    currentScenario, loadDemoScenario, setStep
+  } = useAppStore();
+
+  const [scenarioVal, setScenarioVal] = useState<number>(currentScenario || 1);
+  const [expandedRules, setExpandedRules] = useState(false);
 
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      runVerificationCheck();
-      setLoading(false);
-    }, 2000);
-  }, []);
+    runVerificationCheck();
+  }, [scenarioVal, runVerificationCheck]);
 
-  if (!extraction) {
-    return (
-      <div style={{ padding: '4rem', textAlign: 'center' }}>
-        <h2 style={{ fontFamily: 'Hind Siliguri, sans-serif' }}>প্রথমে দলিল আপলোড করুন</h2>
-        <button className="btn btn-primary" style={{ marginTop: '1rem' }} onClick={() => navigate('/upload')}>আপলোড পেজে যান</button>
-      </div>
-    );
-  }
+  const handleScenarioChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const val = Number(e.target.value);
+    setScenarioVal(val);
+    loadDemoScenario(val);
+  };
 
-  const catInfo = verificationResult ? categoryLabel(verificationResult.category) : null;
-  const findings = verificationResult?.findings ?? [];
-  const criticalFindings = findings.filter(f => f.severity === 'critical');
-  const errorFindings = findings.filter(f => f.severity === 'error');
-  const warningFindings = findings.filter(f => f.severity === 'warning');
+  const handleProceed = () => {
+    setStep(5);
+    navigate('/apply');
+  };
+
+  const availableShare = 8;
+  const claimedShare = scenarioVal === 6 ? 10 : 5;
+  const isOverLimit = claimedShare > availableShare;
+  const hasErrors = isOverLimit || (verificationResult?.findings?.some(f => f.severity === 'error' || f.severity === 'critical') ?? false);
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--page-bg)', padding: '2rem 0' }}>
-      <div className="container-sm">
-        {/* Header */}
-        <div style={{ marginBottom: '1.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.375rem' }}>
-            <button className="btn btn-ghost btn-sm" onClick={() => navigate('/identify')}><ChevronLeft size={14} />পেছনে</button>
+    <div>
+      {/* Workspace Heading */}
+      <div className="workspace-heading">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <div className="workspace-symbol">
+            <ShieldCheck size={22} />
           </div>
-          <h1 style={{ fontFamily: 'Hind Siliguri, sans-serif', fontSize: '1.625rem' }}>স্মার্ট যাচাই ফলাফল</h1>
-          <p style={{ color: 'var(--gray-500)', fontFamily: 'Hind Siliguri, sans-serif', fontSize: '0.875rem' }}>
-            নমুনা পরিস্থিতি #{currentScenario} — স্বয়ংক্রিয় নিয়ম-ভিত্তিক যাচাই
-          </p>
+          <div>
+            <h1 className="title">নামজারির আগে তথ্য যাচাই</h1>
+            <p className="desc" style={{ margin: 0 }}>
+              আবেদনটি জমা দেওয়ার আগে গুরুত্বপূর্ণ তথ্য মিলিয়ে দেখুন।
+            </p>
+          </div>
+        </div>
+        <span className="workspace-label">পরিমাণগত পরীক্ষা</span>
+      </div>
+
+      {/* 2-Column Grid */}
+      <div className="grid two">
+        {/* Left Column: Verification Summary */}
+        <div className="card pad">
+          <div className="panel-head">
+            <h2>যাচাইয়ের সারসংক্ষেপ</h2>
+            <span className={`pill ${hasErrors ? 'red' : ''}`}>
+              {hasErrors ? 'পর্যালোচনা প্রয়োজন' : 'প্রাথমিক পরীক্ষা সম্পন্ন'}
+            </span>
+          </div>
+
+          <div className={`risk-block ${hasErrors ? 'bad' : 'safe'}`}>
+            <span className="risk-icon">{hasErrors ? '⚠' : '✓'}</span>
+            <div>
+              <strong>
+                {hasErrors
+                  ? 'রেকর্ডকৃত অংশের চেয়ে বিক্রির দাবি বেশি অথবা অমিল শনাক্ত'
+                  : 'এই নমুনায় পরিমাণগত অসামঞ্জস্য পাওয়া যায়নি'}
+              </strong>
+              <div style={{ fontSize: 12, marginTop: 4 }}>
+                {hasErrors
+                  ? `নমুনা অংশ ${availableShare} শতাংশ, দাবি ${claimedShare} শতাংশ। আরও ${Math.abs(claimedShare - availableShare)} শতাংশ যাচাই প্রয়োজন।`
+                  : 'বিক্রিত জমির পরিমাণ নমুনা বিক্রেতার উপলব্ধ অংশের মধ্যে আছে।'}
+              </div>
+            </div>
+          </div>
+
+          <div style={{ marginTop: 19 }}>
+            <div className="check">
+              <span className="badge-dot">✓</span>
+              <div>
+                <strong>দলিলের দাগ ও খতিয়ান নম্বর</strong>
+                <small>আপনার নিশ্চিত করা তথ্য ডেমো রেকর্ডের সঙ্গে তুলনা করা হয়েছে</small>
+              </div>
+            </div>
+
+            <div className="check">
+              <span className={`badge-dot ${isOverLimit ? 'warning' : ''}`}>
+                {isOverLimit ? '!' : '✓'}
+              </span>
+              <div>
+                <strong>বিক্রেতার উপলব্ধ অংশ</strong>
+                <small>
+                  {isOverLimit
+                    ? 'বিক্রির দাবির পরিমাণ নমুনা অংশের বেশি'
+                    : `নমুনা রেকর্ডে ${availableShare} শতাংশ পাওয়া গেছে`}
+                </small>
+              </div>
+            </div>
+
+            <div className="check">
+              <span className="badge-dot warning">!</span>
+              <div>
+                <strong>মূল দলিলের সত্যতা</strong>
+                <small>কেবল নমুনা ব্যবহার করা হয়েছে; প্রকৃত নিবন্ধন যাচাই করা হয়নি</small>
+              </div>
+            </div>
+          </div>
+
+          {/* Expandable Automated 7 Rules */}
+          <div style={{ marginTop: 16, paddingTop: 14, borderTop: '1px solid var(--line)' }}>
+            <button
+              className="btn secondary sm"
+              style={{ width: '100%', justifyContent: 'space-between' }}
+              onClick={() => setExpandedRules(!expandedRules)}
+            >
+              <span>৭টি স্বয়ংক্রিয় যাচাই নিয়মের ফলাফল (৭টি নিয়ম)</span>
+              {expandedRules ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+            </button>
+
+            {expandedRules && (
+              <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {Object.values(VERIFICATION_RULES).map(rule => {
+                  const passed = verificationResult?.passedRules?.includes(rule.code) ?? true;
+                  return (
+                    <div
+                      key={rule.code}
+                      style={{
+                        padding: '8px 12px',
+                        background: '#f8faf9',
+                        borderRadius: 8,
+                        border: '1px solid var(--line)',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        fontSize: 12
+                      }}
+                    >
+                      <div>
+                        <span style={{ fontWeight: 700, color: 'var(--deep)' }}>{rule.nameBn}</span>
+                        <span style={{ color: 'var(--muted)', marginLeft: 6, fontSize: 11 }}>({rule.code})</span>
+                      </div>
+                      <span className={`pill ${passed ? '' : 'warn'}`} style={{ padding: '2px 8px', fontSize: 10 }}>
+                        {passed ? 'উত্তীর্ণ' : 'সতর্কতা'}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          <div className="btn-row" style={{ marginTop: 24 }}>
+            <button className="btn" onClick={handleProceed} style={{ width: '100%' }}>
+              আবেদন তৈরি করুন → <ArrowRight size={14} />
+            </button>
+            <button className="btn secondary sm" onClick={() => navigate('/identify')} style={{ width: '100%' }}>
+              <ChevronLeft size={14} /> নকশায় ফিরুন
+            </button>
+          </div>
         </div>
 
-        {loading ? (
-          <div className="card" style={{ padding: '4rem', textAlign: 'center' }}>
-            <Loader2 size={40} color="var(--green)" className="animate-spin" style={{ margin: '0 auto 1rem' }} />
-            <div style={{ fontFamily: 'Hind Siliguri, sans-serif', color: 'var(--gray-500)', fontSize: '1rem' }}>
-              যাচাই নিয়ম প্রয়োগ করা হচ্ছে...
-            </div>
-            <div style={{ fontFamily: 'Hind Siliguri, sans-serif', color: 'var(--gray-400)', fontSize: '0.875rem', marginTop: '0.375rem' }}>
-              R01 থেকে R07 পর্যন্ত ৭টি নিয়ম পরীক্ষা করা হচ্ছে
+        {/* Right Column: Scenario Switcher & Comparison Bar */}
+        <div className="card pad">
+          <div className="panel-head">
+            <div>
+              <h2>যাচাইয়ের পরীক্ষা পরিবর্তন করুন</h2>
+              <p>নিচের দুটি পরিস্থিতি দেখিয়ে বিচারকদের কাছে ফলাফল তুলনা করুন।</p>
             </div>
           </div>
-        ) : (
-          <>
-            {/* Overall result */}
-            {catInfo && verificationResult && (
-              <div style={{ background: catInfo.bg, border: `2px solid ${catInfo.color}`, borderRadius: 16, padding: '1.25rem 1.5rem', marginBottom: '1.5rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                <div style={{ color: catInfo.color, flexShrink: 0 }}>{catInfo.icon}</div>
-                <div>
-                  <div style={{ fontFamily: 'Hind Siliguri, sans-serif', fontWeight: 700, fontSize: '1.0625rem', color: catInfo.color, marginBottom: '0.125rem' }}>
-                    {catInfo.label}
-                  </div>
-                  <div style={{ fontFamily: 'Hind Siliguri, sans-serif', fontSize: '0.875rem', color: 'var(--gray-600)' }}>
-                    {verificationResult.passedRules.length}টি নিয়ম পাস · {findings.length}টি সমস্যা চিহ্নিত · স্কোর: {verificationResult.overallScore}/100
-                  </div>
-                </div>
-                <div style={{ marginLeft: 'auto', display: 'flex', gap: '0.5rem' }}>
-                  {criticalFindings.length > 0 && <span className="badge badge-red"><XCircle size={10} />{criticalFindings.length} জটিল</span>}
-                  {errorFindings.length > 0 && <span className="badge badge-red">{errorFindings.length} ত্রুটি</span>}
-                  {warningFindings.length > 0 && <span className="badge badge-gold">{warningFindings.length} সতর্কতা</span>}
-                </div>
-              </div>
-            )}
 
-            {/* Score bar */}
-            {verificationResult && (
-              <div className="card" style={{ marginBottom: '1.5rem' }}>
-                <div className="card-body">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                    <span style={{ fontFamily: 'Hind Siliguri, sans-serif', fontWeight: 600, fontSize: '0.875rem' }}>যাচাই স্কোর</span>
-                    <span style={{ fontFamily: 'Hind Siliguri, sans-serif', fontWeight: 800, fontSize: '1.5rem', color: verificationResult.overallScore >= 80 ? 'var(--green)' : verificationResult.overallScore >= 50 ? 'var(--gold)' : 'var(--red)' }}>
-                      {verificationResult.overallScore}/100
-                    </span>
-                  </div>
-                  <div className="confidence-bar" style={{ height: 8 }}>
-                    <div className="confidence-fill" style={{ width: `${verificationResult.overallScore}%` }} />
-                  </div>
-                  <div style={{ display: 'flex', gap: '1rem', marginTop: '0.75rem', flexWrap: 'wrap' }}>
-                    {verificationResult.passedRules.map(r => (
-                      <span key={r} className="badge badge-green" style={{ fontSize: '0.7rem' }}>
-                        <CheckCircle size={9} />{r} পাস
-                      </span>
-                    ))}
-                    {findings.map(f => (
-                      <span key={f.id} className="badge badge-red" style={{ fontSize: '0.7rem' }}>
-                        <XCircle size={9} />{f.ruleCode} ব্যর্থ
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
+          <div className="field">
+            <label htmlFor="scenarioSelect">ডেমো পরিস্থিতি</label>
+            <select
+              id="scenarioSelect"
+              value={scenarioVal}
+              onChange={handleScenarioChange}
+            >
+              <option value="1">স্বাভাবিক বিক্রি — ৫ শতাংশ (Clean Match)</option>
+              <option value="6">অসামঞ্জস্যপূর্ণ বিক্রি — ১০ শতাংশ (Area Mismatch)</option>
+              <option value="3">ব্যাংকে বন্ধক রাখা জমি (Mortgage Warning)</option>
+              <option value="4">আদালতে স্থগিতাদেশ (Legal Injunction)</option>
+              <option value="5">অর্পিত / খাস সরকারি জমি (Khas Alert)</option>
+            </select>
+          </div>
 
-            {/* Findings */}
-            {findings.length > 0 && (
-              <div className="card" style={{ marginBottom: '1.5rem' }}>
-                <div className="card-header" style={{ fontFamily: 'Hind Siliguri, sans-serif', fontWeight: 700 }}>
-                  <AlertTriangle size={14} style={{ display: 'inline', marginRight: 6 }} color="var(--gold)" />
-                  চিহ্নিত সমস্যাসমূহ
-                </div>
-                <div className="card-body">
-                  {findings.map(f => <FindingCard key={f.id} finding={f} />)}
-                </div>
-              </div>
-            )}
-
-            {/* Selected parcel summary */}
-            {selectedParcel && (
-              <div className="card" style={{ marginBottom: '1.5rem' }}>
-                <div className="card-header" style={{ fontFamily: 'Hind Siliguri, sans-serif', fontWeight: 700, fontSize: '0.875rem' }}>
-                  <CheckCircle size={14} color="var(--green)" style={{ display: 'inline', marginRight: 6 }} />
-                  নির্বাচিত দাগের তথ্য
-                </div>
-                <div className="card-body">
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '0.75rem' }}>
-                    {[
-                      { label: 'দাগ নম্বর', val: selectedParcel.dagNumber },
-                      { label: 'মৌজা', val: selectedParcel.mouza?.nameBn },
-                      { label: 'জরিপ', val: selectedParcel.surveyType },
-                      { label: 'পরিমাণ', val: `${selectedParcel.area} শতাংশ` },
-                      { label: 'খতিয়ান', val: selectedParcel.currentKhatian },
-                      { label: 'জেলা', val: selectedParcel.district?.nameBn },
-                    ].map((row, i) => (
-                      <div key={i} style={{ background: 'var(--gray-50)', padding: '0.625rem', borderRadius: 8 }}>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--gray-400)', fontFamily: 'Hind Siliguri, sans-serif' }}>{row.label}</div>
-                        <div style={{ fontWeight: 700, fontFamily: 'Hind Siliguri, sans-serif' }}>{row.val || '—'}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Disclaimer */}
-            <div className="alert alert-navy" style={{ marginBottom: '1.5rem' }}>
-              <Shield size={16} style={{ flexShrink: 0, marginTop: 2 }} />
-              <div style={{ fontFamily: 'Hind Siliguri, sans-serif', fontSize: '0.85rem' }}>
-                <strong>গুরুত্বপূর্ণ:</strong> এই যাচাই ফলাফল শুধুমাত্র নমুনা ডেটার ভিত্তিতে স্বয়ংক্রিয়ভাবে তৈরি। AI কোনো আইনি বৈধতা নিশ্চিত করতে পারে না। চূড়ান্ত সিদ্ধান্ত একজন অনুমোদিত কর্মকর্তা নেবেন।
-              </div>
+          <div className="area-comparison" aria-label="নমুনা জমির পরিমাণের তুলনা">
+            <div className="comparison-caption">
+              <h3>জমির পরিমাণের তুলনা</h3>
+              <span>একক: শতাংশ</span>
             </div>
 
-            {/* Actions */}
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <button className="btn btn-ghost" onClick={() => navigate('/identify')}><ChevronLeft size={16} />পেছনে</button>
-              <button className="btn btn-primary btn-lg" onClick={() => navigate('/apply')}>
-                নামজারি আবেদন করুন <ChevronRight size={18} />
-              </button>
+            <div className="bar-label">
+              <span>বিক্রেতার উপলব্ধ অংশ</span>
+              <b>{availableShare}</b>
             </div>
-          </>
-        )}
+            <div className="bar-track">
+              <div className="bar-available" style={{ width: '80%' }}></div>
+            </div>
+
+            <div className="bar-label">
+              <span>বিক্রয়ের দাবি</span>
+              <b>{claimedShare}</b>
+            </div>
+            <div className="bar-track">
+              <div
+                className={`bar-claimed ${isOverLimit ? 'over-limit' : ''}`}
+                style={{ width: `${Math.min(claimedShare * 10, 100)}%` }}
+              ></div>
+            </div>
+
+            <p style={{ margin: '6px 0 0', fontSize: 12, color: isOverLimit ? 'var(--red)' : 'var(--green)' }}>
+              {isOverLimit
+                ? `বিক্রয়ের দাবি উপলব্ধ অংশের চেয়ে ${claimedShare - availableShare} শতাংশ বেশি।`
+                : 'দাবিকৃত পরিমাণ উপলব্ধ অংশের মধ্যে আছে।'}
+            </p>
+          </div>
+
+          <div style={{ marginTop: 18 }} className="rulegrid">
+            <div className="rule">
+              <b>বিক্রেতার নমুনা অংশ</b>
+              <strong style={{ fontSize: 24, color: 'var(--green)' }}>
+                {availableShare} শতাংশ
+              </strong>
+            </div>
+            <div className="rule">
+              <b>প্রস্তাবিত বিক্রি</b>
+              <strong style={{ fontSize: 24, color: isOverLimit ? 'var(--red)' : 'var(--navy)' }}>
+                {claimedShare} শতাংশ
+              </strong>
+            </div>
+          </div>
+
+          <p className="help-note">
+            প্রকৃত ভূমি আইনে জটিল মালিকানা, উত্তরাধিকার, নিবন্ধন ও বিবাদের বিষয় আছে। এটি শুধু একটি সহজ পরীক্ষামূলক নিয়ম।
+          </p>
+        </div>
       </div>
     </div>
   );

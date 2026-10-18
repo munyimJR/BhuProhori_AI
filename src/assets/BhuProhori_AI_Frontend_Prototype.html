@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<meta name="theme-color" content="#113F39" />
+<title>BhuProhori AI | Smart e-Mutation Prototype</title>
+<style>
+:root{--green:#176b56;--mint:#e9f6ef;--navy:#17334c;--deep:#102e31;--ink:#192d32;--muted:#667880;--line:#e2eae7;--bg:#f5f8f7;--white:#fff;--amber:#aa761e;--orange-bg:#fff5df;--red:#b13f43;--red-bg:#fff0f0;--shadow:0 14px 44px rgba(31,62,53,.06)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);font-family:"Noto Sans Bengali","Hind Siliguri",system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);font-size:14px;line-height:1.55}button,input,select,textarea{font:inherit}button{cursor:pointer}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #8ecfb2;outline-offset:2px}button:disabled{opacity:.55;cursor:not-allowed}a{color:var(--green);text-decoration:none}a:hover{text-decoration:underline}.app{display:flex;min-height:100vh}.sidebar{width:252px;flex-shrink:0;background:linear-gradient(165deg,#143d39,#0c3038 75%);color:#effcf5;padding:26px 17px;position:sticky;top:0;min-height:100vh;max-height:100vh;overflow:auto}.brand{display:flex;gap:10px;align-items:center;padding:3px 7px 25px}.brandmark{width:43px;height:43px;display:grid;place-items:center;background:#e9fff2;color:#135542;border-radius:14px;font-size:24px;box-shadow:0 8px 24px #0002}.brand strong{font-size:19px;letter-spacing:-.3px}.brand small{display:block;color:#9ec1b8;font-size:10px;letter-spacing:.4px}.navcaption{font-size:10px;letter-spacing:1.8px;color:#92b9ad;padding:10px 13px 9px}.nav{display:flex;flex-direction:column;gap:5px}.nav-btn{display:flex;align-items:center;gap:11px;text-align:left;width:100%;border:0;background:transparent;color:#b7d1cb;padding:12px;border-radius:11px;font-size:13px;transition:.2s}.nav-btn:hover,.nav-btn.active{background:#ffffff1e;color:white}.nav-btn.active{box-shadow:inset 3px 0 0 #79d6b0}.nav-icon{font-size:18px;width:24px;text-align:center;flex-shrink:0}.side-note{margin:28px 5px 0;padding:16px;background:#ffffff10;border:1px solid #ffffff17;border-radius:14px;color:#c8ddd5;font-size:12px}.side-note strong{display:block;color:white;margin-bottom:4px}.main{flex:1;min-width:0}.topbar{height:74px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:18px;padding:0 36px}.topbar-left{display:flex;align-items:center;gap:12px}.mobile-brand{display:none;font-weight:800;color:var(--green)}.topbar strong{font-size:14px}.subtle{color:var(--muted)}.tiny{font-size:11px}.right-tools{display:flex;gap:11px;align-items:center}.pill{border-radius:99px;padding:6px 11px;background:var(--mint);color:#14694e;font-weight:700;font-size:11px;white-space:nowrap}.pill.warn{background:var(--orange-bg);color:#98651b}.pill.red{background:var(--red-bg);color:var(--red)}.avatar{width:36px;height:36px;display:grid;place-items:center;background:#e3f1ec;color:#235f51;border:1px solid #c9dfd5;border-radius:50%;font-weight:800}.content{max-width:1300px;margin:auto;padding:30px 36px 48px}.page{display:none;animation:come .18s ease}.page.active{display:block}@keyframes come{from{opacity:.5;transform:translateY(7px)}to{opacity:1;transform:none}}.eyebrow{color:#438b73;font-size:11px;text-transform:uppercase;letter-spacing:1.2px;font-weight:800}.title{font-size:28px;line-height:1.32;letter-spacing:-.7px;margin:7px 0 7px;font-weight:800;color:#193e3b}.desc{color:var(--muted);margin:0 0 25px}.card{background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow)}.pad{padding:24px}.hero{background:linear-gradient(114deg,#e1f3e9 0%,#f4faf4 62%,#fefdf6 100%);display:grid;grid-template-columns:1.2fr .8fr;overflow:hidden;min-height:295px}.hero-copy{padding:39px 35px}.hero h1{font-size:32px;line-height:1.38;margin:13px 0;color:#164d40;letter-spacing:-.7px}.hero p{color:#587369;max-width:490px}.hero-side{position:relative;min-height:260px;display:grid;place-items:center;padding:22px}.hero-illustration{width:255px;max-width:100%;background:white;border:1px solid #d9e8dd;box-shadow:0 22px 40px #1b57321a;border-radius:22px;padding:20px;transform:rotate(3deg)}.hero-illustration .document{border:1px dashed #b4d1c1;padding:17px;border-radius:12px}.line{height:7px;border-radius:10px;background:#dce8e2;margin:12px 0}.line.small{width:55%}.line.mid{width:75%}.floating{position:absolute;right:11%;bottom:28px;border:1px solid #d2e3d7;background:white;border-radius:11px;padding:10px 13px;box-shadow:0 11px 28px #214e361b;font-size:11px;font-weight:700;color:#22745a}.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;border:1px solid transparent;background:var(--green);color:white;font-weight:700;border-radius:11px;padding:12px 18px;transition:.2s;font-size:13px;text-decoration:none;min-height:43px}.btn:hover{background:#10553f;text-decoration:none}.btn.secondary{background:#fff;color:#24574b;border-color:#cbded5}.btn.secondary:hover{background:#f1f8f4}.btn.ghost{background:#eff7f2;color:#1e7158}.btn.ghost:hover{background:#d9f0e4}.btn.sm{padding:8px 12px;min-height:35px;font-size:12px}.btn-row{display:flex;flex-wrap:wrap;gap:11px;align-items:center;margin-top:22px}.section-title{font-size:17px;margin:27px 0 14px;color:#203f3b}.grid{display:grid;gap:17px}.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.service{padding:23px;text-align:left;cursor:pointer;border:1px solid var(--line);border-radius:18px;background:white;transition:.2s;box-shadow:var(--shadow)}.service:hover{transform:translateY(-2px);border-color:#8fc6b0}.service .bubble{font-size:24px;background:#eaf6ef;width:48px;height:48px;border-radius:13px;display:grid;place-items:center}.service h3{margin:14px 0 5px;font-size:15px}.service p{margin:0;color:var(--muted);font-size:12px;line-height:1.65}.steps{display:flex;gap:8px;align-items:center;margin:10px 0 21px;flex-wrap:wrap}.step{display:flex;align-items:center;gap:9px;font-size:12px;color:#6f827a}.step .num{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:#e6efea;font-weight:700}.step.current{color:#165941;font-weight:700}.step.current .num{background:var(--green);color:white}.sep{height:1px;width:26px;background:#ccdcd3}.panel-head{display:flex;align-items:start;justify-content:space-between;gap:15px;margin-bottom:18px}.panel-head h3{margin:0;font-size:17px}.panel-head p{color:var(--muted);margin:4px 0 0;font-size:12px}.upload-box{border:2px dashed #b6d9c8;background:#f7fbf8;border-radius:16px;padding:36px 20px;text-align:center}.upload-box .up-icon{font-size:39px;margin-bottom:9px}.upload-box h3{margin:3px 0 4px;font-size:18px}.upload-box p{margin:0 0 20px;color:var(--muted);font-size:12px}.hint{font-size:11px;color:#748985}.hintbox{margin-top:16px;background:#eff8f4;border:1px solid #dbebe2;border-radius:12px;padding:13px 16px;color:#42665c;font-size:12px}.split{display:grid;grid-template-columns:1fr 1fr;gap:18px}.map-split{grid-template-columns:1.28fr .72fr}.doc-preview{min-height:350px;border-radius:13px;background:#eff3ef;display:flex;justify-content:center;padding:20px}.paper{background:#fff;box-shadow:0 8px 25px #172d281f;padding:25px;width:100%;max-width:325px;min-height:340px;text-align:center;color:#41504e}.paper .seal{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:50%;border:2px solid #c2d5cf;color:#83a599;font-size:22px}.paper h4{font-size:16px;margin:11px 0 2px;color:#284c41}.paper small{color:#8ba198}.paper .faux-text{text-align:left;font-size:11px;line-height:2.25;margin-top:15px}.paper b{color:#3f6556}.fieldgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field{display:flex;flex-direction:column;gap:6px}.field label{font-weight:700;font-size:12px;color:#3a5550}.field input,.field select,.field textarea{width:100%;border:1px solid #d7e3de;border-radius:10px;background:#fff;min-height:42px;padding:10px 11px;color:#25443b}.field input:focus,.field select:focus{border-color:#469c76;outline:2px solid #a8d9c4}.field.full{grid-column:1/-1}.confidence{display:inline-block;color:#277a5b;background:#e7f6ed;font-size:10px;padding:2px 6px;border-radius:4px;margin-left:5px}.info-list{display:grid;gap:12px}.info-line{display:flex;justify-content:space-between;gap:16px;border-bottom:1px solid #edf2ef;padding-bottom:10px;font-size:13px}.info-line:last-child{border:0;padding-bottom:0}.info-line span:first-child{color:var(--muted)}.info-line span:last-child{font-weight:700;text-align:right}.map-wrap{border:1px solid #d8e6dc;border-radius:16px;overflow:hidden;background:#deebdb}.map-wrap svg{display:block;width:100%;height:auto}.parcel{cursor:pointer;stroke:#577b6c;stroke-width:2;transition:fill .2s}.parcel:hover{fill:#a9cfb2!important}.parcel.selected{stroke:#1b725c;stroke-width:4;fill:#68b49c!important}.map-caption{display:flex;justify-content:space-between;align-items:center;gap:7px;background:#fff;padding:13px 15px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)}.risk-block{display:flex;gap:13px;align-items:flex-start;border:1px solid #f3dfb7;background:#fffaf0;padding:17px;border-radius:12px;color:#825d1e}.risk-block.safe{background:#f0faf4;border-color:#c6e9d4;color:#216e4c}.risk-block.bad{background:#fff2f2;border-color:#f1cccc;color:#a73d41}.risk-icon{font-size:20px}.check{display:flex;gap:11px;padding:13px 0;border-bottom:1px solid var(--line)}.check:last-child{border-bottom:0}.check strong{display:block;font-size:12px}.check small{color:var(--muted)}.badge-dot{width:24px;height:24px;border-radius:100%;display:grid;place-items:center;background:#e4f4eb;color:#2d815f;font-weight:800;flex-shrink:0}.badge-dot.warning{background:#fff3df;color:#a97528}.timeline{display:flex;gap:0;margin:19px 0}.timeline .stage{flex:1;text-align:center;position:relative;color:#7c9289;font-size:11px}.timeline .stage:before{content:"";display:block;width:19px;height:19px;border-radius:50%;background:#dae9e0;border:4px solid white;box-shadow:0 0 0 1px #d3e1d8;margin:auto auto 9px;position:relative;z-index:2}.timeline .stage:after{content:"";position:absolute;height:2px;background:#d9e6de;left:50%;right:-50%;top:9px;z-index:1}.timeline .stage:last-child:after{display:none}.timeline .stage.passed{color:#2c765c;font-weight:700}.timeline .stage.passed:before{background:#1e8a65;box-shadow:0 0 0 1px #abd9c2}.tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:540px;text-align:left}th,td{padding:13px 14px;border-bottom:1px solid #eaf0ed;font-size:12px}th{background:#f5f8f6;color:#536960;font-weight:800}td{color:#375048}tr:last-child td{border-bottom:0}.stat{padding:20px}.stat .number{font-size:28px;font-weight:900;color:#224e40;margin-top:8px}.stat p{margin:2px 0 0;color:var(--muted);font-size:12px}.report-head{background:linear-gradient(120deg,#184c41,#133d4a);color:white;padding:24px;border-radius:15px;margin-bottom:21px}.report-head h2{margin:5px 0}.report-head p{margin:0;color:#c4e0d5}.footnote{color:var(--muted);font-size:11px;margin-top:22px}.status-option{display:flex;gap:9px;align-items:center;margin:8px 0;font-size:12px}.status-option input{accent-color:var(--green)}.toast{position:fixed;bottom:22px;right:22px;background:#193d36;color:white;box-shadow:0 12px 34px #18392b44;padding:13px 19px;border-radius:12px;z-index:5;display:none;max-width:330px;font-size:12px}.toast.show{display:block}.report-watermark{text-transform:uppercase;letter-spacing:1.1px}.rulegrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.rule{background:#f7faf8;border:1px solid #e3ece7;border-radius:10px;padding:13px;font-size:12px}.rule b{display:block;margin-bottom:5px}.help-note{background:#fff7e5;border-left:3px solid #dfa84d;padding:11px 13px;border-radius:7px;color:#8e691e;font-size:12px;margin:17px 0 0}.summary-bar{display:flex;justify-content:space-between;align-items:center;gap:15px;margin:20px 0}.summary-bar h3{margin:0}.hide{display:none!important}
+@media(max-width:1100px){.sidebar{width:214px}.topbar{padding:0 22px}.content{padding:25px 22px}.hero-copy{padding:30px}.hero h1{font-size:26px}}
+@media(max-width:820px){.app{display:block}.sidebar{position:relative;max-height:unset;min-height:unset;width:100%;padding:13px 15px}.brand{padding:2px 4px 11px}.brandmark{height:37px;width:37px}.brand strong{font-size:17px}.navcaption,.side-note{display:none}.nav{display:flex;flex-direction:row;overflow-x:auto;scrollbar-width:thin;gap:6px;padding-bottom:3px}.nav-btn{flex-shrink:0;width:auto;padding:9px 11px;font-size:12px;white-space:nowrap}.nav-icon{font-size:16px;width:18px}.topbar{height:62px;padding:0 17px}.topbar .top-text{font-size:12px}.content{padding:20px 15px}.hero{grid-template-columns:1fr}.hero-copy{padding:28px}.hero-side{display:none}.grid.three{grid-template-columns:1fr 1fr}}
+@media(max-width:570px){.title{font-size:24px}.hero h1{font-size:25px}.grid.three,.grid.two,.split,.map-split,.fieldgrid,.rulegrid{grid-template-columns:1fr}.field.full{grid-column:1}.panel-head{flex-direction:column}.pad{padding:18px}.right-tools .pill{display:none}.steps{gap:6px}.step{font-size:10px}.sep{width:12px}.btn-row .btn{flex:1}.timeline .stage{font-size:9px}.report-head{padding:18px}}
+@media print{.sidebar,.topbar,.btn,.no-print,.steps{display:none!important}.main,.content{width:100%;padding:0}.page{display:none!important}#page-report{display:block!important}.card{box-shadow:none}.app{display:block}body{background:white}}
+</style>
+<link rel="stylesheet" href="assets/refinement.css" />
+<link rel="stylesheet" href="assets/workspaces.css" />
+<link rel="stylesheet" href="assets/modern.css" />
+<link rel="stylesheet" href="assets/paddy.css" />
+</head>
+<body data-stage="green">
+<a class="skip-link" href="#main-content">মূল বিষয়ে যান</a>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand"><div class="brandmark"><!--
+tags: [security, protection, protect, verified, secured, safe, approved, check, tick, guard, safety, secure, shield]
+category: System
+version: "1.0"
+unicode: "eb22"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M11.46 20.846a12 12 0 0 1 -7.96 -14.846a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3a12 12 0 0 1 -.09 7.06" />
+  <path d="M15 19l2 2l4 -4" />
+</svg>
+</div><div><strong>ভূপ্রহরী AI</strong><small>BhuProhori • Smart e-Mutation</small></div></div>
+  <div class="navcaption">আপনার ভূমিসেবা</div>
+  <nav class="nav" aria-label="Main navigation">
+    <button type="button" class="nav-btn active" aria-current="page" data-page="home"><span class="nav-icon"><!--
+tags: [home, house, homepage, main, start, dashboard, building, residence, real-estate]
+category: Buildings
+version: "1.0"
+unicode: "eac1"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M5 12l-2 0l9 -9l9 9l-2 0" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+</span> হোমপেজ</button>
+    <button type="button" class="nav-btn" data-page="upload"><span class="nav-icon"><!--
+tags: [upload, import, send, arrow-up, cloud, file, transfer, arrow]
+category: Arrows
+version: "1.0"
+unicode: "eb47"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" />
+  <path d="M7 9l5 -5l5 5" />
+  <path d="M12 4l0 12" />
+</svg>
+</span> দলিল আপলোড</button>
+    <button type="button" class="nav-btn" data-page="review"><span class="nav-icon"><!--
+tags: [search, find, lookup, magnifier, document, file, browse, explore, query]
+category: Document
+version: "1.31"
+unicode: "ed5d"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+  <path d="M12 21h-5a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v4.5" />
+  <path d="M14 17.5a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0" />
+  <path d="M18.5 19.5l2.5 2.5" />
+</svg>
+</span> AI তথ্য যাচাই</button>
+    <button type="button" class="nav-btn" data-page="map"><span class="nav-icon"><!--
+tags: [map, navigation, location, travel, geography, directions, atlas]
+category: Map
+version: "1.0"
+unicode: "eae9"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M3 7l6 -3l6 3l6 -3v13l-6 3l-6 -3l-6 3v-13" />
+  <path d="M9 4v13" />
+  <path d="M15 7v13" />
+</svg>
+</span> জমির নকশা</button>
+    <button type="button" class="nav-btn" data-page="verify"><span class="nav-icon"><!--
+tags: [check, done, success, confirmed, approved, tick, ok, verified, complete, correct, checkmark, circle]
+category: Shapes
+version: "1.0"
+unicode: "ea67"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+  <path d="M9 12l2 2l4 -4" />
+</svg>
+</span> যাচাইয়ের ফলাফল</button>
+    <button type="button" class="nav-btn" data-page="mutation"><span class="nav-icon"><!--
+tags: [description, document, text, details, notes, article, content, report, page, lines, file]
+category: Document
+version: "1.55"
+unicode: "f028"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+  <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" />
+  <path d="M9 17h6" />
+  <path d="M9 13h6" />
+</svg>
+</span> নামজারি আবেদন</button>
+    <button type="button" class="nav-btn" data-page="officer"><span class="nav-icon"><!--
+tags: [people, group, team, persons, accounts, members, community, user, users]
+category: System
+version: "1.7"
+unicode: "ebf2"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" />
+  <path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+  <path d="M21 21v-2a4 4 0 0 0 -3 -3.85" />
+</svg>
+</span> অফিসার ড্যাশবোর্ড</button>
+    <button type="button" class="nav-btn" data-page="report"><span class="nav-icon"><!--
+tags: [document, analytics, results, business, summary, timesheet, file, paper, report]
+category: Document
+version: "1.39"
+unicode: "eece"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M8 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h5.697" />
+  <path d="M18 14v4h4" />
+  <path d="M18 11v-4a2 2 0 0 0 -2 -2h-2" />
+  <path d="M8 5a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2" />
+  <path d="M14 18a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" />
+  <path d="M8 11h4" />
+  <path d="M8 15h3" />
+</svg>
+</span> চূড়ান্ত রিপোর্ট</button>
+  </nav>
+  <div class="side-note"><!--
+tags: [lock, padlock, locked, security, secure, password, private, protected]
+category: System
+version: "1.0"
+unicode: "eae2"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6" />
+  <path d="M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0" />
+  <path d="M8 11v-4a4 4 0 1 1 8 0v4" />
+</svg>
+<strong>আপনার তথ্য, আপনার নিয়ন্ত্রণে</strong>এই ডিজাইনের সব ব্যক্তি, দলিল, খতিয়ান, দাগ ও নামজারি তথ্য সম্পূর্ণ কাল্পনিক। সরকারি সিস্টেমের সঙ্গে কোনো সংযোগ নেই।</div>
+</aside>
+<div class="main">
+<header class="topbar">
+ <div class="topbar-left"><div><strong class="top-text" id="crumb">হোমপেজ</strong><div class="tiny subtle">দলিল থেকে নামজারি — সহজ ৩ ধাপে</div></div></div>
+ <div class="right-tools"><span class="pill demo-pill"><i></i> ইন্টার‌্যাক্টিভ ডেমো</span><span class="avatar" title="Demo citizen">D</span></div>
+</header>
+<main class="content" id="main-content" tabindex="-1">
+<section class="page active" id="page-home">
+  <div class="welcome-line"><span>ভূমির তথ্য থেকে আবেদনের প্রস্তুতি</span><span class="welcome-meta">LANDTECH INNOVATION · 2026</span></div>
+  <div class="hero card">
+    <div class="hero-copy"><h1>জমির নামজারি,<br>এবার <span>আরও সহজ।</span></h1><p>আপনার দলিল আপলোড করুন। প্রয়োজনীয় তথ্য যাচাই করুন। সহজেই নামজারির আবেদন প্রস্তুত করুন।</p><div class="btn-row"><button class="btn" data-go="upload">দলিল দিয়ে শুরু করুন <!--
+tags: [direction, east, next, forward, continue, proceed, go, pointer, arrow, right]
+category: Arrows
+version: "1.0"
+unicode: "ea1f"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M5 12l14 0" />
+  <path d="M13 18l6 -6" />
+  <path d="M13 6l6 6" />
+</svg>
+</button><button class="hero-link" data-go="review">নমুনা দিয়ে দেখুন <!--
+tags: [direction, northeast, diagonal, external-link, open-in-new, trend, pointer, navigation, arrow, right]
+category: Arrows
+version: "1.0"
+unicode: "ea24"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M17 7l-10 10" />
+  <path d="M8 7l9 0l0 9" />
+</svg>
+</button></div><div class="hero-assurance"><!--
+tags: [lock, padlock, locked, security, secure, password, private, protected]
+category: System
+version: "1.0"
+unicode: "eae2"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6" />
+  <path d="M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0" />
+  <path d="M8 11v-4a4 4 0 1 1 8 0v4" />
+</svg>
+ <span>কোনো ফাইল সার্ভারে পাঠানো হয় না · শুধুমাত্র ডেমো</span></div></div>
+    <div class="hero-side">
+      <img class="paddy-hero-image" src="assets/paddy-green-to-gold.png" alt="সবুজ থেকে সোনালি হয়ে ওঠা ধানক্ষেতের কল্পিত দৃশ্য" width="1536" height="1024" /><span class="photo-credit">AI-নির্মিত ধানক্ষেতের দৃশ্য</span>
+      <span class="map-demo-label"><!--
+tags: [layers, stack, pile, layout, elements, components, levels, z-order, stacked]
+category: Design
+version: "1.39"
+unicode: "eef7"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M12 4l-8 4l8 4l8 -4l-8 -4" />
+  <path d="M4 12l8 4l8 -4" />
+  <path d="M4 16l8 4l8 -4" />
+</svg>
+ সবুজ থেকে সোনালি</span>
+      <div class="plot-preview"><div class="plot-preview-top"><span class="plot-symbol"><!--
+tags: [pin, marker, location, place, gps, map, point, poi, destination]
+category: Map
+version: "1.0"
+unicode: "eae8"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M9 11a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" />
+  <path d="M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0" />
+</svg>
+</span><div><strong>আপনার জমির পরিচিতি</strong><small>ডেমো মৌজা · আরএস জরিপ</small></div><span class="sample-tag">নমুনা</span></div><div class="plot-preview-data"><div><small>দাগ নম্বর</small><b>১২৫</b></div><div><small>খতিয়ান</small><b>২৫৬</b></div><div><small>জমির পরিমাণ</small><b>২০ <em>শতাংশ</em></b></div></div><button class="plot-link" data-go="map">নমুনা নকশা দেখুন <!--
+tags: [direction, east, next, forward, continue, proceed, go, pointer, arrow, right]
+category: Arrows
+version: "1.0"
+unicode: "ea1f"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M5 12l14 0" />
+  <path d="M13 18l6 -6" />
+  <path d="M13 6l6 6" />
+</svg>
+</button></div>
+      
+    </div>
+  </div>
+  <div class="section-heading"><h2 class="section-title">আপনি কী করতে চান?</h2><span>আপনার প্রয়োজন অনুযায়ী শুরু করুন</span></div>
+  <div class="grid three services">
+    <button class="service featured" data-go="upload"><div class="service-top"><span class="bubble"><!--
+tags: [upload, import, send, arrow-up, cloud, file, transfer, arrow]
+category: Arrows
+version: "1.0"
+unicode: "eb47"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" />
+  <path d="M7 9l5 -5l5 5" />
+  <path d="M12 4l0 12" />
+</svg>
+</span><span class="service-arrow"><!--
+tags: [direction, northeast, diagonal, external-link, open-in-new, trend, pointer, navigation, arrow, right]
+category: Arrows
+version: "1.0"
+unicode: "ea24"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M17 7l-10 10" />
+  <path d="M8 7l9 0l0 9" />
+</svg>
+</span></div><h3>দলিল আপলোড করুন</h3><p>ছবি বা PDF দিয়ে শুরু করুন। নমুনা তথ্য থেকে আবেদনের ধাপগুলো দেখুন।</p><span class="service-foot">শুরু করার সহজ উপায় <!--
+tags: [direction, east, next, forward, continue, proceed, go, pointer, arrow, right]
+category: Arrows
+version: "1.0"
+unicode: "ea1f"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M5 12l14 0" />
+  <path d="M13 18l6 -6" />
+  <path d="M13 6l6 6" />
+</svg>
+</span></button>
+    <button class="service" data-go="map"><div class="service-top"><span class="bubble"><!--
+tags: [map, navigation, location, travel, geography, directions, atlas]
+category: Map
+version: "1.0"
+unicode: "eae9"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M3 7l6 -3l6 3l6 -3v13l-6 3l-6 -3l-6 3v-13" />
+  <path d="M9 4v13" />
+  <path d="M15 7v13" />
+</svg>
+</span><span class="service-arrow"><!--
+tags: [direction, northeast, diagonal, external-link, open-in-new, trend, pointer, navigation, arrow, right]
+category: Arrows
+version: "1.0"
+unicode: "ea24"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M17 7l-10 10" />
+  <path d="M8 7l9 0l0 9" />
+</svg>
+</span></div><h3>জমির তথ্য দেখুন</h3><p>নমুনা দাগ, খতিয়ান ও মৌজা নকশায় জমির পরিচিতি মিলিয়ে নিন।</p><span class="service-foot">নমুনা নকশা খুলুন <!--
+tags: [direction, east, next, forward, continue, proceed, go, pointer, arrow, right]
+category: Arrows
+version: "1.0"
+unicode: "ea1f"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M5 12l14 0" />
+  <path d="M13 18l6 -6" />
+  <path d="M13 6l6 6" />
+</svg>
+</span></button>
+    <button class="service" data-go="report"><div class="service-top"><span class="bubble"><!--
+tags: [time, watch, hour, schedule, timer, clock-face, history, pending, wall-clock, minutes, clock]
+category: System
+version: "1.0"
+unicode: "ea70"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" />
+  <path d="M12 7v5l3 3" />
+</svg>
+</span><span class="service-arrow"><!--
+tags: [direction, northeast, diagonal, external-link, open-in-new, trend, pointer, navigation, arrow, right]
+category: Arrows
+version: "1.0"
+unicode: "ea24"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M17 7l-10 10" />
+  <path d="M8 7l9 0l0 9" />
+</svg>
+</span></div><h3>আবেদনের অবস্থা দেখুন</h3><p>ডেমো আবেদনের অগ্রগতি ও যাচাইয়ের সারসংক্ষেপ এক জায়গায় দেখুন।</p><span class="service-foot">ডেমো রিপোর্ট দেখুন <!--
+tags: [direction, east, next, forward, continue, proceed, go, pointer, arrow, right]
+category: Arrows
+version: "1.0"
+unicode: "ea1f"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M5 12l14 0" />
+  <path d="M13 18l6 -6" />
+  <path d="M13 6l6 6" />
+</svg>
+</span></button>
+  </div>
+  <div class="growth-story"><div><span class="growth-dot"></span><strong>সবুজে শুরু। সোনালিতে প্রস্তুতি।</strong><p>ধানের বেড়ে ওঠার রঙে, দলিল থেকে আবেদনের পথ।</p></div><div class="growth-colors" aria-label="সবুজ থেকে সোনালি রঙের ধাপ"><span>শুরু</span><span>যাচাই</span><span>প্রস্তুতি</span></div></div><div class="how-it-works"><div class="how-intro"><h2>দলিল থেকে আবেদন।<br><span>সহজ তিনটি ধাপে।</span></h2><p>প্রতিটি ধাপে তথ্য দেখুন, বুঝুন ও নিশ্চিত করুন।</p></div><ol class="journey"><li><span class="journey-number">০১</span><div><h3>দলিল দিন</h3><p>ছবি, PDF অথবা নমুনা দলিল বেছে নিন।</p></div></li><li><span class="journey-number">০২</span><div><h3>তথ্য যাচাই করুন</h3><p>দলিলের তথ্য ও জমির পরিচিতি মিলিয়ে নিন।</p></div></li><li><span class="journey-number">০৩</span><div><h3>আবেদন প্রস্তুত করুন</h3><p>তথ্য নিশ্চিত করে ডেমো আবেদন তৈরি করুন।</p></div></li></ol></div>
+  <div class="demo-disclosure"><!--
+tags: [security, protection, protect, verified, secured, safe, approved, check, tick, guard, safety, secure, shield]
+category: System
+version: "1.0"
+unicode: "eb22"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M11.46 20.846a12 12 0 0 1 -7.96 -14.846a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3a12 12 0 0 1 -.09 7.06" />
+  <path d="M15 19l2 2l4 -4" />
+</svg>
+ <p><strong>স্বচ্ছতা থেকেই আস্থা।</strong> এটি একটি হ্যাকাথন প্রোটোটাইপ। সব রেকর্ড কাল্পনিক; কোনো সরকারি সিস্টেমে আবেদন জমা হয় না।</p></div>
+</section>
+<section class="page" id="page-upload"><div class="workspace-heading"><div class="workspace-symbol"><svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" />
+  <path d="M7 9l5 -5l5 5" />
+  <path d="M12 4l0 12" />
+</svg></div><div><h1 class="title">দলিল আপলোড করুন</h1><p class="desc">কাগজের তথ্য হাতে না লিখে, একটি দলিল দিয়ে শুরু করুন।</p></div><span class="workspace-label">দলিল থেকে শুরু</span></div>
+ <div class="steps"><span class="step current"><span class="num">1</span> দলিল</span><span class="sep"></span><span class="step"><span class="num">2</span> তথ্য যাচাই</span><span class="sep"></span><span class="step"><span class="num">3</span> আবেদন</span></div>
+ <div class="grid two">
+  <div class="card pad"><div class="panel-head"><div><h2>আপনার দলিল দিন</h2><p>এই ডিজাইন পরীক্ষার জন্য আপলোডটি শুধুই UI ডেমো।</p></div></div>
+   <div class="upload-box"><div class="upload-format"><span>PDF</span><span>JPG</span><span>PNG</span></div><div class="up-icon"><!--
+tags: [text, document, txt, doc, article, page, notes, file, content, paper]
+category: Document
+version: "1.0"
+unicode: "eaa2"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+  <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" />
+  <path d="M9 9l1 0" />
+  <path d="M9 13l6 0" />
+  <path d="M9 17l6 0" />
+</svg>
+</div><h2>একটি দলিল।<br>আবেদনের প্রথম ধাপ।</h2><p>JPG, PNG বা PDF • কোনো ফাইল সার্ভারে পাঠানো হয় না</p><input id="fileInput" type="file" accept="image/png,image/jpeg,application/pdf" hidden/><button class="btn secondary" type="button" id="chooseFile">ফাইল বাছাই করুন</button><div class="hint" id="selectedFilename" style="margin-top:14px">কোনো ফাইল নির্বাচন করা হয়নি</div></div>
+   <div class="btn-row"><span class="sample-prompt">হাতে দলিল নেই?</span><button class="btn" id="loadSample">নমুনা দলিল ব্যবহার করুন →</button></div>
+   <div class="hintbox"><!--
+tags: [check, done, success, confirmed, approved, tick, ok, verified, complete, correct, checkmark, circle]
+category: Shapes
+version: "1.0"
+unicode: "ea67"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+  <path d="M9 12l2 2l4 -4" />
+</svg>
+ ডেমোতে একটি কাল্পনিক দলিল থেকে পূর্বনির্ধারিত তথ্য দেখানো হবে। আপলোড করা ফাইলে প্রকৃত OCR বা AI বিশ্লেষণ করা হচ্ছে না।</div>
+  </div>
+  <div class="card pad"><figure class="paddy-panel-photo"><img src="assets/paddy-green-to-gold.png" alt="সবুজ ধান ও পাকা সোনালি ধানের কল্পিত দৃশ্য" loading="lazy" width="1536" height="1024"/><figcaption>মাটির সঙ্গে সম্পর্ক, তথ্যের সঙ্গে আস্থা।</figcaption></figure><div class="extraction-heading"><svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+  <path d="M12 21h-5a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v4.5" />
+  <path d="M14 17.5a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0" />
+  <path d="M18.5 19.5l2.5 2.5" />
+</svg><h2>দলিলের তথ্য,<br>গুছিয়ে এক জায়গায়।</h2><p>নমুনা দলিল দিয়ে নিচের তথ্যগুলো পর্যালোচনা করতে পারবেন।</p></div><div class="check"><span class="badge-dot">✓</span><div><strong>দলিল নম্বর ও তারিখ</strong><small>Deed number & registration date</small></div></div><div class="check"><span class="badge-dot">✓</span><div><strong>মৌজা, খতিয়ান ও দাগ</strong><small>Land identifiers</small></div></div><div class="check"><span class="badge-dot">✓</span><div><strong>বিক্রেতা, ক্রেতা ও জমির পরিমাণ</strong><small>Transaction details</small></div></div><div class="check"><span class="badge-dot">✓</span><div><strong>ভুল ও অসম্পূর্ণ তথ্য</strong><small>Items needing confirmation</small></div></div></div>
+ </div>
+</section>
+<section class="page" id="page-review"><div class="workspace-heading"><div class="workspace-symbol"><svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+  <path d="M12 21h-5a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v4.5" />
+  <path d="M14 17.5a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0" />
+  <path d="M18.5 19.5l2.5 2.5" />
+</svg></div><div><h1 class="title">দলিল থেকে পাওয়া তথ্য যাচাই করুন</h1><p class="desc">বাম পাশে নমুনা দলিল, ডানে সম্পাদনাযোগ্য তথ্য। ভুল থাকলে সংশোধন করুন।</p></div><span class="workspace-label">তথ্য নিশ্চিতকরণ</span></div>
+ <div class="steps"><span class="step"><span class="num">✓</span> দলিল</span><span class="sep"></span><span class="step current"><span class="num">2</span> তথ্য যাচাই</span><span class="sep"></span><span class="step"><span class="num">3</span> আবেদন</span></div>
+ <div class="split">
+  <div class="card pad"><div class="panel-head"><h2>মূল দলিল (ডেমো)</h2><span class="pill">SAMPLE ONLY</span></div><div class="document-toolbar"><span>DEMO-2026-001</span><span>নমুনা · ১ পৃষ্ঠা</span></div><div class="doc-preview"><div class="paper"><div class="document-ribbon">শুধুমাত্র নমুনা</div><span class="seal">RS</span><h4>নমুনা জমি হস্তান্তর দলিল</h4><small>NOT A REAL LEGAL DOCUMENT</small><div class="faux-text">দলিল নম্বর: <b>DEMO-2026-001</b><br/>মৌজা: <b>ডেমো মৌজা</b><br/>জরিপ: <b>RS</b><br/>খতিয়ান: <b>২৫৬</b><br/>দাগ: <b>১২৫</b><br/>জমির পরিমাণ: <b>৫ শতাংশ</b><br/>দাতা: <b>Demo Owner A</b><br/>গ্রহীতা: <b>Demo Buyer B</b><div class="line"></div><div class="line mid"></div><div class="line small"></div></div><small style="display:block;margin-top:16px">কাল্পনিক তথ্য • Only for the hackathon</small></div></div></div>
+  <div class="card pad"><div class="panel-head"><div><h2>পূরণ করা তথ্য</h2><p>ডেমো এক্সট্রাকশন • বাস্তব AI সংযুক্ত নয়</p></div><span class="pill">সংশোধনযোগ্য</span></div>
+   <div class="fieldgrid"><div class="field"><label for="fDeed">দলিল নম্বর <span class="confidence">Sample</span></label><input id="fDeed" value="DEMO-2026-001"/></div><div class="field"><label for="fSurvey">জরিপের ধরন</label><select id="fSurvey"><option>RS</option><option>CS</option><option>SA</option><option>BS</option></select></div><div class="field"><label for="fMouza">মৌজা</label><input id="fMouza" value="ডেমো মৌজা" /></div><div class="field"><label for="fKhatian">খতিয়ান নম্বর</label><input id="fKhatian" value="256" /></div><div class="field"><label for="fDag">দাগ নম্বর</label><input id="fDag" value="125" /></div><div class="field"><label for="fArea">বিক্রিত জমির পরিমাণ (শতাংশ)</label><input id="fArea" type="number" min="0.1" step="0.1" value="5" /></div><div class="field"><label for="fSeller">বিক্রেতা</label><input id="fSeller" value="Demo Owner A" /></div><div class="field"><label for="fBuyer">ক্রেতা</label><input id="fBuyer" value="Demo Buyer B" /></div></div>
+   <div class="hintbox">বাস্তব সংস্করণে AI শনাক্ত করা প্রতিটি তথ্য ব্যবহারকারীকে নিশ্চিত করতে হবে।</div><div class="btn-row"><button class="btn" data-go="map">তথ্য নিশ্চিত করুন → জমি দেখুন</button><button class="btn secondary" data-go="upload">পেছনে যান</button></div>
+  </div>
+ </div>
+</section>
+<section class="page" id="page-map"><div class="workspace-heading"><div class="workspace-symbol"><svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M3 7l6 -3l6 3l6 -3v13l-6 3l-6 -3l-6 3v-13" />
+  <path d="M9 4v13" />
+  <path d="M15 7v13" />
+</svg></div><div><h1 class="title">জমিটি শনাক্ত করুন</h1><p class="desc">সাধারণ ব্যবহারকারীকে নকশায় জমি খুঁজতে হবে না—দলিলের তথ্য থেকে সম্ভাব্য প্লট দেখানো হবে।</p></div><span class="workspace-label">জমির পরিচিতি</span></div>
+ <div class="split map-split">
+  <div class="card pad"><div class="panel-head"><div><h2>জমির অবস্থান ও নকশা</h2><p>এটি কাল্পনিক জমির নকশা; সরকারি প্লট ডেটা নয়।</p></div><span class="pill">DEMO GEOJSON</span></div>
+  <div class="map-legend"><span><i class="legend-selected"></i> নির্বাচিত দাগ</span><span><i></i> নমুনা সীমানা</span><span>RS · ডেমো মৌজা</span></div><div class="map-wrap"><svg id="landMap" viewBox="0 0 660 370" role="img" aria-label="Interactive sample parcel map">
+  <defs><pattern id="map-grid" width="45" height="45" patternUnits="userSpaceOnUse"><path d="M45 0H0V45" fill="none" stroke="#c6dac9" stroke-width=".6"/></pattern></defs><rect width="660" height="370" fill="#e7f0e1"/><rect width="660" height="370" fill="url(#map-grid)"/><g fill="#d2e3c5" stroke="#c0d4b4"><path d="M570 30H630V85H570Z M580 110H645V160H580Z M15 325H100V360H15Z M140 325H240V360H140Z"/></g><path d="M0 55 L660 18 M0 177 L660 141 M0 303 L660 286" stroke="#d6ded5" stroke-width="32"/><path d="M0 55 L660 18 M0 177 L660 141 M0 303 L660 286" stroke="white" stroke-width="2" stroke-dasharray="10 8"/><path d="M510 0 Q480 95 545 192 T560 370" stroke="#b4dbeb" stroke-width="35" fill="none" opacity=".7"/>
+  <polygon class="parcel selected" data-plot="125" role="button" tabindex="0" aria-label="নমুনা দাগ 125" aria-pressed="true" points="50,55 244,44 229,164 55,177" fill="#afd9bc"/><polygon class="parcel" data-plot="126" role="button" tabindex="0" aria-label="নমুনা দাগ 126" aria-pressed="false" points="245,44 435,48 452,159 231,164" fill="#dbe1b0"/><polygon class="parcel" data-plot="127" role="button" tabindex="0" aria-label="নমুনা দাগ 127" aria-pressed="false" points="55,178 230,165 251,284 70,297" fill="#c3d9ed"/><polygon class="parcel" data-plot="128" role="button" tabindex="0" aria-label="নমুনা দাগ 128" aria-pressed="false" points="232,166 452,160 462,275 252,284" fill="#edd2c6"/><g fill="#325a4a" font-size="18" font-weight="700" text-anchor="middle" style="pointer-events:none"><text x="140" y="115">Dag 125</text><text x="336" y="115">Dag 126</text><text x="148" y="244">Dag 127</text><text x="346" y="235">Dag 128</text></g><g fill="#254b40" font-size="12"><text x="620" y="235">N</text><path d="M625 245l-6 15 6-4 6 4Z"/><path d="M500 335h120m-120-5v10m120-10v10" stroke="#254b40"/><text x="533" y="355">৫০ মি · নমুনা</text></g></svg><div class="map-caption"><span>নমুনা দাগে ক্লিক করে বিস্তারিত দেখুন</span><a href="https://map.land.gov.bd/" target="_blank" rel="noopener noreferrer">সরকারি ভূমি নকশা ↗</a></div></div>
+  </div>
+  <div class="card pad"><div class="panel-head"><div><h2>সম্ভাব্য জমি পাওয়া গেছে</h2><p>দলিলের সঙ্গে মিলিয়ে দেখুন</p></div></div><div class="parcel-identity"><svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M3 7l6 -3l6 3l6 -3v13l-6 3l-6 -3l-6 3v-13" />
+  <path d="M9 4v13" />
+  <path d="M15 7v13" />
+</svg><span>নির্বাচিত জমির বিবরণ</span></div><span class="pill" id="matchStatus">নমুনা মিল</span><div style="margin-top:20px" class="info-list"><div class="info-line"><span>দাগ নম্বর</span><span id="mapDag">125</span></div><div class="info-line"><span>মৌজা</span><span>ডেমো মৌজা</span></div><div class="info-line"><span>জরিপ</span><span>RS</span></div><div class="info-line"><span>রেকর্ডকৃত প্লটের পরিমাণ</span><span id="mapArea">20 শতাংশ</span></div><div class="info-line"><span>খতিয়ান</span><span id="mapKhatian">256</span></div></div><div class="hintbox">নকশার চিত্রটি শুধু জমি শনাক্ত করার সহায়ক। এটি নিজে মালিকানা প্রমাণ করে না।</div><div class="btn-row"><button class="btn" data-go="verify">যাচাইয়ের ফলাফল দেখুন →</button></div></div>
+ </div>
+</section>
+<section class="page" id="page-verify"><div class="workspace-heading"><div class="workspace-symbol"><svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+  <path d="M9 12l2 2l4 -4" />
+</svg></div><div><h1 class="title">নামজারির আগে তথ্য যাচাই</h1><p class="desc">আবেদনটি জমা দেওয়ার আগে গুরুত্বপূর্ণ তথ্য মিলিয়ে দেখুন।</p></div><span class="workspace-label">পরিমাণগত পরীক্ষা</span></div>
+ <div class="grid two">
+ <div class="card pad"><div class="panel-head"><h2>যাচাইয়ের সারসংক্ষেপ</h2><span class="pill" id="verifyBadge">ডেমো পরীক্ষা</span></div><div id="riskBox" class="risk-block safe"><span class="risk-icon">✓</span><div><strong id="riskTitle">এই নমুনায় পরিমাণগত অসামঞ্জস্য পাওয়া যায়নি</strong><div style="font-size:12px" id="riskDesc">বিক্রিত জমির পরিমাণ নমুনা বিক্রেতার উপলব্ধ অংশের মধ্যে আছে।</div></div></div><div style="margin-top:19px"><div class="check"><span class="badge-dot">✓</span><div><strong>দলিলের দাগ ও খতিয়ান নম্বর</strong><small>আপনার নিশ্চিত করা তথ্য ডেমো রেকর্ডের সঙ্গে তুলনা করা হয়েছে</small></div></div><div class="check"><span class="badge-dot" id="areaCheckIcon">✓</span><div><strong>বিক্রেতার উপলব্ধ অংশ</strong><small id="shareText">নমুনা রেকর্ডে ৮ শতাংশ পাওয়া গেছে</small></div></div><div class="check"><span class="badge-dot warning">!</span><div><strong>মূল দলিলের সত্যতা</strong><small>কেবল নমুনা ব্যবহার করা হয়েছে; প্রকৃত নিবন্ধন যাচাই করা হয়নি</small></div></div></div><div class="btn-row"><button class="btn" data-go="mutation">আবেদন তৈরি করুন →</button></div></div>
+ <div class="card pad"><div class="panel-head"><div><h2>যাচাইয়ের পরীক্ষা পরিবর্তন করুন</h2><p>নিচের দুটি পরিস্থিতি দেখিয়ে বিচারকদের কাছে ফলাফল তুলনা করুন।</p></div></div><div class="field"><label for="scenario">ডেমো পরিস্থিতি</label><select id="scenario"><option value="5">স্বাভাবিক বিক্রি — ৫ শতাংশ</option><option value="10">অসামঞ্জস্যপূর্ণ বিক্রি — ১০ শতাংশ</option></select></div><div class="area-comparison" aria-label="নমুনা জমির পরিমাণের তুলনা"><div class="comparison-caption"><h3>জমির পরিমাণের তুলনা</h3><span>একক: শতাংশ</span></div><div class="bar-label"><span>বিক্রেতার উপলব্ধ অংশ</span><b>৮</b></div><div class="bar-track"><div class="bar-available"></div></div><div class="bar-label"><span>বিক্রয়ের দাবি</span><b id="comparisonValue">৫</b></div><div class="bar-track"><div id="comparisonBar" class="bar-claimed"></div></div><p id="comparisonNote">দাবিকৃত পরিমাণ উপলব্ধ অংশের মধ্যে আছে।</p></div><div style="margin-top:18px" class="rulegrid"><div class="rule"><b>বিক্রেতার নমুনা অংশ</b><strong style="font-size:24px;color:var(--green)">৮ শতাংশ</strong></div><div class="rule"><b>প্রস্তাবিত বিক্রি</b><strong style="font-size:24px;color:var(--navy)" id="scenarioArea">৫ শতাংশ</strong></div></div><p class="help-note">প্রকৃত ভূমি আইনে জটিল মালিকানা, উত্তরাধিকার, নিবন্ধন ও বিবাদের বিষয় আছে। এটি শুধু একটি সহজ পরীক্ষামূলক নিয়ম।</p></div>
+ </div>
+</section>
+<section class="page" id="page-mutation"><div class="workspace-heading"><div class="workspace-symbol"><svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+  <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" />
+  <path d="M9 17h6" />
+  <path d="M9 13h6" />
+</svg></div><div><h1 class="title">নামজারির আবেদন প্রস্তুত</h1><p class="desc">আগের ধাপে যাচাইকৃত বা নিশ্চিত করা তথ্য দিয়ে আবেদন ফরমের নমুনা পূরণ করা হয়েছে।</p></div><span class="workspace-label">আবেদনের প্রস্তুতি</span></div>
+ <div class="steps"><span class="step"><span class="num">✓</span> দলিল</span><span class="sep"></span><span class="step"><span class="num">✓</span> তথ্য যাচাই</span><span class="sep"></span><span class="step current"><span class="num">3</span> আবেদন</span></div>
+ <div class="grid two">
+  <div class="card pad"><div class="panel-head"><h2>আবেদনকারীর তথ্য</h2><span class="pill">প্রি-ফিল্ড ডেমো</span></div><div class="fieldgrid"><div class="field full"><label for="applicant">আবেদনকারীর নাম</label><input id="applicant" value="Demo Buyer B" /></div><div class="field"><label for="appDeed">দলিল নম্বর</label><input id="appDeed" value="DEMO-2026-001" /></div><div class="field"><label for="appDag">দাগ নম্বর</label><input id="appDag" value="125" /></div><div class="field"><label for="appKhatian">খতিয়ান</label><input id="appKhatian" value="256" /></div><div class="field"><label for="appArea">আবেদিত জমি (শতাংশ)</label><input id="appArea" type="number" value="5" min="0.1" step="0.1" /></div><div class="field full"><label for="appNotes">অতিরিক্ত মন্তব্য (ঐচ্ছিক)</label><textarea id="appNotes" rows="3" placeholder="কিছু জানাতে চাইলে লিখুন..."></textarea></div></div><div class="btn-row"><button class="btn" id="submitDemo">ডেমো আবেদন জমা দিন →</button><button class="btn secondary" data-go="review">তথ্য পরিবর্তন</button></div></div>
+  <div class="card pad"><div class="harvest-photo" role="img" aria-label="সোনালি ধানের কল্পিত দৃশ্য"></div><div class="application-emblem"><svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+  <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2" />
+  <path d="M9 17h6" />
+  <path d="M9 13h6" />
+</svg></div><div class="panel-head"><h2>জমা দেওয়ার আগে,<br>একবার মিলিয়ে নিন।</h2><span class="pill warn">সরকারি জমা নয়</span></div><div class="check"><span class="badge-dot">✓</span><div><strong>জমির পরিচিতি পূরণ</strong><small>মৌজা, দাগ, খতিয়ান</small></div></div><div class="check"><span class="badge-dot">✓</span><div><strong>দলিলের তথ্য যোগ করা হয়েছে</strong><small>ডেমো দলিল নম্বর ও বিক্রয় বিবরণ</small></div></div><div class="check"><span class="badge-dot warning">!</span><div><strong>সহায়ক নথির সরকারি যাচাই বাকি</strong><small>প্রকৃত দলিল যাচাই বা সরকারি সংযোগ নেই</small></div></div><div class="hintbox"><!--
+tags: [check, done, success, confirmed, approved, tick, ok, verified, complete, correct, checkmark, circle]
+category: Shapes
+version: "1.0"
+unicode: "ea67"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+  <path d="M9 12l2 2l4 -4" />
+</svg>
+ এই অ্যাপ থেকে বাস্তব নামজারির আবেদন জমা হয় না। সব তথ্য শুধু ব্রাউজারের এই ডেমোতে ব্যবহৃত।</div></div>
+ </div>
+</section>
+<section class="page" id="page-officer"><div class="workspace-heading"><div class="workspace-symbol"><svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" />
+  <path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+  <path d="M21 21v-2a4 4 0 0 0 -3 -3.85" />
+</svg></div><div><h1 class="title">ভূমি কর্মকর্তার ড্যাশবোর্ড</h1><p class="desc">এটি সরকারি অফিসার অ্যাকাউন্ট নয়—শুধু অনুমোদন প্রক্রিয়ার ডেমো।</p></div><span class="workspace-label">পর্যালোচনার কর্মক্ষেত্র</span></div>
+ <div class="grid three"><div class="card stat"><span class="subtle">মোট নমুনা আবেদন</span><div class="number">12</div><p>এ মাসের ডেমো তথ্য</p></div><div class="card stat"><span class="subtle">যাচাই প্রয়োজন</span><div class="number">04</div><p>অসামঞ্জস্য বা নথি সমস্যা</p></div><div class="card stat"><span class="subtle">পর্যালোচনাধীন</span><div class="number">06</div><p>সিমুলেটেড কর্মপ্রবাহ</p></div></div>
+ <div class="card pad" style="margin-top:19px"><div class="panel-head"><h2>আবেদন পর্যালোচনা</h2><span class="pill">OFFICER DEMO</span></div><p class="table-scroll-note">সব তথ্য দেখতে টেবিলটি পাশে স্ক্রল করুন →</p><div class="tablewrap" tabindex="0" role="region" aria-label="নমুনা আবেদনের তালিকা"><table><thead><tr><th>আবেদন</th><th>দাগ</th><th>আবেদনকারী</th><th>পরিমাণ</th><th>অবস্থা</th></tr></thead><tbody><tr><td>DEMO-MUT-001</td><td id="officerDag">125</td><td>Demo Buyer B</td><td id="officerArea">5 শতাংশ</td><td><span class="pill warn" id="officerStatus">Review Pending</span></td></tr><tr><td>DEMO-MUT-002</td><td>126</td><td>Demo Buyer C</td><td>3 শতাংশ</td><td><span class="pill">Verified</span></td></tr><tr><td>DEMO-MUT-003</td><td>128</td><td>Demo Buyer D</td><td>4 শতাংশ</td><td><span class="pill warn">Documents Needed</span></td></tr></tbody></table></div></div>
+ <div class="grid two" style="margin-top:18px"><div class="card pad"><h2 style="margin-top:0">DEMO-MUT-001 এর বিষয়ে সিদ্ধান্ত</h2><label class="status-option"><input type="radio" name="officerDecision" value="Need clarification" checked/> অতিরিক্ত তথ্য চাই</label><label class="status-option"><input type="radio" name="officerDecision" value="Field verification"/> মাঠ পর্যায়ে যাচাই</label><label class="status-option"><input type="radio" name="officerDecision" value="Under review"/> পর্যালোচনাধীন রাখুন</label><label class="status-option"><input type="radio" name="officerDecision" value="Demo approved"/> নমুনা অনুমোদন দেখান</label><div class="btn-row"><button class="btn" id="officerAction">সিদ্ধান্ত সংরক্ষণ করুন</button></div></div><div class="card pad"><h2 style="margin-top:0">আবেদনের অগ্রগতি</h2><div class="timeline"><div class="stage passed">দাখিল</div><div class="stage passed">প্রাথমিক যাচাই</div><div class="stage">কর্মকর্তার সিদ্ধান্ত</div><div class="stage">সম্পন্ন</div></div><p class="subtle" style="font-size:12px" id="progressMessage">নমুনা আবেদনটি কর্মকর্তার পর্যালোচনার জন্য প্রস্তুত।</p><button class="btn secondary sm" data-go="report">চূড়ান্ত রিপোর্ট দেখুন →</button></div></div>
+</section>
+<section class="page" id="page-report"><div class="workspace-heading"><div class="workspace-symbol"><svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M8 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h5.697" />
+  <path d="M18 14v4h4" />
+  <path d="M18 11v-4a2 2 0 0 0 -2 -2h-2" />
+  <path d="M8 5a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2" />
+  <path d="M14 18a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" />
+  <path d="M8 11h4" />
+  <path d="M8 15h3" />
+</svg></div><div><h1 class="title">নামজারি যাচাই ও আবেদনের রিপোর্ট</h1><p class="desc">ভূপ্রহরী AI আপনার আবেদন, নথি এবং যাচাইয়ের সারসংক্ষেপ এক জায়গায় দেখায়।</p></div><span class="workspace-label">আবেদনের সারসংক্ষেপ</span></div>
+ <div class="card pad" id="printArea"><div class="report-landscape" role="img" aria-label="সবুজ থেকে সোনালি ধানক্ষেতের কল্পিত দৃশ্য"></div><div class="report-head"><span class="report-emblem"><svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+  <path d="M9 12l2 2l4 -4" />
+</svg></span><div class="report-watermark" style="font-size:10px;color:#bfe3d1">BHUPROHORI AI • DEMONSTRATION REPORT</div><h2>ভূমি নামজারি যাচাই রিপোর্ট</h2><p>Demo Application: DEMO-MUT-001</p></div><div class="grid two"><div><h3 style="font-size:14px">আবেদনের বিবরণ</h3><div class="info-list"><div class="info-line"><span>আবেদনকারী</span><span id="rBuyer">Demo Buyer B</span></div><div class="info-line"><span>দলিল নম্বর</span><span id="rDeed">DEMO-2026-001</span></div><div class="info-line"><span>মৌজা</span><span id="rMouza">ডেমো মৌজা</span></div><div class="info-line"><span>দাগ নম্বর</span><span id="rDag">125</span></div><div class="info-line"><span>আবেদিত জমি</span><span id="rArea">5 শতাংশ</span></div></div></div><div><h3 style="font-size:14px">যাচাই ও অগ্রগতি</h3><div class="risk-block safe" id="reportResult"><span class="risk-icon">✓</span><div><strong id="reportRiskTitle">নমুনা পরিমাণগত যাচাই সম্পন্ন</strong><div class="tiny" id="reportRiskText">প্রাথমিক ডেমো যাচাইয়ে পরিমাণগত অসামঞ্জস্য পাওয়া যায়নি।</div></div></div><div class="hintbox">আবেদনের বর্তমান অবস্থা: <b id="rStatus">প্রাথমিক যাচাই</b></div></div></div><div class="help-note"><strong>শুধুমাত্র হ্যাকাথন ডেমো</strong><br/>এই রিপোর্ট সরকারি দলিল, মালিকানা সনদ বা অনুমোদিত নামজারি নয়। এতে কাল্পনিক ব্যক্তিগত ও ভূমি তথ্য ব্যবহৃত হয়েছে।</div></div>
+ <div class="btn-row no-print"><button class="btn" onclick="window.print()"><!--
+tags: [print, printing, paper, office, fax, device, document, hardcopy, printer]
+category: Devices
+version: "1.0"
+unicode: "eb0e"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M17 17h2a2 2 0 0 0 2 -2v-4a2 2 0 0 0 -2 -2h-14a2 2 0 0 0 -2 2v4a2 2 0 0 0 2 2h2" />
+  <path d="M17 9v-4a2 2 0 0 0 -2 -2h-6a2 2 0 0 0 -2 2v4" />
+  <path d="M7 15a2 2 0 0 1 2 -2h6a2 2 0 0 1 2 2v4a2 2 0 0 1 -2 2h-6a2 2 0 0 1 -2 -2l0 -4" />
+</svg>
+ রিপোর্ট প্রিন্ট / PDF</button><button class="btn secondary" data-go="home">হোমে ফিরুন</button></div>
+</section>
+<footer class="footnote">© BhuProhori AI — LandTech Hackathon frontend concept. Original prototype layout inspired by common document-processing, map and guided-form UX patterns. No third-party branding or government data is reproduced.</footer>
+</main>
+</div>
+</div>
+<div class="toast" role="status" aria-live="polite" id="toast"></div>
+<script>
+(()=>{
+'use strict';
+const names={home:'হোমপেজ',upload:'দলিল আপলোড',review:'AI তথ্য যাচাই',map:'জমির নকশা',verify:'যাচাইয়ের ফলাফল',mutation:'নামজারি আবেদন',officer:'অফিসার ড্যাশবোর্ড',report:'চূড়ান্ত রিপোর্ট'};
+const $=id=>document.getElementById(id);
+const data={plot:'125',status:'প্রাথমিক যাচাই',availableShare:8,reviewed:5,submitted:false};
+let toastTimer;
+function notify(s){const el=$('toast');el.textContent=s;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),3500)}
+function go(page){if(!names[page])return;document.body.dataset.stage=['mutation','officer','report'].includes(page)?'gold':['review','map','verify'].includes(page)?'ripening':'green';document.querySelectorAll('.page').forEach(e=>e.classList.toggle('active',e.id==='page-'+page));document.querySelectorAll('.nav-btn').forEach(e=>e.classList.toggle('active',e.dataset.page===page));$('crumb').textContent=names[page];document.querySelectorAll('.nav-btn').forEach(e=>e.setAttribute('aria-current',e.dataset.page===page?'page':'false'));const heading=document.querySelector('#page-'+page+' h1');if(heading){heading.tabIndex=-1;heading.focus({preventScroll:true});}if(page==='verify')check();if(page==='mutation')prefill();if(page==='officer')officerView();if(page==='report')report();window.scrollTo({top:0,behavior:'smooth'});}
+document.querySelectorAll('[data-page],[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.page||b.dataset.go)));
+$('chooseFile').addEventListener('click',()=>$('fileInput').click());
+$('fileInput').addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];if(f){$('selectedFilename').textContent='নির্বাচিত: '+f.name;notify('ফাইল নির্বাচন হয়েছে। নিরাপত্তার জন্য ডেমোতে কোনো ফাইল পড়া বা আপলোড করা হচ্ছে না।')}});
+$('loadSample').addEventListener('click',()=>{notify('কাল্পনিক দলিলের নমুনা তথ্য দেখানো হচ্ছে');go('review')});
+document.querySelectorAll('[data-plot]').forEach(p=>p.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();p.dispatchEvent(new MouseEvent('click',{bubbles:true}));}}));
+const plotInfo={125:{area:20,khatian:256},126:{area:15,khatian:278},127:{area:12,khatian:310},128:{area:25,khatian:319}};
+document.querySelectorAll('[data-plot]').forEach(p=>p.addEventListener('click',()=>{data.plot=p.dataset.plot;document.querySelectorAll('[data-plot]').forEach(x=>{x.classList.toggle('selected',x.dataset.plot===data.plot);x.setAttribute('aria-pressed',String(x.dataset.plot===data.plot));});$('mapDag').textContent=data.plot;$('mapArea').textContent=plotInfo[data.plot].area+' শতাংশ';$('mapKhatian').textContent=plotInfo[data.plot].khatian;$('matchStatus').textContent=data.plot===$('fDag').value?'নমুনা মিল':'ম্যানুয়াল নির্বাচন';notify('ডেমো দাগ '+data.plot+' নির্বাচিত হয়েছে')}));
+function amount(){const a=Number($('fArea').value);return Number.isFinite(a)&&a>0?a:5}
+function check(){const selected=Number($('scenario').value);data.reviewed=selected;$('scenarioArea').textContent=selected+' শতাংশ';const bad=selected>data.availableShare;$('comparisonValue').textContent=selected;$('comparisonBar').style.width=(selected*10)+'%';$('comparisonBar').classList.toggle('over-limit',bad);$('comparisonNote').textContent=bad?'বিক্রয়ের দাবি উপলব্ধ অংশের চেয়ে ২ শতাংশ বেশি।':'দাবিকৃত পরিমাণ উপলব্ধ অংশের মধ্যে আছে।';const box=$('riskBox');box.className='risk-block '+(bad?'bad':'safe');box.querySelector('.risk-icon').textContent=bad?'⚠':'✓';$('riskTitle').textContent=bad?'রেকর্ডকৃত অংশের চেয়ে বিক্রির দাবি বেশি':'এই নমুনায় পরিমাণগত অসামঞ্জস্য পাওয়া যায়নি';$('riskDesc').textContent=bad?`নমুনা অংশ ${data.availableShare} শতাংশ, দাবি ${selected} শতাংশ। আরও ${selected-data.availableShare} শতাংশ যাচাই প্রয়োজন।`:'বিক্রিত জমির পরিমাণ নমুনা বিক্রেতার উপলব্ধ অংশের মধ্যে আছে।';$('verifyBadge').className='pill '+(bad?'red':'');$('verifyBadge').textContent=bad?'পর্যালোচনা প্রয়োজন':'প্রাথমিক পরীক্ষা সম্পন্ন';$('areaCheckIcon').textContent=bad?'!':'✓';$('areaCheckIcon').className='badge-dot '+(bad?'warning':'');$('shareText').textContent=bad?'বিক্রির দাবির পরিমাণ নমুনা অংশের বেশি':'নমুনা রেকর্ডে ৮ শতাংশ পাওয়া গেছে';return bad}
+$('scenario').addEventListener('change',()=>{check();$('fArea').value=$('scenario').value;});
+function prefill(){$('applicant').value=$('fBuyer').value;$('appDeed').value=$('fDeed').value;$('appDag').value=data.plot;$('appKhatian').value=plotInfo[data.plot].khatian;$('appArea').value=data.reviewed||amount()}
+$('submitDemo').addEventListener('click',()=>{const a=Number($('appArea').value);if(!Number.isFinite(a)||a<=0){notify('জমির পরিমাণ সঠিকভাবে লিখুন');return}data.reviewed=a;data.submitted=true;data.status='কর্মকর্তার পর্যালোচনাধীন';notify('ডেমো আবেদন তৈরি হয়েছে। কোনো সরকারি সিস্টেমে জমা হয়নি।');go('officer')});
+function officerView(){$('officerDag').textContent=data.plot;$('officerArea').textContent=data.reviewed+' শতাংশ';$('officerStatus').textContent=data.submitted?'Under Review':'Review Pending';}
+$('officerAction').addEventListener('click',()=>{const value=document.querySelector('input[name="officerDecision"]:checked').value;const label={'Need clarification':'অতিরিক্ত তথ্য প্রয়োজন','Field verification':'মাঠ পর্যায়ে যাচাই প্রয়োজন','Under review':'কর্মকর্তার পর্যালোচনাধীন','Demo approved':'ডেমো অনুমোদিত'};data.status=label[value];$('progressMessage').textContent='নমুনা সিদ্ধান্ত: '+data.status;$('officerStatus').textContent=value;notify('সিমুলেটেড সিদ্ধান্ত সংরক্ষিত হয়েছে। এটি সরকারি অনুমোদন নয়।')});
+function report(){const bad=data.reviewed>data.availableShare;$('rBuyer').textContent=$('applicant').value||'Demo Buyer B';$('rDeed').textContent=$('appDeed').value||$('fDeed').value;$('rMouza').textContent=$('fMouza').value;$('rDag').textContent=data.plot;$('rArea').textContent=data.reviewed+' শতাংশ';$('rStatus').textContent=data.status;const el=$('reportResult');el.className='risk-block '+(bad?'bad':'safe');$('reportRiskTitle').textContent=bad?'জমির পরিমাণ যাচাই প্রয়োজন':'নমুনা পরিমাণগত যাচাই সম্পন্ন';$('reportRiskText').textContent=bad?'বিক্রয়ের দাবি নমুনা উপলব্ধ অংশ অতিক্রম করেছে।':'ডেমোর নিয়মভিত্তিক পরিমাণগত পরীক্ষায় অসামঞ্জস্য পাওয়া যায়নি।';el.querySelector('.risk-icon').textContent=bad?'⚠':'✓'}
+const initialPage=location.hash.slice(1);if(names[initialPage])go(initialPage);
+})();
+</script>
+</body>
+</html>
