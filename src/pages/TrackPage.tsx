@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Award, Printer, Home, CheckCircle, Search, Sparkles, ShieldCheck, AlertTriangle, RefreshCw } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
-import paddyImage from '../assets/paddy-green-to-gold.png';
+import statusAuditReportImg from '../assets/Status & Audit Report.png';
 
 export default function TrackPage() {
   const navigate = useNavigate();
@@ -123,11 +123,11 @@ export default function TrackPage() {
         {/* Landscape photo banner */}
         <figure className="paddy-panel-photo" style={{ marginBottom: 18 }}>
           <img
-            src={paddyImage}
-            alt="সবুজ থেকে সোনালি ধানক্ষেতের কল্পিত দৃশ্য"
+            src={statusAuditReportImg}
+            alt="নামজারি যাচাই ও আবেদনের অডিট রিপোর্ট"
             width="1536"
             height="1024"
-            style={{ height: 110 }}
+            style={{ height: 130, objectFit: 'cover' }}
           />
         </figure>
 

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FileText, ArrowRight, CheckCircle, Loader2 } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
-import paddyImage from '../assets/paddy-green-to-gold.png';
+import eMutationAppImg from '../assets/e-Mutation Application.jpeg';
 
 export default function ApplicationPage() {
   const navigate = useNavigate();
@@ -195,8 +195,8 @@ export default function ApplicationPage() {
         <div className="card pad">
           <figure className="paddy-panel-photo">
             <img
-              src={paddyImage}
-              alt="সোনালি ধানের কল্পিত দৃশ্য"
+              src={eMutationAppImg}
+              alt="ই-নামজারি আবেদন ও যাচাই"
               loading="lazy"
               width="1536"
               height="1024"

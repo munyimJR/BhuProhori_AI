@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
 import type { UploadedDocument } from '../types';
-import paddyImage from '../assets/paddy-green-to-gold.png';
+import deedUploadImg from '../assets/Deed Upload.avif';
 
 export default function UploadPage() {
   const navigate = useNavigate();
@@ -198,8 +198,8 @@ export default function UploadPage() {
         <div className="card pad">
           <figure className="paddy-panel-photo">
             <img
-              src={paddyImage}
-              alt={isBn ? 'সবুজ ধান ও পাকা সোনালি ধানের কল্পিত দৃশ্য' : 'Green and golden paddy field'}
+              src={deedUploadImg}
+              alt={isBn ? 'দলিল আপলোড ও ডিজিটাল যাচাই' : 'Deed Upload & Verification'}
               loading="lazy"
               width="1536"
               height="1024"
