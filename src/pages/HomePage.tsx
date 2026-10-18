@@ -1,16 +1,71 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Upload, Map, Award, ArrowRight, ArrowUpRight, Lock, Layers,
-  MapPin, Shield, CheckCircle, AlertTriangle, FileText, ChevronRight
+  MapPin, Shield, CheckCircle, AlertTriangle, FileText, ChevronRight,
+  ChevronLeft
 } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
 import { TRANSLATIONS } from '../utils/translations';
+import slide1 from '../assets/slide_image_1.jpg';
+import slide2 from '../assets/slide_image_2.jpg';
+import slide3 from '../assets/slide_image_3.jpg';
+import slide4 from '../assets/slide_image_4.jpg';
 import paddyImage from '../assets/paddy-green-to-gold.png';
+
+const HERO_SLIDES = [
+  {
+    src: slide1,
+    title: { bn: 'ড্রোন জিআইএস পার্সেল ভিউ', en: 'Drone GIS Parcel View' },
+    credit: { bn: 'আকাশ থেকে ফসলি জমির দাগ ও সীমানা', en: 'Aerial cadastral plots & agricultural boundaries' },
+  },
+  {
+    src: slide3,
+    title: { bn: 'প্রকৃত মৌজা নকশা (কুমিল্লা সদর)', en: 'Official Mouza Map (Cumilla)' },
+    credit: { bn: 'জে.এল ২৩৭ সিট নকশা রেকর্ড', en: 'J.L 237 Cadastral Sheet Record' },
+  },
+  {
+    src: slide2,
+    title: { bn: 'স্যাটেলাইট গ্রিড ও খতিয়ান বণ্টন', en: 'Satellite Grid & Parcel Division' },
+    credit: { bn: 'কৃষি পার্সেল ও খতিয়ান বণ্টন', en: 'Cadastral land boundaries & divisions' },
+  },
+  {
+    src: slide4,
+    title: { bn: 'ঢাকা জেলা মৌজা নকশা সিট', en: 'Dhaka Cadastral Mouza Sheet' },
+    credit: { bn: 'ভূমি রেকর্ড ও জরিপ অধিদপ্তর', en: 'Department of Land Records & Survey' },
+  },
+  {
+    src: paddyImage,
+    title: { bn: 'মাটি ও ফসলি জমি', en: 'Soil & Agricultural Land' },
+    credit: { bn: 'সবুজ থেকে সোনালি ধানক্ষেত', en: 'Lush green to golden harvest' },
+  },
+];
 
 export default function HomePage() {
   const navigate = useNavigate();
   const { loadDemoScenario, resetJourney, language } = useAppStore();
   const tHome = TRANSLATIONS.home;
+
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+
+  useEffect(() => {
+    if (isPaused) return;
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
+    }, 4500);
+    return () => clearInterval(interval);
+  }, [isPaused]);
+
+  const handlePrevSlide = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentSlide((prev) => (prev - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
+  };
+
+  const handleNextSlide = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
+  };
 
   const handleStartUpload = () => {
     resetJourney();
@@ -95,19 +150,72 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="hero-side">
-          <img
-            className="paddy-hero-image"
-            src={paddyImage}
-            alt={tHome.photoCredit[language]}
-            width="1536"
-            height="1024"
-          />
-          <span className="photo-credit">{tHome.photoCredit[language]}</span>
+        <div
+          className="hero-side hero-slider-container"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+        >
+          {HERO_SLIDES.map((slide, index) => (
+            <div
+              key={index}
+              className={`hero-slide-item ${index === currentSlide ? 'active' : ''}`}
+            >
+              <img
+                className="paddy-hero-image"
+                src={slide.src}
+                alt={slide.title[language]}
+                width="1536"
+                height="1024"
+              />
+            </div>
+          ))}
+
+          {/* Dynamic slide badges */}
+          <span className="photo-credit">
+            {HERO_SLIDES[currentSlide].credit[language]}
+          </span>
           <span className="map-demo-label">
             <Layers size={14} />
-            {tHome.growthLabel[language]}
+            {HERO_SLIDES[currentSlide].title[language]}
           </span>
+
+          {/* Previous / Next slide buttons */}
+          <button
+            type="button"
+            className="slider-arrow prev"
+            onClick={handlePrevSlide}
+            aria-label={language === 'bn' ? 'পূর্ববর্তী ছবি' : 'Previous slide'}
+          >
+            <ChevronLeft size={16} />
+          </button>
+          <button
+            type="button"
+            className="slider-arrow next"
+            onClick={handleNextSlide}
+            aria-label={language === 'bn' ? 'পরবর্তী ছবি' : 'Next slide'}
+          >
+            <ChevronRight size={16} />
+          </button>
+
+          {/* Slider pagination dots & counter */}
+          <div className="slider-controls">
+            <div className="slider-dots">
+              {HERO_SLIDES.map((_, dotIdx) => (
+                <button
+                  key={dotIdx}
+                  type="button"
+                  className={`slider-dot ${dotIdx === currentSlide ? 'active' : ''}`}
+                  onClick={() => setCurrentSlide(dotIdx)}
+                  aria-label={`Slide ${dotIdx + 1}`}
+                />
+              ))}
+            </div>
+            <span className="slider-counter">
+              {language === 'bn'
+                ? `${['১', '২', '৩', '৪', '৫'][currentSlide]} / ৫`
+                : `${currentSlide + 1} / ${HERO_SLIDES.length}`}
+            </span>
+          </div>
         </div>
       </div>
 
