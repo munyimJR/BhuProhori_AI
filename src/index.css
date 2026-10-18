@@ -146,16 +146,24 @@ img {
 }
 
 .brandmark {
-  width: 42px;
-  height: 42px;
+  width: 46px;
+  height: 46px;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, #ecfdf5 0%, #c7f3e0 100%);
-  color: #135542;
+  background: #ffffff;
   border-radius: 13px;
-  box-shadow: 0 4px 18px rgba(16, 185, 129, 0.35), inset 0 1px 1px #ffffff;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.22), 0 0 0 1px rgba(255, 255, 255, 0.18);
   flex-shrink: 0;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 2.5px;
+  overflow: hidden;
+}
+
+.brandmark-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 .brand:hover .brandmark {

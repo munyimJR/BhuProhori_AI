@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { Home, Upload, FileCheck, Map, ShieldCheck, FileText, Users, Award, Lock, X, Sparkles } from 'lucide-react';
+import logoImg from '../assets/logo.png';
 import useAppStore from '../store/useAppStore';
 import { TRANSLATIONS } from '../utils/translations';
 
@@ -44,7 +45,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Link to="/" className="brand" onClick={handleLinkClick}>
           <div className="brandmark">
-            <ShieldCheck size={24} />
+            <img src={logoImg} alt="ভূপ্রহরী AI লোগো" className="brandmark-img" />
           </div>
           <div className="brand-text-wrap">
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
