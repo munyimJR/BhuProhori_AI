@@ -189,7 +189,6 @@ export default function UploadPage() {
               width="1536"
               height="1024"
             />
-            <figcaption>{isBn ? 'মাটির সঙ্গে সম্পর্ক, তথ্যের সঙ্গে আস্থা।' : 'Rooted in the soil, trusted through verified data.'}</figcaption>
           </figure>
 
           <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', marginBottom: 16 }}>

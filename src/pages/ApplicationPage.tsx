@@ -201,7 +201,6 @@ export default function ApplicationPage() {
               width="1536"
               height="1024"
             />
-            <figcaption>সোনালি ধানের পথে—সহজ নামজারি।</figcaption>
           </figure>
 
           <div className="panel-head" style={{ marginTop: 12 }}>

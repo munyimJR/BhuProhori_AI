@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Upload, Map, Award, ArrowRight, ArrowUpRight, Lock, Layers,
+  Upload, Map, Award, ArrowRight, ArrowUpRight, Lock,
   MapPin, Shield, CheckCircle, AlertTriangle, FileText, ChevronRight,
   ChevronLeft
 } from 'lucide-react';
@@ -169,15 +169,6 @@ export default function HomePage() {
               />
             </div>
           ))}
-
-          {/* Dynamic slide badges */}
-          <span className="photo-credit">
-            {HERO_SLIDES[currentSlide].credit[language]}
-          </span>
-          <span className="map-demo-label">
-            <Layers size={14} />
-            {HERO_SLIDES[currentSlide].title[language]}
-          </span>
 
           {/* Previous / Next slide buttons */}
           <button
