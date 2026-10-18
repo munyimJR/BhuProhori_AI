@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Upload, FileCheck, Map, ShieldCheck, FileText, Users, Award, Lock, X } from 'lucide-react';
+import { Home, Upload, FileCheck, Map, ShieldCheck, FileText, Users, Award, Lock, X, Sparkles } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
 import { TRANSLATIONS } from '../utils/translations';
 
@@ -7,17 +7,18 @@ interface NavConfig {
   path: string;
   key: 'home' | 'upload' | 'review' | 'identify' | 'verify' | 'apply' | 'officer' | 'track';
   icon: React.ReactNode;
+  badge?: { text: string; type: 'live' | 'ai' | 'pro' };
 }
 
 const NAV_CONFIGS: NavConfig[] = [
-  { path: '/', key: 'home', icon: <Home size={18} /> },
-  { path: '/upload', key: 'upload', icon: <Upload size={18} /> },
-  { path: '/review', key: 'review', icon: <FileCheck size={18} /> },
-  { path: '/identify', key: 'identify', icon: <Map size={18} /> },
-  { path: '/verify', key: 'verify', icon: <ShieldCheck size={18} /> },
-  { path: '/apply', key: 'apply', icon: <FileText size={18} /> },
-  { path: '/officer', key: 'officer', icon: <Users size={18} /> },
-  { path: '/track', key: 'track', icon: <Award size={18} /> },
+  { path: '/', key: 'home', icon: <Home size={17} /> },
+  { path: '/upload', key: 'upload', icon: <Upload size={17} /> },
+  { path: '/review', key: 'review', icon: <FileCheck size={17} /> },
+  { path: '/identify', key: 'identify', icon: <Map size={17} />, badge: { text: 'LIVE GIS', type: 'live' } },
+  { path: '/verify', key: 'verify', icon: <ShieldCheck size={17} />, badge: { text: 'AI AUDIT', type: 'ai' } },
+  { path: '/apply', key: 'apply', icon: <FileText size={17} /> },
+  { path: '/officer', key: 'officer', icon: <Users size={17} />, badge: { text: 'AC LAND', type: 'pro' } },
+  { path: '/track', key: 'track', icon: <Award size={17} /> },
 ];
 
 interface SidebarProps {
@@ -43,10 +44,13 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Link to="/" className="brand" onClick={handleLinkClick}>
           <div className="brandmark">
-            <ShieldCheck size={26} />
+            <ShieldCheck size={24} />
           </div>
-          <div>
-            <strong>ভূপ্রহরী AI</strong>
+          <div className="brand-text-wrap">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <strong>ভূপ্রহরী AI</strong>
+              <span className="brand-pill">2026</span>
+            </div>
             <small>{TRANSLATIONS.nav.brandSub[language]}</small>
           </div>
         </Link>
@@ -78,18 +82,31 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
               onClick={handleLinkClick}
             >
               <span className="nav-icon">{item.icon}</span>
-              {label}
+              <span className="nav-label-text">{label}</span>
+              {item.badge && (
+                <span className={`nav-micro-badge badge-${item.badge.type}`}>
+                  {item.badge.text}
+                </span>
+              )}
             </Link>
           );
         })}
       </nav>
 
       <div className="side-note">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-          <Lock size={14} color="#79d6b0" />
-          <strong style={{ margin: 0 }}>{TRANSLATIONS.nav.securityTitle[language]}</strong>
+        <div className="side-note-header">
+          <div className="side-note-icon">
+            <Lock size={12} />
+          </div>
+          <strong>{TRANSLATIONS.nav.securityTitle[language]}</strong>
         </div>
-        {TRANSLATIONS.nav.securityDesc[language]}
+        <p className="side-note-desc">
+          {TRANSLATIONS.nav.securityDesc[language]}
+        </p>
+        <div className="side-note-footer">
+          <Sparkles size={11} color="#6ee7b7" />
+          <span>Client-Side Privacy Demo</span>
+        </div>
       </div>
     </aside>
   );

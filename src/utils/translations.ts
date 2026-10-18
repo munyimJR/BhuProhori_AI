@@ -39,6 +39,10 @@ export const TRANSLATIONS = {
         title: { bn: 'জমির নকশা', en: 'Parcel GIS Map' },
         subtitle: { bn: 'সাধারণ ব্যবহারকারীকে নকশায় জমি খুঁজতে হবে না', en: 'Interactive cadastral map with automatic parcel matching' }
       },
+      '/map': {
+        title: { bn: 'জমির নকশা (লাইভ জিআইএস)', en: 'Parcel GIS Map (Live)' },
+        subtitle: { bn: 'সরকারি লাইভ ভূমি নকশা ও এআই পার্সেল সিঙ্ক', en: 'Government Live Land Map & AI Parcel Sync' }
+      },
       '/verify': {
         title: { bn: 'যাচাইয়ের ফলাফল', en: 'Verification Engine' },
         subtitle: { bn: 'নামজারির আগে জমির পরিমাণ ও অধিকারের সত্যতা পরীক্ষা', en: 'Automated discrepancy, mortgage & encumbrance checking' }
