@@ -56,11 +56,11 @@ const DEVELOPERS: Developer[] = [
     roleBn: 'সফটওয়্যার ডেভেলপার ও সিস্টেম আর্কিটেক্ট',
     roleEn: 'Software Developer & System Architect',
     image: ronyImg,
-    email: 'ronyroy@gmail.com',
-    linkedin: 'https://www.linkedin.com/in/rony-roy-0b03b143a/',
-    github: 'https://github.com/rony',
-    githubDisplay: 'rony',
-    linkedinDisplay: 'in/rony-roy',
+    email: 'rony34835@gmail.com',
+    linkedin: 'https://www.linkedin.com/in/rony-roy-0b03b143a/?isSelfProfile=true',
+    github: 'https://github.com/rony-roy',
+    githubDisplay: 'rony-roy',
+    linkedinDisplay: 'in/rony-roy-0b03b143a',
   },
 ];
 
@@ -90,55 +90,58 @@ export default function Footer() {
     <>
       <footer className="app-footer no-print">
         <div className="app-footer-inner">
-          {/* Brand & Tagline */}
-          <div className="app-footer-brand">
-            <Link to="/" className="app-footer-logo-link">
-              <img src={logoImg} alt="ভূপ্রহরী AI" className="app-footer-logo-img" />
-              <span className="app-footer-title">
-                {isBn ? 'ভূপ্রহরী AI' : 'BhuProhori AI'}
+          {/* Line 1: Brand & Tagline (Left) + Minimal Navigation (Right) */}
+          <div className="app-footer-row app-footer-row-top">
+            <div className="app-footer-brand">
+              <Link to="/" className="app-footer-logo-link">
+                <img src={logoImg} alt="ভূপ্রহরী AI" className="app-footer-logo-img" />
+                <span className="app-footer-title">
+                  {isBn ? 'ভূপ্রহরী AI' : 'BhuProhori AI'}
+                </span>
+              </Link>
+              <span className="app-footer-dot">•</span>
+              <span className="app-footer-tagline">
+                {isBn ? 'স্মার্ট ই-নামজারি ও ক্যাডাস্ট্রাল ভেরিফিকেশন' : 'Smart e-Mutation & Cadastral Verification'}
               </span>
-            </Link>
-            <span className="app-footer-dot">•</span>
-            <span className="app-footer-tagline">
-              {isBn ? 'স্মার্ট ই-নামজারি ও ক্যাডাস্ট্রাল ভেরিফিকেশন' : 'Smart e-Mutation & Cadastral Verification'}
-            </span>
-          </div>
-
-          {/* Minimal Nav Links */}
-          <nav className="app-footer-nav" aria-label="Footer navigation">
-            <Link to="/">{isBn ? 'হোম' : 'Home'}</Link>
-            <Link to="/upload">{isBn ? 'দলিল আপলোড' : 'Deed Upload'}</Link>
-            <Link to="/verify">{isBn ? 'এআই যাচাই' : 'AI Verification'}</Link>
-            <Link to="/identify">{isBn ? 'জমির নকশা' : 'GIS Map'}</Link>
-            <Link to="/track">{isBn ? 'রিপোর্ট' : 'Report'}</Link>
-          </nav>
-
-          {/* Developer Info Button, Status Pill & Copyright */}
-          <div className="app-footer-meta">
-            {/* Developer Info Button */}
-            <button
-              type="button"
-              className="app-footer-dev-btn"
-              onClick={() => setIsDevModalOpen(true)}
-              aria-label={isBn ? 'ডেভেলপার পরিচিতি' : 'Developer Information'}
-            >
-              <Code2 size={13} />
-              <span>{isBn ? 'ডেভেলপার তথ্য' : 'Developer Info'}</span>
-            </button>
-
-            <span className="app-footer-dot">•</span>
-
-            <div className="app-footer-status">
-              <span className="app-footer-live-dot" />
-              <Sparkles size={12} color="var(--green)" />
-              <span>{isBn ? 'Gemini 1.5 Flash সক্রিয়' : 'Gemini 1.5 Flash Active'}</span>
             </div>
 
-            <span className="app-footer-dot">•</span>
+            <nav className="app-footer-nav" aria-label="Footer navigation">
+              <Link to="/">{isBn ? 'হোম' : 'Home'}</Link>
+              <Link to="/upload">{isBn ? 'দলিল আপলোড' : 'Deed Upload'}</Link>
+              <Link to="/verify">{isBn ? 'এআই যাচাই' : 'AI Verification'}</Link>
+              <Link to="/identify">{isBn ? 'জমির নকশা' : 'GIS Map'}</Link>
+              <Link to="/track">{isBn ? 'রিপোর্ট' : 'Report'}</Link>
+            </nav>
+          </div>
 
-            <span className="app-footer-copy">
-              © {isBn ? '২০২৬' : '2026'} {isBn ? 'ভূপ্রহরী AI' : 'BhuProhori AI'}
-            </span>
+          {/* Line 2: Copyright (Left) + Developer Info & Live AI Status (Right) */}
+          <div className="app-footer-row app-footer-row-bottom">
+            <div className="app-footer-copy-wrap">
+              <span className="app-footer-copy">
+                © {isBn ? '২০২৬ ভূপ্রহরী AI — সর্বস্বত্ব সংরক্ষিত' : '2026 BhuProhori AI — All rights reserved'}
+              </span>
+            </div>
+
+            <div className="app-footer-meta">
+              {/* Developer Info Button */}
+              <button
+                type="button"
+                className="app-footer-dev-btn"
+                onClick={() => setIsDevModalOpen(true)}
+                aria-label={isBn ? 'ডেভেলপার পরিচিতি' : 'Developer Information'}
+              >
+                <Code2 size={13} />
+                <span>{isBn ? 'ডেভেলপার তথ্য' : 'Developer Info'}</span>
+              </button>
+
+              <span className="app-footer-dot">•</span>
+
+              <div className="app-footer-status">
+                <span className="app-footer-live-dot" />
+                <Sparkles size={12} color="var(--green)" />
+                <span>{isBn ? 'Gemini 1.5 Flash সক্রিয়' : 'Gemini 1.5 Flash Active'}</span>
+              </div>
+            </div>
           </div>
         </div>
       </footer>
