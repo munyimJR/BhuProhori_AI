@@ -1531,51 +1531,269 @@ img {
 .growth-colors span:nth-child(2) { background: #f7fae8; color: #78851e; padding: 4px 10px; border-radius: 20px; }
 .growth-colors span:nth-child(3) { background: var(--orange-bg); color: var(--amber); padding: 4px 10px; border-radius: 20px; }
 
+/* ── How it works with Left Interactive Task Slide ──────────── */
 .how-it-works {
-  margin: 32px 0;
+  margin: 36px 0 28px;
   display: grid;
-  grid-template-columns: 0.9fr 1.1fr;
-  gap: 28px;
-  align-items: center;
-  background: white;
-  border: 1px solid var(--line);
-  border-radius: 20px;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 32px;
+  align-items: stretch;
+  background: #ffffff;
+  border: 1.5px solid var(--line);
+  border-radius: 22px;
   padding: 32px;
-  box-shadow: var(--shadow);
+  box-shadow: 0 16px 40px rgba(31, 62, 53, 0.06);
 }
+
+.how-intro {
+  display: flex;
+  flex-direction: column;
+}
+
 .how-intro h2 {
-  font-size: clamp(22px, 3.5vw, 26px);
+  font-size: clamp(22px, 3.5vw, 27px);
   line-height: 1.35;
   color: var(--deep);
-  margin: 0 0 8px;
+  margin: 0 0 6px;
+  font-weight: 800;
 }
-.how-intro h2 span { color: var(--green); }
-.how-intro p { font-size: 13px; color: var(--muted); margin: 0; }
+
+.how-intro h2 span {
+  color: var(--green);
+}
+
+.how-intro p {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0 0 18px;
+}
+
+.how-task-slide-card {
+  margin-top: auto;
+  background: linear-gradient(135deg, #f7faf8 0%, #edf6f2 100%);
+  border: 1px solid #d7e8e0;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 6px 18px rgba(23, 107, 86, 0.05);
+}
+
+.how-task-slide-card:hover {
+  box-shadow: 0 10px 28px rgba(23, 107, 86, 0.1);
+  border-color: #8ecfb2;
+}
+
+.how-task-slide-image-wrap {
+  position: relative;
+  width: 100%;
+  height: 140px;
+  overflow: hidden;
+  background: #172c26;
+}
+
+.how-task-slide-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.how-task-slide-card:hover .how-task-slide-img {
+  transform: scale(1.03);
+}
+
+.how-task-slide-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(16, 46, 38, 0.85);
+  backdrop-filter: blur(6px);
+  color: #6ee7b7;
+  border: 1px solid rgba(110, 231, 183, 0.35);
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 99px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.how-task-slide-content {
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.how-task-slide-title {
+  margin: 0 0 5px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--deep);
+}
+
+.how-task-slide-desc {
+  margin: 0 0 12px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #4b635c;
+  flex: 1;
+}
+
+.how-task-slide-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(23, 107, 86, 0.12);
+}
+
+.how-task-slide-btn {
+  background: var(--green);
+  color: #ffffff;
+  border: 0;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.how-task-slide-btn:hover {
+  background: var(--green-dark);
+  transform: translateY(-1px);
+}
+
+.how-task-slide-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.how-task-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #cbd5e1;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.how-task-dot.active {
+  background: var(--green);
+  width: 18px;
+  border-radius: 99px;
+}
+
+/* ── Synced Journey Steps on Right ──────────────────────────── */
 .journey {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   margin: 0;
   padding: 0;
+  justify-content: center;
 }
-.journey li {
+
+.journey-item {
   display: flex;
-  gap: 16px;
-  align-items: flex-start;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1.5px solid transparent;
+  background: #f8faf9;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+.journey-item:hover {
+  background: #eff7f3;
+  border-color: #8ecfb2;
+  transform: translateX(4px);
+}
+
+.journey-item.active {
+  background: #e9f6ef;
+  border-color: #10b981;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.12);
+}
+
 .journey-number {
   font-size: 13px;
   font-weight: 800;
   color: var(--green);
-  background: var(--mint);
-  padding: 6px 10px;
-  border-radius: 8px;
+  background: #ffffff;
+  padding: 7px 11px;
+  border-radius: 10px;
   font-family: monospace;
   flex-shrink: 0;
+  border: 1px solid rgba(23, 107, 86, 0.15);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
 }
-.journey h3 { font-size: 14px; margin: 0 0 2px; color: var(--deep); }
-.journey p { font-size: 12px; margin: 0; color: var(--muted); }
+
+.journey-item.active .journey-number {
+  background: var(--green);
+  color: #ffffff;
+  border-color: var(--green);
+}
+
+.journey-item h3 {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--deep);
+}
+
+.journey-item p {
+  font-size: 12px;
+  margin: 3px 0 0;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.journey-step-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: rgba(23, 107, 86, 0.08);
+  color: var(--green);
+}
+
+.journey-arrow {
+  color: var(--muted);
+  opacity: 0.4;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.journey-item:hover .journey-arrow,
+.journey-item.active .journey-arrow {
+  color: var(--green);
+  opacity: 1;
+  transform: translateX(3px);
+}
+
+@media (max-width: 900px) {
+  .how-it-works {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 22px;
+  }
+}
 
 .demo-disclosure {
   display: flex;

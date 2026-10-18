@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Upload, Map, Award, ArrowRight, ArrowUpRight, Lock,
   MapPin, Shield, CheckCircle, AlertTriangle, FileText, ChevronRight,
-  ChevronLeft
+  ChevronLeft, Sparkles
 } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
 import { TRANSLATIONS } from '../utils/translations';
@@ -12,6 +12,9 @@ import slide2 from '../assets/slide_image_2.jpg';
 import slide3 from '../assets/slide_image_3.jpg';
 import slide4 from '../assets/slide_image_4.jpg';
 import paddyImage from '../assets/paddy-green-to-gold.png';
+import deedUploadImg from '../assets/Deed Upload.avif';
+import statusReportImg from '../assets/Status & Audit Report.png';
+import eMutationAppImg from '../assets/e-Mutation Application.jpeg';
 
 const HERO_SLIDES = [
   {
@@ -41,6 +44,48 @@ const HERO_SLIDES = [
   },
 ];
 
+const TASK_STEPS_SLIDES = [
+  {
+    step: 1,
+    badgeBn: 'ধাপ ১ : দলিল আপলোড',
+    badgeEn: 'Step 1 : Upload Deed',
+    titleBn: 'দলিল আপলোড ও স্বয়ংক্রিয় রিডিং',
+    titleEn: 'Deed Upload & Instant OCR',
+    descBn: 'দলিলের ছবি বা PDF আপলোড করলেই এআই দলিলের নম্বর, দাগ, খতিয়ান ও হস্তান্তরিত জমির পরিমাণ নির্ভুলভাবে শনাক্ত করে।',
+    descEn: 'Upload deed image or PDF; AI automatically extracts deed number, plot, khatian, and land area with high accuracy.',
+    image: deedUploadImg,
+    actionBn: 'দলিল আপলোড শুরু করুন →',
+    actionEn: 'Start Deed Upload →',
+    route: '/upload',
+  },
+  {
+    step: 2,
+    badgeBn: 'ধাপ ২ : এআই ও হিস্যা যাচাই',
+    badgeEn: 'Step 2 : AI & Share Verification',
+    titleBn: 'খতিয়ান হিস্যা, ব্যাংক বন্ধক ও দ্বৈত বিক্রয় পরীক্ষা',
+    titleEn: 'Khatian Share, Bank Mortgage & Double Sale Check',
+    descBn: 'খতিয়ানের প্রাপ্য অংশের তুলনায় অতিরিক্ত জমি দাবি, ব্যাংকে বন্ধক বা কোনো আদালতের স্থগিতাদেশ আছে কিনা তা ৭টি নিয়মে লাইভ এআই দিয়ে যাচাই হয়।',
+    descEn: 'Live Gemini AI verifies seller share, checks bank mortgage liens, and flags double selling risks across 7 cadastral rules.',
+    image: statusReportImg,
+    actionBn: 'লাইভ যাচাই পদ্ধতি দেখুন →',
+    actionEn: 'Explore Verification Engine →',
+    route: '/verify',
+  },
+  {
+    step: 3,
+    badgeBn: 'ধাপ ৩ : ই-নামজারি প্রস্তুত',
+    badgeEn: 'Step 3 : e-Mutation Ready',
+    titleBn: 'নিরাপদ আবেদন প্রস্তুত ও ট্র্যাকিং',
+    titleEn: 'Certified Application & Tracking',
+    descBn: 'যাচাইকৃত শতভাগ সঠিক তথ্য দিয়ে মুহূর্তেই ই-নামজারি আবেদন তৈরি হয় এবং নাগরিকের জন্য কিউআর কোডযুক্ত ট্র্যাকিং ও অডিট রিপোর্ট প্রদান করা হয়।',
+    descEn: 'Instantly generates an error-free e-mutation application with certified QR audit report and real-time AC Land tracking.',
+    image: eMutationAppImg,
+    actionBn: 'আবেদন ফরম দেখুন →',
+    actionEn: 'View Application Form →',
+    route: '/apply',
+  },
+];
+
 export default function HomePage() {
   const navigate = useNavigate();
   const { loadDemoScenario, resetJourney, language } = useAppStore();
@@ -49,6 +94,9 @@ export default function HomePage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
+  const [taskStepSlide, setTaskStepSlide] = useState(0);
+  const [isTaskSlidePaused, setIsTaskSlidePaused] = useState(false);
+
   useEffect(() => {
     if (isPaused) return;
     const interval = setInterval(() => {
@@ -56,6 +104,14 @@ export default function HomePage() {
     }, 4500);
     return () => clearInterval(interval);
   }, [isPaused]);
+
+  useEffect(() => {
+    if (isTaskSlidePaused) return;
+    const interval = setInterval(() => {
+      setTaskStepSlide((prev) => (prev + 1) % TASK_STEPS_SLIDES.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [isTaskSlidePaused]);
 
   const handlePrevSlide = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -210,7 +266,128 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Action / Services grid */}
+      {/* How it works — Placed right above "আপনি কী করতে চান?" for clear orientation */}
+      <div
+        className="how-it-works"
+        onMouseEnter={() => setIsTaskSlidePaused(true)}
+        onMouseLeave={() => setIsTaskSlidePaused(false)}
+      >
+        <div className="how-intro">
+          <h2>
+            {tHome.howTitlePre[language]}<br />
+            <span>{tHome.howTitleBold[language]}</span>
+          </h2>
+          <p>{tHome.howSub[language]}</p>
+
+          {/* Interactive Slide for Task Completion on Left Side */}
+          <div className="how-task-slide-card">
+            <div className="how-task-slide-image-wrap">
+              <img
+                src={TASK_STEPS_SLIDES[taskStepSlide].image}
+                alt={language === 'bn' ? TASK_STEPS_SLIDES[taskStepSlide].titleBn : TASK_STEPS_SLIDES[taskStepSlide].titleEn}
+                className="how-task-slide-img"
+              />
+              <span className="how-task-slide-badge">
+                <Sparkles size={11} />
+                {language === 'bn' ? TASK_STEPS_SLIDES[taskStepSlide].badgeBn : TASK_STEPS_SLIDES[taskStepSlide].badgeEn}
+              </span>
+            </div>
+
+            <div className="how-task-slide-content">
+              <h4 className="how-task-slide-title">
+                {language === 'bn' ? TASK_STEPS_SLIDES[taskStepSlide].titleBn : TASK_STEPS_SLIDES[taskStepSlide].titleEn}
+              </h4>
+              <p className="how-task-slide-desc">
+                {language === 'bn' ? TASK_STEPS_SLIDES[taskStepSlide].descBn : TASK_STEPS_SLIDES[taskStepSlide].descEn}
+              </p>
+
+              <div className="how-task-slide-foot">
+                <button
+                  type="button"
+                  className="how-task-slide-btn"
+                  onClick={() => navigate(TASK_STEPS_SLIDES[taskStepSlide].route)}
+                >
+                  {language === 'bn' ? TASK_STEPS_SLIDES[taskStepSlide].actionBn : TASK_STEPS_SLIDES[taskStepSlide].actionEn}
+                </button>
+
+                <div className="how-task-slide-dots">
+                  {TASK_STEPS_SLIDES.map((_, dotIdx) => (
+                    <button
+                      key={dotIdx}
+                      type="button"
+                      className={`how-task-dot ${dotIdx === taskStepSlide ? 'active' : ''}`}
+                      onClick={() => setTaskStepSlide(dotIdx)}
+                      aria-label={`Slide ${dotIdx + 1}`}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 3 Step Journey on Right Side */}
+        <ol className="journey">
+          <li
+            className={`journey-item ${taskStepSlide === 0 ? 'active' : ''}`}
+            onClick={() => setTaskStepSlide(0)}
+            role="button"
+            tabIndex={0}
+          >
+            <span className="journey-number">{language === 'bn' ? '০১' : '01'}</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6 }}>
+                <h3>{tHome.step1Title[language]}</h3>
+                <span className="journey-step-badge">
+                  {language === 'bn' ? 'শুরু' : 'Start'}
+                </span>
+              </div>
+              <p>{tHome.step1Desc[language]}</p>
+            </div>
+            <ArrowRight size={14} className="journey-arrow" />
+          </li>
+
+          <li
+            className={`journey-item ${taskStepSlide === 1 ? 'active' : ''}`}
+            onClick={() => setTaskStepSlide(1)}
+            role="button"
+            tabIndex={0}
+          >
+            <span className="journey-number">{language === 'bn' ? '০২' : '02'}</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6 }}>
+                <h3>{tHome.step2Title[language]}</h3>
+                <span className="journey-step-badge">
+                  {language === 'bn' ? 'এআই যাচাই' : 'AI Verify'}
+                </span>
+              </div>
+              <p>{tHome.step2Desc[language]}</p>
+            </div>
+            <ArrowRight size={14} className="journey-arrow" />
+          </li>
+
+          <li
+            className={`journey-item ${taskStepSlide === 2 ? 'active' : ''}`}
+            onClick={() => setTaskStepSlide(2)}
+            role="button"
+            tabIndex={0}
+          >
+            <span className="journey-number">{language === 'bn' ? '০৩' : '03'}</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6 }}>
+                <h3>{tHome.step3Title[language]}</h3>
+                <span className="journey-step-badge">
+                  {language === 'bn' ? 'প্রস্তুত' : 'Ready'}
+                </span>
+              </div>
+              <p>{tHome.step3Desc[language]}</p>
+            </div>
+            <ArrowRight size={14} className="journey-arrow" />
+          </li>
+        </ol>
+      </div>
+
+      {/* Action / Services grid — আপনি কী করতে চান? */}
       <div className="section-heading">
         <h2 className="section-title">{tHome.sectionTitle[language]}</h2>
         <span>{tHome.sectionSub[language]}</span>
@@ -280,40 +457,6 @@ export default function HomePage() {
           <span>{tHome.storyStep2[language]}</span>
           <span>{tHome.storyStep3[language]}</span>
         </div>
-      </div>
-
-      {/* How it works */}
-      <div className="how-it-works">
-        <div className="how-intro">
-          <h2>
-            {tHome.howTitlePre[language]}<br />
-            <span>{tHome.howTitleBold[language]}</span>
-          </h2>
-          <p>{tHome.howSub[language]}</p>
-        </div>
-        <ol className="journey">
-          <li>
-            <span className="journey-number">{language === 'bn' ? '০১' : '01'}</span>
-            <div>
-              <h3>{tHome.step1Title[language]}</h3>
-              <p>{tHome.step1Desc[language]}</p>
-            </div>
-          </li>
-          <li>
-            <span className="journey-number">{language === 'bn' ? '০২' : '02'}</span>
-            <div>
-              <h3>{tHome.step2Title[language]}</h3>
-              <p>{tHome.step2Desc[language]}</p>
-            </div>
-          </li>
-          <li>
-            <span className="journey-number">{language === 'bn' ? '০৩' : '03'}</span>
-            <div>
-              <h3>{tHome.step3Title[language]}</h3>
-              <p>{tHome.step3Desc[language]}</p>
-            </div>
-          </li>
-        </ol>
       </div>
 
       {/* Interactive Hackathon Scenarios Picker */}
