@@ -11,7 +11,7 @@ export default function OfficerPage() {
   const navigate = useNavigate();
   const {
     allApplications, updateApplicationStatus, currentRole, setRole,
-    runLiveOfficerAudit, geminiOfficerAudits, isAiLoading, language
+    runLiveOfficerAudit, geminiOfficerAudits, isAiLoading, language, resetGeminiApiKey
   } = useAppStore();
 
   const isBn = language === 'bn';
@@ -290,16 +290,38 @@ export default function OfficerPage() {
           {aiAuditError && (
             <div
               style={{
-                padding: '8px 12px',
+                padding: '10px 14px',
                 borderRadius: 8,
                 background: '#fff0f0',
                 border: '1px solid #fca5a5',
                 color: '#b13f43',
                 fontSize: 12,
-                marginBottom: 12
+                marginBottom: 12,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: 8
               }}
             >
-              ⚠ {aiAuditError}
+              <div>⚠ {aiAuditError}</div>
+              <button
+                className="btn sm"
+                style={{
+                  background: '#b13f43',
+                  color: '#ffffff',
+                  border: 'none',
+                  fontSize: 11,
+                  padding: '4px 10px'
+                }}
+                onClick={() => {
+                  resetGeminiApiKey();
+                  setAiAuditError(null);
+                  handleRunAiAudit();
+                }}
+              >
+                ⚡ {isBn ? '১-ক্লিকে রি-কানেক্ট ও পুনরায় চালান' : '1-Click Reconnect & Retry'}
+              </button>
             </div>
           )}
 

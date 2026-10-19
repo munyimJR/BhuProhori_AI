@@ -6,13 +6,13 @@ import {
   Landmark, HelpCircle, Loader2, Info
 } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
-import { GEMINI_SAMPLE_PRESETS, getStoredGeminiKey } from '../services/geminiService';
+import { GEMINI_SAMPLE_PRESETS, getStoredGeminiKey, BUILTIN_GEMINI_KEY } from '../services/geminiService';
 
 export default function ReviewPage() {
   const navigate = useNavigate();
   const {
     extraction, updateExtractionField, setStep, loadDemoScenario, language,
-    geminiApiKey, setGeminiApiKey, aiAuditResult, isAiLoading, aiError,
+    geminiApiKey, setGeminiApiKey, resetGeminiApiKey, aiAuditResult, isAiLoading, aiError,
     runLiveGeminiExtraction
   } = useAppStore();
 
@@ -50,12 +50,16 @@ export default function ReviewPage() {
   };
 
   const handleSaveApiKey = () => {
-    if (tempApiKey.trim()) {
-      setGeminiApiKey(tempApiKey.trim());
-      setShowKeyModal(false);
-      setSuccessToast(isBn ? 'API কি সফলভাবে সংরক্ষিত হয়েছে!' : 'API Key successfully updated!');
-      setTimeout(() => setSuccessToast(null), 3000);
+    const val = tempApiKey.trim();
+    if (!val) {
+      resetGeminiApiKey();
+      setTempApiKey(BUILTIN_GEMINI_KEY);
+    } else {
+      setGeminiApiKey(val);
     }
+    setShowKeyModal(false);
+    setSuccessToast(isBn ? 'API কি সফলভাবে সংরক্ষিত হয়েছে!' : 'API Key successfully updated!');
+    setTimeout(() => setSuccessToast(null), 3000);
   };
 
   const handleProceed = () => {
@@ -229,7 +233,7 @@ export default function ReviewPage() {
                 type="text"
                 value={tempApiKey}
                 onChange={e => setTempApiKey(e.target.value)}
-                placeholder="AQ.Ab8RN6LlRZM5gQ9tT9MRVorGRk..."
+                placeholder="AIzaSy... / Google Gemini API Key"
                 style={{ flex: 1, minWidth: 260, padding: '7px 12px', fontSize: 13 }}
               />
               <button className="btn sm" onClick={handleSaveApiKey}>
@@ -238,7 +242,10 @@ export default function ReviewPage() {
               <button
                 className="btn secondary sm"
                 onClick={() => {
-                  setTempApiKey(getStoredGeminiKey());
+                  resetGeminiApiKey();
+                  setTempApiKey(BUILTIN_GEMINI_KEY);
+                  setSuccessToast(isBn ? 'ডিফল্ট অ্যাক্টিভ কী পুনরুদ্ধার করা হয়েছে।' : 'Default key restored.');
+                  setTimeout(() => setSuccessToast(null), 3000);
                 }}
               >
                 {isBn ? 'ডিফল্ট কী বসান' : 'Reset Default'}
@@ -376,7 +383,7 @@ export default function ReviewPage() {
           <div
             style={{
               marginTop: 14,
-              padding: '10px 14px',
+              padding: '12px 16px',
               borderRadius: 8,
               background: '#fff0f0',
               border: '1px solid #f8b4b4',
@@ -384,13 +391,37 @@ export default function ReviewPage() {
               fontSize: 13,
               display: 'flex',
               alignItems: 'center',
-              gap: 8
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: 10
             }}
           >
-            <AlertTriangle size={16} />
-            <div>
-              <strong>{isBn ? 'Gemini API ত্রুটি:' : 'Gemini API Error:'}</strong> {aiError}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <AlertTriangle size={16} />
+              <div>
+                <strong>{isBn ? 'Gemini API ত্রুটি:' : 'Gemini API Error:'}</strong> {aiError}
+              </div>
             </div>
+            <button
+              className="btn sm"
+              style={{
+                background: '#b13f43',
+                color: '#ffffff',
+                border: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                fontSize: 12
+              }}
+              onClick={() => {
+                resetGeminiApiKey();
+                setTempApiKey(BUILTIN_GEMINI_KEY);
+                handleRunAi();
+              }}
+            >
+              <Zap size={13} />
+              <span>{isBn ? '১-ক্লিকে রি-কানেক্ট ও পুনরায় চালান' : '1-Click Reconnect & Retry'}</span>
+            </button>
           </div>
         )}
 

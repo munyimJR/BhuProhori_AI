@@ -3,6 +3,7 @@ import { Menu } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
 import LanguageToggle from './LanguageToggle';
 import UserRoleCapsule from './UserRoleCapsule';
+import GeminiStatusCapsule from './GeminiStatusCapsule';
 import { TRANSLATIONS } from '../utils/translations';
 
 interface TopbarProps {
@@ -43,6 +44,9 @@ export default function Topbar({ onToggleMobileMenu }: TopbarProps) {
       </div>
 
       <div className="right-tools">
+        {/* Real-time Gemini Flash AI connection status pill & modal */}
+        <GeminiStatusCapsule />
+
         {/* Bilingual Bangla/English toggle switch */}
         <LanguageToggle />
 

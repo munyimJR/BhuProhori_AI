@@ -11,6 +11,8 @@ import { runVerification, runVerificationForScenario } from '../services/verific
 import {
   getStoredGeminiKey,
   saveGeminiKey,
+  resetToDefaultGeminiKey,
+  BUILTIN_GEMINI_KEY,
   runGeminiAnalysis,
   convertToAppExtraction,
   runGeminiVerification,
@@ -69,6 +71,7 @@ interface AppStore {
 
   // Actions
   setGeminiApiKey: (key: string) => void;
+  resetGeminiApiKey: () => void;
   setAiAuditResult: (audit: GeminiFraudAudit | null) => void;
   runLiveGeminiExtraction: (text?: string, base64?: string, mimeType?: string) => Promise<void>;
   runLiveGeminiVerificationCheck: (customScenarioNumber?: number, customNotes?: string) => Promise<GeminiVerificationResult>;
@@ -112,7 +115,7 @@ const useAppStore = create<AppStore>()(
       currentUser: null,
 
       // Gemini AI Engine
-      geminiApiKey: getStoredGeminiKey(),
+      geminiApiKey: getStoredGeminiKey() || BUILTIN_GEMINI_KEY,
       aiAuditResult: null,
       geminiVerificationResult: null,
       geminiOfficerAudits: {},
@@ -122,8 +125,19 @@ const useAppStore = create<AppStore>()(
       lastAiInputText: '',
 
       setGeminiApiKey: (key) => {
-        saveGeminiKey(key);
-        set({ geminiApiKey: key });
+        const clean = key.trim();
+        if (!clean) {
+          resetToDefaultGeminiKey();
+          set({ geminiApiKey: BUILTIN_GEMINI_KEY, aiError: null });
+        } else {
+          saveGeminiKey(clean);
+          set({ geminiApiKey: clean, aiError: null });
+        }
+      },
+
+      resetGeminiApiKey: () => {
+        resetToDefaultGeminiKey();
+        set({ geminiApiKey: BUILTIN_GEMINI_KEY, aiError: null });
       },
 
       setAiAuditResult: (audit) => set({ aiAuditResult: audit }),
@@ -168,11 +182,12 @@ const useAppStore = create<AppStore>()(
             note = 'খতিয়ানে বিক্রেতার অংশ ৮ শতক কিন্তু বিক্রির দাবি ১০ শতক (২ শতক বেশি)। ইতিপূর্বে ৪ শতক বিক্রি হয়েছিল।';
           }
 
+          const activeKey = (geminiApiKey || getStoredGeminiKey() || BUILTIN_GEMINI_KEY).trim();
           const result = await runGeminiVerification({
             deedData,
             parcelData,
             contextNote: note,
-            apiKey: geminiApiKey,
+            apiKey: activeKey,
           });
 
           set({
@@ -194,9 +209,10 @@ const useAppStore = create<AppStore>()(
         const app = allApplications.find(a => a.id === appId) || allApplications[0];
         if (!app) throw new Error('Application not found');
 
+        const activeKey = (geminiApiKey || getStoredGeminiKey() || BUILTIN_GEMINI_KEY).trim();
         set({ isAiLoading: true, aiError: null });
         try {
-          const audit = await auditOfficerCaseWithGemini(app, geminiApiKey);
+          const audit = await auditOfficerCaseWithGemini(app, activeKey);
           set({
             geminiOfficerAudits: {
               ...geminiOfficerAudits,
@@ -216,13 +232,14 @@ const useAppStore = create<AppStore>()(
 
       runLiveGeminiExtraction: async (text, base64, mimeType) => {
         const { geminiApiKey } = get();
+        const activeKey = (geminiApiKey || getStoredGeminiKey() || BUILTIN_GEMINI_KEY).trim();
         set({ isAiLoading: true, aiError: null });
         try {
           const result = await runGeminiAnalysis({
             text,
             base64Image: base64,
             mimeType,
-            apiKey: geminiApiKey,
+            apiKey: activeKey,
           });
           const docId = `gemini-doc-${Date.now()}`;
           const extraction = convertToAppExtraction(result, docId);
@@ -488,9 +505,16 @@ const useAppStore = create<AppStore>()(
         language: state.language,
         isAuthenticated: state.isAuthenticated,
         currentUser: state.currentUser,
-        geminiApiKey: state.geminiApiKey,
+        geminiApiKey: state.geminiApiKey || BUILTIN_GEMINI_KEY,
         aiAuditResult: state.aiAuditResult,
       }),
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          if (!state.geminiApiKey || !state.geminiApiKey.trim()) {
+            state.geminiApiKey = BUILTIN_GEMINI_KEY;
+          }
+        }
+      },
     }
   )
 );

@@ -15,7 +15,7 @@ export default function VerificationPage() {
     currentScenario, loadDemoScenario, setStep,
     language,
     geminiVerificationResult, isVerifyingAi, aiError,
-    runLiveGeminiVerificationCheck, extraction
+    runLiveGeminiVerificationCheck, extraction, resetGeminiApiKey
   } = useAppStore();
 
   const isBn = language === 'bn';
@@ -230,7 +230,7 @@ export default function VerificationPage() {
         <div
           style={{
             marginBottom: 16,
-            padding: '10px 14px',
+            padding: '12px 16px',
             borderRadius: 8,
             background: '#fff0f0',
             border: '1px solid #f8b4b4',
@@ -238,13 +238,36 @@ export default function VerificationPage() {
             fontSize: 13,
             display: 'flex',
             alignItems: 'center',
-            gap: 8
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: 10
           }}
         >
-          <AlertTriangle size={16} />
-          <div>
-            <strong>{isBn ? 'Gemini API ত্রুটি:' : 'Gemini API Error:'}</strong> {aiError}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <AlertTriangle size={16} />
+            <div>
+              <strong>{isBn ? 'Gemini API ত্রুটি:' : 'Gemini API Error:'}</strong> {aiError}
+            </div>
           </div>
+          <button
+            className="btn sm"
+            style={{
+              background: '#b13f43',
+              color: '#ffffff',
+              border: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              fontSize: 12
+            }}
+            onClick={() => {
+              resetGeminiApiKey();
+              handleTriggerAiVerify(scenarioVal);
+            }}
+          >
+            <Zap size={13} />
+            <span>{isBn ? '১-ক্লিকে রি-কানেক্ট ও পুনরায় যাচাই' : '1-Click Reconnect & Retry'}</span>
+          </button>
         </div>
       )}
 
