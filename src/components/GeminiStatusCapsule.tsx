@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import {
   Zap, CheckCircle2, AlertCircle, RefreshCw, Key,
-  Eye, EyeOff, ShieldCheck, ExternalLink, Sparkles, X, Cpu, Layers
+  Eye, EyeOff, ExternalLink, X, ShieldCheck
 } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
 import {
@@ -35,7 +35,7 @@ export default function GeminiStatusCapsule() {
   const currentKey = (geminiApiKey || getStoredGeminiKey() || BUILTIN_GEMINI_KEY).trim();
   const isUsingCustom = currentKey !== BUILTIN_GEMINI_KEY;
 
-  // Initialize state on open
+  // Sync state on open
   useEffect(() => {
     if (isOpen) {
       setInputKey(currentKey);
@@ -62,8 +62,8 @@ export default function GeminiStatusCapsule() {
   const handleModelChange = (modelId: string) => {
     setSelectedModel(modelId);
     saveGeminiModel(modelId);
-    setSaveFeedback(isBn ? `মডেল পরিবর্তিত: ${modelId}` : `Model changed to: ${modelId}`);
-    setTimeout(() => setSaveFeedback(null), 3000);
+    setSaveFeedback(isBn ? 'মডেল সংরক্ষিত' : 'Model saved');
+    setTimeout(() => setSaveFeedback(null), 2500);
   };
 
   const handleRunPingTest = async () => {
@@ -81,7 +81,7 @@ export default function GeminiStatusCapsule() {
         success: false,
         model: selectedModel,
         latencyMs: 0,
-        message: err?.message || 'সংযোগ পরীক্ষা ব্যর্থ হয়েছে।'
+        message: err?.message || 'সংযোগ ব্যর্থ'
       });
     } finally {
       setIsTesting(false);
@@ -93,12 +93,12 @@ export default function GeminiStatusCapsule() {
     if (!val) {
       resetGeminiApiKey();
       setInputKey(BUILTIN_GEMINI_KEY);
-      setSaveFeedback(isBn ? 'ডিফল্ট অ্যাক্টিভ কী পুনরুদ্ধার করা হয়েছে।' : 'Restored default active key.');
+      setSaveFeedback(isBn ? 'ডিফল্ট কী সক্রিয়' : 'Default key restored');
     } else {
       setGeminiApiKey(val);
-      setSaveFeedback(isBn ? 'নতুন API কী সফলভাবে সংরক্ষিত হয়েছে!' : 'API Key saved successfully!');
+      setSaveFeedback(isBn ? 'কী সংরক্ষিত হয়েছে' : 'Key saved');
     }
-    setTimeout(() => setSaveFeedback(null), 3000);
+    setTimeout(() => setSaveFeedback(null), 2500);
   };
 
   const handleReset = () => {
@@ -106,12 +106,12 @@ export default function GeminiStatusCapsule() {
     setInputKey(BUILTIN_GEMINI_KEY);
     setSelectedModel('gemini-flash-lite-latest');
     saveGeminiModel('gemini-flash-lite-latest');
-    setSaveFeedback(isBn ? 'ডিফল্ট অ্যাক্টিভ কী ও লাইট মডেল রিস্টোর করা হয়েছে।' : 'Restored default active key & lite model.');
-    setTimeout(() => setSaveFeedback(null), 3000);
+    setSaveFeedback(isBn ? 'ডিফল্ট রিস্টোর সম্পন্ন' : 'Restored default');
+    setTimeout(() => setSaveFeedback(null), 2500);
   };
 
-  const maskedKey = currentKey.length > 12
-    ? `${currentKey.slice(0, 6)}••••••••${currentKey.slice(-4)}`
+  const maskedKey = currentKey.length > 10
+    ? `${currentKey.slice(0, 5)}•••${currentKey.slice(-4)}`
     : currentKey;
 
   const activeModelObj = GEMINI_AVAILABLE_MODELS.find(m => m.id === selectedModel) || GEMINI_AVAILABLE_MODELS[0];
@@ -126,64 +126,80 @@ export default function GeminiStatusCapsule() {
           display: 'flex',
           alignItems: 'center',
           gap: 6,
-          padding: '6px 12px',
+          padding: '5px 11px',
           borderRadius: 20,
-          background: 'linear-gradient(135deg, rgba(23,107,86,0.1) 0%, rgba(16,85,63,0.15) 100%)',
-          border: '1px solid rgba(23,107,86,0.3)',
+          background: 'linear-gradient(135deg, rgba(23,107,86,0.08) 0%, rgba(16,85,63,0.12) 100%)',
+          border: '1px solid rgba(23,107,86,0.25)',
           color: 'var(--green-dark)',
           fontSize: 12,
           fontWeight: 600,
           cursor: 'pointer',
           transition: 'all 0.2s ease',
-          boxShadow: '0 1px 4px rgba(0,0,0,0.04)'
+          boxShadow: '0 1px 3px rgba(0,0,0,0.03)'
         }}
-        title={isBn ? `গুগল জেমিনাই এআই স্ট্যাটাস (${activeModelObj.name})` : `Google Gemini AI Status (${activeModelObj.nameEn})`}
+        title={isBn ? `Gemini AI স্ট্যাটাস (${activeModelObj.name})` : `Gemini AI Status (${activeModelObj.nameEn})`}
       >
         <span
           style={{
-            width: 8,
-            height: 8,
+            width: 7,
+            height: 7,
             borderRadius: '50%',
             background: '#10b981',
-            boxShadow: '0 0 8px #10b981',
+            boxShadow: '0 0 6px #10b981',
             display: 'inline-block',
             animation: 'pulse 2s infinite'
           }}
         />
-        <Zap size={13} color="#176b56" />
+        <Zap size={12} color="#176b56" />
         <span style={{ whiteSpace: 'nowrap' }}>
           {isBn ? 'Gemini AI সক্রিয়' : 'Gemini AI Active'}
         </span>
       </button>
 
-      {/* ── Dropdown Modal ── */}
+      {/* ── Compact Minimal Dropdown ── */}
       {isOpen && (
         <div
           style={{
             position: 'absolute',
-            top: 'calc(100% + 8px)',
+            top: 'calc(100% + 6px)',
             right: 0,
-            width: 380,
+            width: 320,
             maxWidth: '92vw',
             background: '#ffffff',
-            borderRadius: 14,
+            borderRadius: 12,
             border: '1px solid var(--line)',
-            boxShadow: '0 12px 36px rgba(0,0,0,0.18)',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
             zIndex: 1050,
-            padding: 16,
+            padding: 12,
             color: 'var(--ink)'
           }}
         >
-          {/* Header */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 700, fontSize: 14, color: 'var(--deep)' }}>
-                <Sparkles size={16} color="var(--green)" />
-                <span>{isBn ? 'Google Gemini AI সংযোগ' : 'Google Gemini AI Connection'}</span>
-              </div>
-              <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>
-                {isBn ? 'স্মার্ট অটো-ফেলওভার ও আনলিমিটেড কোটা যুক্ত' : 'Smart Auto-Failover & Unlimited Quota Enabled'}
-              </div>
+          {/* Compact Header */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 700, fontSize: 13, color: 'var(--deep)' }}>
+              <span
+                style={{
+                  width: 7,
+                  height: 7,
+                  borderRadius: '50%',
+                  background: '#10b981',
+                  boxShadow: '0 0 6px #10b981',
+                  display: 'inline-block'
+                }}
+              />
+              <span>Google Gemini AI</span>
+              <span
+                style={{
+                  fontSize: 10,
+                  padding: '1px 6px',
+                  borderRadius: 8,
+                  background: isUsingCustom ? '#dbeafe' : '#e6f4ea',
+                  color: isUsingCustom ? '#1d4ed8' : '#137333',
+                  fontWeight: 600
+                }}
+              >
+                {isUsingCustom ? 'Custom' : 'Active'}
+              </span>
             </div>
             <button
               onClick={() => setIsOpen(false)}
@@ -192,283 +208,219 @@ export default function GeminiStatusCapsule() {
                 border: 'none',
                 cursor: 'pointer',
                 color: 'var(--muted)',
-                padding: 4
+                padding: 2,
+                display: 'flex',
+                alignItems: 'center'
               }}
               aria-label="Close"
             >
-              <X size={16} />
+              <X size={15} />
             </button>
           </div>
 
-          {/* Current Status Box */}
+          {/* Model Selector & Live Ping Inline */}
           <div
             style={{
-              padding: 12,
-              borderRadius: 10,
-              background: '#f0fdf4',
-              border: '1px solid #bbf7d0',
-              marginBottom: 12
+              padding: 9,
+              borderRadius: 8,
+              background: '#f8fafc',
+              border: '1px solid #e2e8f0',
+              marginBottom: 8
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, color: '#166534' }}>
-                <CheckCircle2 size={15} color="#16a34a" />
-                <span>{isBn ? 'সার্ভার: সক্রিয় ও প্রস্তুত' : 'Server: Live & Ready'}</span>
-              </div>
-              <span
-                style={{
-                  fontSize: 10,
-                  padding: '2px 8px',
-                  borderRadius: 12,
-                  background: isUsingCustom ? '#dbeafe' : '#e0e7ff',
-                  color: isUsingCustom ? '#1e40af' : '#3730a3',
-                  fontWeight: 600
-                }}
-              >
-                {isUsingCustom ? (isBn ? 'কাস্টম কী' : 'Custom Key') : (isBn ? 'ডিফল্ট অ্যাক্টিভ কী' : 'Default Key')}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
+              <span style={{ fontSize: 10.5, fontWeight: 700, color: '#475569' }}>
+                {isBn ? 'মডেল (Model):' : 'Model:'}
+              </span>
+              <span style={{ fontSize: 10, fontFamily: 'monospace', color: '#64748b' }}>
+                {maskedKey}
               </span>
             </div>
 
-            <div style={{ fontSize: 11, fontFamily: 'monospace', color: '#14532d', background: '#dcfce7', padding: '4px 8px', borderRadius: 6, wordBreak: 'break-all', marginBottom: 8 }}>
-              Key: {maskedKey}
-            </div>
+            <select
+              value={selectedModel}
+              onChange={(e) => handleModelChange(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '5px 8px',
+                borderRadius: 5,
+                border: '1px solid #cbd5e1',
+                background: '#ffffff',
+                fontSize: 11,
+                fontWeight: 600,
+                color: '#1e293b',
+                marginBottom: 6
+              }}
+            >
+              <option value="gemini-flash-lite-latest">⚡ Flash Lite (আনলিমিটেড কোটা - সেরা)</option>
+              <option value="gemini-3.5-flash-lite">🚀 3.5 Flash Lite (উচ্চ নির্ভুলতা)</option>
+              <option value="gemini-3-flash-preview">🧠 3 Flash Preview (উন্নত)</option>
+              <option value="gemini-flash-latest">🌐 Flash Latest (অটো-ফেলওভার)</option>
+            </select>
 
-            {/* Model Selector in Status Box */}
-            <div style={{ marginBottom: 8 }}>
-              <label style={{ fontSize: 11, fontWeight: 700, color: '#14532d', display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
-                <Cpu size={12} />
-                <span>{isBn ? 'সক্রিয় AI মডেল (Active Model):' : 'Active AI Model:'}</span>
-              </label>
-              <select
-                value={selectedModel}
-                onChange={(e) => handleModelChange(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '6px 8px',
-                  borderRadius: 6,
-                  border: '1px solid #86efac',
-                  background: '#ffffff',
-                  fontSize: 11,
-                  fontWeight: 600,
-                  color: '#15803d'
-                }}
-              >
-                {GEMINI_AVAILABLE_MODELS.map(m => (
-                  <option key={m.id} value={m.id}>
-                    {m.recommended ? '⭐ ' : ''}{isBn ? m.name : m.nameEn}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div style={{ display: 'flex', gap: 6 }}>
+            {/* Test Ping Button & Inline Result */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <button
                 type="button"
                 onClick={handleRunPingTest}
                 disabled={isTesting}
                 style={{
-                  flex: 1,
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 6,
-                  padding: '7px 10px',
-                  borderRadius: 6,
+                  gap: 4,
+                  padding: '4px 9px',
+                  borderRadius: 5,
                   background: '#15803d',
                   color: '#ffffff',
-                  fontSize: 11,
+                  fontSize: 10.5,
                   fontWeight: 600,
                   border: 'none',
-                  cursor: isTesting ? 'wait' : 'pointer'
+                  cursor: isTesting ? 'wait' : 'pointer',
+                  flexShrink: 0
                 }}
               >
-                <RefreshCw size={12} className={isTesting ? 'animate-spin' : ''} />
-                <span>
-                  {isTesting
-                    ? (isBn ? 'পিং টেস্ট হচ্ছে...' : 'Testing...')
-                    : (isBn ? 'লাইভ সংযোগ পরীক্ষা (Ping)' : 'Test Live Connection')}
-                </span>
+                <RefreshCw size={11} className={isTesting ? 'animate-spin' : ''} />
+                <span>{isTesting ? (isBn ? 'টেস্টিং...' : 'Testing...') : (isBn ? 'পিং টেস্ট' : 'Ping Test')}</span>
               </button>
-            </div>
 
-            {/* Test Result Message */}
-            {testResult && (
-              <div
-                style={{
-                  marginTop: 8,
-                  padding: '6px 10px',
-                  borderRadius: 6,
-                  fontSize: 11,
-                  background: testResult.success ? '#ffffff' : '#fef2f2',
-                  border: testResult.success ? '1px solid #86efac' : '1px solid #fecaca',
-                  color: testResult.success ? '#15803d' : '#b91c1c',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6
-                }}
-              >
-                {testResult.success ? <CheckCircle2 size={13} /> : <AlertCircle size={13} />}
-                <span>
-                  {testResult.message}
-                  {testResult.latencyMs > 0 && ` (${testResult.latencyMs}ms)`}
-                </span>
+              <div style={{ fontSize: 10, color: testResult?.success ? '#15803d' : (testResult ? '#b91c1c' : '#64748b'), display: 'flex', alignItems: 'center', gap: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {testResult ? (
+                  <>
+                    {testResult.success ? <CheckCircle2 size={12} /> : <AlertCircle size={12} />}
+                    <span>{testResult.success ? `সফল (${testResult.latencyMs}ms)` : 'ব্যর্থ'}</span>
+                  </>
+                ) : (
+                  <span>{isBn ? 'সবসময় সক্রিয় ও সংযুক্ত' : '24/7 Connected'}</span>
+                )}
               </div>
-            )}
+            </div>
           </div>
 
-          {/* High Demand / HTTP 503 Auto-Failover Explanation */}
+          {/* Single-line Micro Protection Badge */}
           <div
             style={{
-              padding: 10,
-              borderRadius: 8,
+              padding: '5px 8px',
+              borderRadius: 6,
               background: '#eff6ff',
               border: '1px solid #bfdbfe',
-              marginBottom: 12,
-              fontSize: 11,
-              color: '#1e3a8a'
+              fontSize: 10,
+              color: '#1d4ed8',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 5,
+              marginBottom: 8
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 700, marginBottom: 4 }}>
-              <Layers size={13} color="#2563eb" />
-              <span>{isBn ? 'HTTP 503 স্পাইক ও রেট লিমিট সুরক্ষা:' : 'HTTP 503 Spike & Rate Limit Protection:'}</span>
-            </div>
-            <div style={{ lineHeight: 1.45, fontSize: 10.5 }}>
+            <ShieldCheck size={12} color="#2563eb" style={{ flexShrink: 0 }} />
+            <span style={{ lineHeight: 1.3 }}>
               {isBn
-                ? 'গুগলের Gemini 3.8 Flash মডেলে ফ্রি টায়ারের RPM সীমা (5/5) ও সাময়িক হাই-ডিমান্ড স্পাইক (HTTP 503) দেখা দিলে আমাদের স্মার্ট অটো-ফেলওভার সিস্টেম স্বয়ংক্রিয়ভাবে আনলিমিটেড কোটাবিশিষ্ট Gemini Flash Lite-এ সুইচ করে নিরবচ্ছিন্ন সেবা নিশ্চিত করে।'
-                : 'When Google experiences 503 spikes or RPM limits (5/5) on 3.8 Flash, our smart failover automatically cascades to unlimited quota Gemini Flash Lite for zero downtime.'}
-            </div>
+                ? 'স্মার্ট অটো-ফেলওভার সক্রিয় • ৫০৩ স্পাইক ও ৫ RPM রেট-লিমিট মুক্ত'
+                : 'Smart failover active • Protected against 503 spikes & rate limits'}
+            </span>
           </div>
 
-          {/* Permanent Active Guarantee */}
-          <div
-            style={{
-              padding: 10,
-              borderRadius: 8,
-              background: '#f8fafc',
-              border: '1px solid #e2e8f0',
-              marginBottom: 12,
-              fontSize: 11,
-              color: '#334155'
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 700, marginBottom: 4, color: 'var(--deep)' }}>
-              <ShieldCheck size={14} color="var(--green)" />
-              <span>{isBn ? 'সবসময় সক্রিয় থাকার নিশ্চয়তা:' : 'Permanent Active Guarantee:'}</span>
-            </div>
-            <ul style={{ margin: 0, paddingLeft: 16, lineHeight: 1.5, fontSize: 10.5 }}>
-              <li>
-                {isBn
-                  ? 'অ্যাপে ভেরিফায়েড অ্যাক্টিভ কী ও মাল্টি-মডেল ব্যাকআপ বিল্ট-ইন কনফিগার করা।'
-                  : 'Baked-in verified API key with multi-model auto-failover built in.'}
-              </li>
-              <li>
-                {isBn
-                  ? 'ব্রাউজার রিফ্রেশ বা ক্যাশ ক্লিয়ার করলেও ডিফল্ট কী ও মডেল সক্রিয় থাকবে।'
-                  : 'Settings persist across browser reloads, cache clears, and incognito mode.'}
-              </li>
-            </ul>
-          </div>
-
-          {/* Key Configuration Section */}
-          <div style={{ borderTop: '1px solid var(--line)', paddingTop: 10 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-              <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--deep)', display: 'flex', alignItems: 'center', gap: 4 }}>
-                <Key size={12} />
-                <span>{isBn ? 'নিজস্ব Gemini API Key ব্যবহার করুন:' : 'Use Custom Gemini Key:'}</span>
+          {/* Compact Custom Key Input Row */}
+          <div style={{ borderTop: '1px solid var(--line)', paddingTop: 8 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+              <label style={{ fontSize: 10.5, fontWeight: 700, color: '#334155', display: 'flex', alignItems: 'center', gap: 3 }}>
+                <Key size={11} />
+                <span>{isBn ? 'কাস্টম API Key:' : 'Custom Key:'}</span>
               </label>
               <a
                 href="https://aistudio.google.com/app/apikey"
                 target="_blank"
                 rel="noreferrer"
                 style={{
-                  fontSize: 10,
+                  fontSize: 9.5,
                   color: 'var(--green)',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 3,
+                  gap: 2,
                   textDecoration: 'none',
                   fontWeight: 600
                 }}
               >
-                <span>{isBn ? 'ফ্রি কী নিন' : 'Get Free Key'}</span>
-                <ExternalLink size={10} />
+                <span>{isBn ? 'ফ্রি কী নিন' : 'Get Key'}</span>
+                <ExternalLink size={9} />
               </a>
             </div>
 
-            <div style={{ position: 'relative', marginBottom: 8 }}>
-              <input
-                type={showKeyText ? 'text' : 'password'}
-                value={inputKey}
-                onChange={(e) => setInputKey(e.target.value)}
-                placeholder="AIzaSy... / Google Gemini API Key"
-                style={{
-                  width: '100%',
-                  boxSizing: 'border-box',
-                  padding: '7px 32px 7px 10px',
-                  borderRadius: 6,
-                  border: '1px solid var(--line)',
-                  fontSize: 12,
-                  fontFamily: 'monospace'
-                }}
-              />
-              <button
-                type="button"
-                onClick={() => setShowKeyText(!showKeyText)}
-                style={{
-                  position: 'absolute',
-                  right: 8,
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: 'var(--muted)',
-                  padding: 2
-                }}
-              >
-                {showKeyText ? <EyeOff size={14} /> : <Eye size={14} />}
-              </button>
-            </div>
+            <div style={{ display: 'flex', gap: 4 }}>
+              <div style={{ position: 'relative', flex: 1 }}>
+                <input
+                  type={showKeyText ? 'text' : 'password'}
+                  value={inputKey}
+                  onChange={(e) => setInputKey(e.target.value)}
+                  placeholder="AIzaSy... / Google Key"
+                  style={{
+                    width: '100%',
+                    boxSizing: 'border-box',
+                    padding: '5px 24px 5px 7px',
+                    borderRadius: 5,
+                    border: '1px solid var(--line)',
+                    fontSize: 11,
+                    fontFamily: 'monospace'
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowKeyText(!showKeyText)}
+                  style={{
+                    position: 'absolute',
+                    right: 5,
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: 'var(--muted)',
+                    padding: 1
+                  }}
+                >
+                  {showKeyText ? <EyeOff size={12} /> : <Eye size={12} />}
+                </button>
+              </div>
 
-            <div style={{ display: 'flex', gap: 6 }}>
               <button
                 type="button"
                 onClick={handleSave}
                 style={{
-                  flex: 1,
-                  padding: '6px 12px',
-                  borderRadius: 6,
+                  padding: '5px 9px',
+                  borderRadius: 5,
                   background: 'var(--green)',
                   color: '#ffffff',
-                  fontSize: 11,
+                  fontSize: 10.5,
                   fontWeight: 600,
                   border: 'none',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  flexShrink: 0
                 }}
               >
-                {isBn ? 'সংরক্ষণ করুন' : 'Save Key'}
+                {isBn ? 'সংরক্ষণ' : 'Save'}
               </button>
+
               <button
                 type="button"
                 onClick={handleReset}
                 style={{
-                  padding: '6px 10px',
-                  borderRadius: 6,
+                  padding: '5px 7px',
+                  borderRadius: 5,
                   background: '#f1f5f9',
                   border: '1px solid #cbd5e1',
                   color: '#475569',
-                  fontSize: 11,
+                  fontSize: 10.5,
                   fontWeight: 600,
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  flexShrink: 0
                 }}
-                title={isBn ? 'মূল ডিফল্ট কী ও মডেল ফিরিয়ে আনুন' : 'Reset to default key & model'}
+                title={isBn ? 'ডিফল্ট রিস্টোর' : 'Reset'}
               >
-                {isBn ? 'ডিফল্ট রিস্টোর' : 'Reset Default'}
+                {isBn ? 'রিস্টোর' : 'Reset'}
               </button>
             </div>
 
             {saveFeedback && (
-              <div style={{ marginTop: 6, fontSize: 11, color: '#15803d', fontWeight: 600, textAlign: 'center' }}>
+              <div style={{ marginTop: 4, fontSize: 10, color: '#15803d', fontWeight: 600, textAlign: 'center' }}>
                 {saveFeedback}
               </div>
             )}
