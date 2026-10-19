@@ -52,52 +52,149 @@ export function resetToDefaultGeminiKey(): string {
   return BUILTIN_GEMINI_KEY;
 }
 
+export const GEMINI_AVAILABLE_MODELS = [
+  {
+    id: 'gemini-flash-lite-latest',
+    name: 'Gemini Flash Lite (আনলিমিটেড কোটা ও হাই-স্পিড)',
+    nameEn: 'Gemini Flash Lite (Unlimited Quota, High Speed)',
+    recommended: true,
+  },
+  {
+    id: 'gemini-3.5-flash-lite',
+    name: 'Gemini 3.5 Flash Lite (স্থিতিশীল ও নির্ভরযোগ্য)',
+    nameEn: 'Gemini 3.5 Flash Lite (Stable & Highly Reliable)',
+    recommended: false,
+  },
+  {
+    id: 'gemini-3-flash-preview',
+    name: 'Gemini 3 Flash Preview (উচ্চ বুদ্ধিমত্তা)',
+    nameEn: 'Gemini 3 Flash Preview (Advanced Intelligence)',
+    recommended: false,
+  },
+  {
+    id: 'gemini-flash-latest',
+    name: 'Gemini Flash Latest (স্বয়ংক্রিয় ব্যাকআপসহ)',
+    nameEn: 'Gemini Flash Latest (With Auto-Failover)',
+    recommended: false,
+  }
+];
+
+export const DEFAULT_GEMINI_MODEL = 'gemini-flash-lite-latest';
+const MODEL_STORAGE_KEY = 'bhuprohori_gemini_model';
+
+export function getStoredGeminiModel(): string {
+  try {
+    const saved = localStorage.getItem(MODEL_STORAGE_KEY);
+    if (saved && saved.trim()) return saved.trim();
+  } catch {
+    // ignore
+  }
+  return DEFAULT_GEMINI_MODEL;
+}
+
+export function saveGeminiModel(modelId: string): void {
+  try {
+    localStorage.setItem(MODEL_STORAGE_KEY, modelId.trim());
+  } catch {
+    // ignore
+  }
+}
+
 /**
- * Tests live connection to Google Gemini Flash API with latency tracking
+ * Executes a call to Google Gemini with automatic failover cascade across models.
+ * If a model returns 503 (high demand) or 429 (rate limit), it seamlessly tries the next model.
  */
-export async function testGeminiConnection(keyToTest?: string): Promise<{
+export async function callGeminiWithFailover(options: {
+  apiKey: string;
+  payload: Record<string, unknown>;
+  preferredModel?: string;
+}): Promise<{ text: string; modelUsed: string; latencyMs: number }> {
+  const { apiKey, payload } = options;
+  const preferred = options.preferredModel || getStoredGeminiModel() || DEFAULT_GEMINI_MODEL;
+
+  const candidateModels = [
+    preferred,
+    'gemini-flash-lite-latest',
+    'gemini-3.5-flash-lite',
+    'gemini-3-flash-preview',
+    'gemini-flash-latest'
+  ];
+  // Remove duplicates while preserving cascade order
+  const models = Array.from(new Set(candidateModels));
+
+  let lastError: Error | null = null;
+
+  for (const model of models) {
+    const t0 = performance.now();
+    try {
+      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-goog-api-key': apiKey,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const latencyMs = Math.round(performance.now() - t0);
+
+      if (response.ok) {
+        const json = await response.json();
+        const text = json?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (text) {
+          if (model !== preferred) {
+            saveGeminiModel(model);
+          }
+          return { text, modelUsed: model, latencyMs };
+        }
+      }
+
+      const errText = await response.text();
+      let parsedErr: any = null;
+      try { parsedErr = JSON.parse(errText); } catch {}
+      const errMsg = parsedErr?.error?.message || errText;
+
+      console.warn(`Gemini model ${model} HTTP ${response.status} (${errMsg}). Failing over to next available model...`);
+      lastError = new Error(`Gemini ${model} (${response.status}): ${errMsg}`);
+    } catch (networkErr: any) {
+      console.warn(`Gemini model ${model} network error: ${networkErr?.message}. Trying next model...`);
+      lastError = networkErr;
+    }
+  }
+
+  throw lastError || new Error('সকল Gemini AI মডেলের কল ব্যর্থ হয়েছে। অনুগ্রহ করে ইন্টারনেট সংযোগ চেক করুন।');
+}
+
+/**
+ * Tests live connection to Google Gemini Flash API with latency tracking and auto-failover
+ */
+export async function testGeminiConnection(keyToTest?: string, modelToTest?: string): Promise<{
   success: boolean;
   model: string;
   latencyMs: number;
   message: string;
 }> {
   const activeKey = (keyToTest || getStoredGeminiKey() || BUILTIN_GEMINI_KEY).trim();
-  const startTime = performance.now();
   try {
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${activeKey}`;
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-goog-api-key': activeKey
-      },
-      body: JSON.stringify({
+    const result = await callGeminiWithFailover({
+      apiKey: activeKey,
+      payload: {
         contents: [{ parts: [{ text: 'Ping test. Respond strictly with the word ACTIVE.' }] }]
-      })
+      },
+      preferredModel: modelToTest,
     });
-    const latencyMs = Math.round(performance.now() - startTime);
-    if (!response.ok) {
-      const errText = await response.text();
-      return {
-        success: false,
-        model: 'gemini-flash-latest',
-        latencyMs,
-        message: `HTTP ${response.status}: ${errText}`
-      };
-    }
-    const data = await response.json();
-    const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text;
     return {
       success: true,
-      model: 'gemini-flash-latest',
-      latencyMs,
-      message: reply?.trim() ? `সফলভাবে সংযুক্ত (${reply.trim()})` : 'সফলভাবে সংযুক্ত'
+      model: result.modelUsed,
+      latencyMs: result.latencyMs,
+      message: `সফলভাবে সংযুক্ত (${result.modelUsed})`
     };
   } catch (err: any) {
     return {
       success: false,
-      model: 'gemini-flash-latest',
-      latencyMs: Math.round(performance.now() - startTime),
+      model: modelToTest || getStoredGeminiModel(),
+      latencyMs: 0,
       message: err?.message || 'নেটওয়ার্ক সংযোগ ত্রুটি।'
     };
   }
@@ -238,39 +335,10 @@ CRITICAL: Output strictly ONLY raw JSON without markdown formatting or conversat
     });
   }
 
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`;
-
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-goog-api-key': apiKey,
-    },
-    body: JSON.stringify({
-      contents: [{ parts }]
-    })
+  const { text: rawText, modelUsed } = await callGeminiWithFailover({
+    apiKey,
+    payload: { contents: [{ parts }] }
   });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    let msg = `Gemini API error (${response.status}): ${response.statusText}`;
-    try {
-      const errJson = JSON.parse(errorText);
-      if (errJson?.error?.message) {
-        msg = errJson.error.message;
-      }
-    } catch {
-      // ignore
-    }
-    throw new Error(msg);
-  }
-
-  const jsonResponse = await response.json();
-  const rawText = jsonResponse?.candidates?.[0]?.content?.parts?.[0]?.text;
-
-  if (!rawText) {
-    throw new Error('Gemini Flash did not return any text output.');
-  }
 
   // Clean JSON response
   let cleaned = rawText.trim();
@@ -319,7 +387,7 @@ CRITICAL: Output strictly ONLY raw JSON without markdown formatting or conversat
     summaryBn: audit.summaryBn || parsed.summaryBn || 'স্বয়ংক্রিয় এআই বিশ্লেষণ সম্পন্ন হয়েছে।',
     recommendationBn: audit.recommendationBn || parsed.recommendationBn || 'নথি ও রেকর্ডপত্র বিবেচনাপূর্বক পরবর্তী ব্যবস্থা গ্রহণ করুন।',
     extractedAt: new Date().toISOString(),
-    modelUsed: 'gemini-flash-latest'
+    modelUsed
   };
 
   return {
@@ -468,30 +536,10 @@ Return strictly valid JSON:
 }
 CRITICAL: Return strictly ONLY the raw JSON string without markdown quotes.`;
 
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`;
-
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-goog-api-key': apiKey,
-    },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }]
-    })
+  const { text: rawText, modelUsed } = await callGeminiWithFailover({
+    apiKey,
+    payload: { contents: [{ parts: [{ text: prompt }] }] }
   });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Gemini Verification API Error (${response.status}): ${errorText}`);
-  }
-
-  const jsonResponse = await response.json();
-  const rawText = jsonResponse?.candidates?.[0]?.content?.parts?.[0]?.text;
-
-  if (!rawText) {
-    throw new Error('Gemini Flash did not return any verification text.');
-  }
 
   let cleaned = rawText.trim();
   if (cleaned.startsWith('```json')) cleaned = cleaned.replace(/^```json/, '');
@@ -530,7 +578,7 @@ CRITICAL: Return strictly ONLY the raw JSON string without markdown quotes.`;
     officerRecommendationBn: parsed.officerRecommendationBn || 'নথি ও রেকর্ড বিবেচনাপূর্বক ব্যবস্থা গ্রহণ করুন।',
     rules: parsed.rules || {},
     verifiedAt: new Date().toISOString(),
-    modelUsed: 'gemini-flash-latest'
+    modelUsed
   };
 }
 
@@ -578,30 +626,10 @@ Output strictly valid JSON:
 }
 CRITICAL: Output strictly ONLY valid raw JSON without markdown formatting.`;
 
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${activeKey}`;
-
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-goog-api-key': activeKey,
-    },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }]
-    })
+  const { text: rawText } = await callGeminiWithFailover({
+    apiKey: activeKey,
+    payload: { contents: [{ parts: [{ text: prompt }] }] }
   });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Gemini Officer Audit API Error (${response.status}): ${errorText}`);
-  }
-
-  const jsonResponse = await response.json();
-  const rawText = jsonResponse?.candidates?.[0]?.content?.parts?.[0]?.text;
-
-  if (!rawText) {
-    throw new Error('Gemini Flash did not return any officer audit text.');
-  }
 
   let cleaned = rawText.trim();
   if (cleaned.startsWith('```json')) cleaned = cleaned.replace(/^```json/, '');

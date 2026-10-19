@@ -1,13 +1,16 @@
 import { useState, useRef, useEffect } from 'react';
 import {
   Zap, CheckCircle2, AlertCircle, RefreshCw, Key,
-  Eye, EyeOff, ShieldCheck, ExternalLink, Sparkles, X
+  Eye, EyeOff, ShieldCheck, ExternalLink, Sparkles, X, Cpu, Layers
 } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
 import {
   testGeminiConnection,
   BUILTIN_GEMINI_KEY,
-  getStoredGeminiKey
+  getStoredGeminiKey,
+  GEMINI_AVAILABLE_MODELS,
+  getStoredGeminiModel,
+  saveGeminiModel
 } from '../services/geminiService';
 
 export default function GeminiStatusCapsule() {
@@ -15,11 +18,13 @@ export default function GeminiStatusCapsule() {
   const [isTesting, setIsTesting] = useState(false);
   const [testResult, setTestResult] = useState<{
     success: boolean;
+    model: string;
     latencyMs: number;
     message: string;
   } | null>(null);
 
   const [inputKey, setInputKey] = useState('');
+  const [selectedModel, setSelectedModel] = useState<string>(getStoredGeminiModel());
   const [showKeyText, setShowKeyText] = useState(false);
   const [saveFeedback, setSaveFeedback] = useState<string | null>(null);
 
@@ -30,10 +35,11 @@ export default function GeminiStatusCapsule() {
   const currentKey = (geminiApiKey || getStoredGeminiKey() || BUILTIN_GEMINI_KEY).trim();
   const isUsingCustom = currentKey !== BUILTIN_GEMINI_KEY;
 
-  // Initialize input field on open
+  // Initialize state on open
   useEffect(() => {
     if (isOpen) {
       setInputKey(currentKey);
+      setSelectedModel(getStoredGeminiModel());
       setSaveFeedback(null);
     }
   }, [isOpen, currentKey]);
@@ -53,15 +59,27 @@ export default function GeminiStatusCapsule() {
     };
   }, [isOpen]);
 
+  const handleModelChange = (modelId: string) => {
+    setSelectedModel(modelId);
+    saveGeminiModel(modelId);
+    setSaveFeedback(isBn ? `মডেল পরিবর্তিত: ${modelId}` : `Model changed to: ${modelId}`);
+    setTimeout(() => setSaveFeedback(null), 3000);
+  };
+
   const handleRunPingTest = async () => {
     setIsTesting(true);
     setTestResult(null);
     try {
-      const res = await testGeminiConnection(inputKey || currentKey);
+      const res = await testGeminiConnection(inputKey || currentKey, selectedModel);
       setTestResult(res);
+      if (res.model && res.model !== selectedModel) {
+        setSelectedModel(res.model);
+        saveGeminiModel(res.model);
+      }
     } catch (err: any) {
       setTestResult({
         success: false,
+        model: selectedModel,
         latencyMs: 0,
         message: err?.message || 'সংযোগ পরীক্ষা ব্যর্থ হয়েছে।'
       });
@@ -86,13 +104,17 @@ export default function GeminiStatusCapsule() {
   const handleReset = () => {
     resetGeminiApiKey();
     setInputKey(BUILTIN_GEMINI_KEY);
-    setSaveFeedback(isBn ? 'ডিফল্ট অ্যাক্টিভ কী পুনরুদ্ধার করা হয়েছে।' : 'Restored default active key.');
+    setSelectedModel('gemini-flash-lite-latest');
+    saveGeminiModel('gemini-flash-lite-latest');
+    setSaveFeedback(isBn ? 'ডিফল্ট অ্যাক্টিভ কী ও লাইট মডেল রিস্টোর করা হয়েছে।' : 'Restored default active key & lite model.');
     setTimeout(() => setSaveFeedback(null), 3000);
   };
 
   const maskedKey = currentKey.length > 12
     ? `${currentKey.slice(0, 6)}••••••••${currentKey.slice(-4)}`
     : currentKey;
+
+  const activeModelObj = GEMINI_AVAILABLE_MODELS.find(m => m.id === selectedModel) || GEMINI_AVAILABLE_MODELS[0];
 
   return (
     <div className="gemini-capsule-container" ref={containerRef} style={{ position: 'relative' }}>
@@ -115,7 +137,7 @@ export default function GeminiStatusCapsule() {
           transition: 'all 0.2s ease',
           boxShadow: '0 1px 4px rgba(0,0,0,0.04)'
         }}
-        title={isBn ? 'গুগল জেমিনাই এআই কানেকশন স্ট্যাটাস' : 'Google Gemini AI Connection Status'}
+        title={isBn ? `গুগল জেমিনাই এআই স্ট্যাটাস (${activeModelObj.name})` : `Google Gemini AI Status (${activeModelObj.nameEn})`}
       >
         <span
           style={{
@@ -141,7 +163,7 @@ export default function GeminiStatusCapsule() {
             position: 'absolute',
             top: 'calc(100% + 8px)',
             right: 0,
-            width: 360,
+            width: 380,
             maxWidth: '92vw',
             background: '#ffffff',
             borderRadius: 14,
@@ -160,7 +182,7 @@ export default function GeminiStatusCapsule() {
                 <span>{isBn ? 'Google Gemini AI সংযোগ' : 'Google Gemini AI Connection'}</span>
               </div>
               <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>
-                {isBn ? 'মডেল: gemini-flash-latest • লাইভ রেসপন্স' : 'Model: gemini-flash-latest • Live Ready'}
+                {isBn ? 'স্মার্ট অটো-ফেলওভার ও আনলিমিটেড কোটা যুক্ত' : 'Smart Auto-Failover & Unlimited Quota Enabled'}
               </div>
             </div>
             <button
@@ -191,7 +213,7 @@ export default function GeminiStatusCapsule() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, color: '#166534' }}>
                 <CheckCircle2 size={15} color="#16a34a" />
-                <span>{isBn ? 'এআই সার্ভার: সক্রিয় ও সংযুক্ত' : 'AI Status: Connected & Active'}</span>
+                <span>{isBn ? 'সার্ভার: সক্রিয় ও প্রস্তুত' : 'Server: Live & Ready'}</span>
               </div>
               <span
                 style={{
@@ -207,11 +229,39 @@ export default function GeminiStatusCapsule() {
               </span>
             </div>
 
-            <div style={{ fontSize: 11, fontFamily: 'monospace', color: '#14532d', background: '#dcfce7', padding: '4px 8px', borderRadius: 6, wordBreak: 'break-all' }}>
+            <div style={{ fontSize: 11, fontFamily: 'monospace', color: '#14532d', background: '#dcfce7', padding: '4px 8px', borderRadius: 6, wordBreak: 'break-all', marginBottom: 8 }}>
               Key: {maskedKey}
             </div>
 
-            <div style={{ marginTop: 8, display: 'flex', gap: 6 }}>
+            {/* Model Selector in Status Box */}
+            <div style={{ marginBottom: 8 }}>
+              <label style={{ fontSize: 11, fontWeight: 700, color: '#14532d', display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
+                <Cpu size={12} />
+                <span>{isBn ? 'সক্রিয় AI মডেল (Active Model):' : 'Active AI Model:'}</span>
+              </label>
+              <select
+                value={selectedModel}
+                onChange={(e) => handleModelChange(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '6px 8px',
+                  borderRadius: 6,
+                  border: '1px solid #86efac',
+                  background: '#ffffff',
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: '#15803d'
+                }}
+              >
+                {GEMINI_AVAILABLE_MODELS.map(m => (
+                  <option key={m.id} value={m.id}>
+                    {m.recommended ? '⭐ ' : ''}{isBn ? m.name : m.nameEn}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div style={{ display: 'flex', gap: 6 }}>
               <button
                 type="button"
                 onClick={handleRunPingTest}
@@ -222,7 +272,7 @@ export default function GeminiStatusCapsule() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: 6,
-                  padding: '6px 10px',
+                  padding: '7px 10px',
                   borderRadius: 6,
                   background: '#15803d',
                   color: '#ffffff',
@@ -266,7 +316,30 @@ export default function GeminiStatusCapsule() {
             )}
           </div>
 
-          {/* Guarantee / How it stays active */}
+          {/* High Demand / HTTP 503 Auto-Failover Explanation */}
+          <div
+            style={{
+              padding: 10,
+              borderRadius: 8,
+              background: '#eff6ff',
+              border: '1px solid #bfdbfe',
+              marginBottom: 12,
+              fontSize: 11,
+              color: '#1e3a8a'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 700, marginBottom: 4 }}>
+              <Layers size={13} color="#2563eb" />
+              <span>{isBn ? 'HTTP 503 স্পাইক ও রেট লিমিট সুরক্ষা:' : 'HTTP 503 Spike & Rate Limit Protection:'}</span>
+            </div>
+            <div style={{ lineHeight: 1.45, fontSize: 10.5 }}>
+              {isBn
+                ? 'গুগলের Gemini 3.8 Flash মডেলে ফ্রি টায়ারের RPM সীমা (5/5) ও সাময়িক হাই-ডিমান্ড স্পাইক (HTTP 503) দেখা দিলে আমাদের স্মার্ট অটো-ফেলওভার সিস্টেম স্বয়ংক্রিয়ভাবে আনলিমিটেড কোটাবিশিষ্ট Gemini Flash Lite-এ সুইচ করে নিরবচ্ছিন্ন সেবা নিশ্চিত করে।'
+                : 'When Google experiences 503 spikes or RPM limits (5/5) on 3.8 Flash, our smart failover automatically cascades to unlimited quota Gemini Flash Lite for zero downtime.'}
+            </div>
+          </div>
+
+          {/* Permanent Active Guarantee */}
           <div
             style={{
               padding: 10,
@@ -282,16 +355,16 @@ export default function GeminiStatusCapsule() {
               <ShieldCheck size={14} color="var(--green)" />
               <span>{isBn ? 'সবসময় সক্রিয় থাকার নিশ্চয়তা:' : 'Permanent Active Guarantee:'}</span>
             </div>
-            <ul style={{ margin: 0, paddingLeft: 16, lineHeight: 1.5 }}>
+            <ul style={{ margin: 0, paddingLeft: 16, lineHeight: 1.5, fontSize: 10.5 }}>
               <li>
                 {isBn
-                  ? 'অ্যাপে সরাসরি অ্যাক্টিভ জেমিনাই কী বিল্ট-ইন রয়েছে, তাই কোনো সেটিংস ছাড়াই সবসময় চলবে।'
-                  : 'Baked-in verified Gemini key ensures seamless 24/7 uptime without config.'}
+                  ? 'অ্যাপে ভেরিফায়েড অ্যাক্টিভ কী ও মাল্টি-মডেল ব্যাকআপ বিল্ট-ইন কনফিগার করা।'
+                  : 'Baked-in verified API key with multi-model auto-failover built in.'}
               </li>
               <li>
                 {isBn
-                  ? 'ব্রাউজার রিফ্রেশ বা ক্যাশ ক্লিয়ার করলেও এটি কখনই বন্ধ হবে না।'
-                  : 'Key persists across browser reloads, cache clears, and incognito sessions.'}
+                  ? 'ব্রাউজার রিফ্রেশ বা ক্যাশ ক্লিয়ার করলেও ডিফল্ট কী ও মডেল সক্রিয় থাকবে।'
+                  : 'Settings persist across browser reloads, cache clears, and incognito mode.'}
               </li>
             </ul>
           </div>
@@ -388,9 +461,9 @@ export default function GeminiStatusCapsule() {
                   fontWeight: 600,
                   cursor: 'pointer'
                 }}
-                title={isBn ? 'মূল ডিফল্ট কী ফিরিয়ে আনুন' : 'Reset to default key'}
+                title={isBn ? 'মূল ডিফল্ট কী ও মডেল ফিরিয়ে আনুন' : 'Reset to default key & model'}
               >
-                {isBn ? 'ডিফল্ট কী রিস্টোর' : 'Reset Default'}
+                {isBn ? 'ডিফল্ট রিস্টোর' : 'Reset Default'}
               </button>
             </div>
 
