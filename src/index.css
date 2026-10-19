@@ -3546,7 +3546,10 @@ tr:last-child td { border-bottom: 0; }
     padding: 0 8px;
     gap: 6px;
     justify-content: space-between;
-    overflow: hidden;
+    overflow: visible !important;
+    position: sticky;
+    top: 0;
+    z-index: 990;
   }
 
   .topbar-left {
@@ -3619,6 +3622,8 @@ tr:last-child td { border-bottom: 0; }
     right: 10px !important;
     width: auto !important;
     max-width: calc(100vw - 20px) !important;
+    max-height: calc(100vh - 75px) !important;
+    overflow-y: auto !important;
     box-shadow: 0 16px 40px rgba(0,0,0,0.22);
     z-index: 1050;
   }
@@ -3669,6 +3674,8 @@ tr:last-child td { border-bottom: 0; }
     right: 10px !important;
     width: auto !important;
     max-width: calc(100vw - 20px) !important;
+    max-height: calc(100vh - 75px) !important;
+    overflow-y: auto !important;
     box-shadow: 0 16px 40px rgba(0,0,0,0.22);
     z-index: 1050;
   }
