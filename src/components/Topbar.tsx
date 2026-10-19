@@ -37,7 +37,7 @@ export default function Topbar({ onToggleMobileMenu }: TopbarProps) {
             <Menu size={20} />
           </button>
         )}
-        <div>
+        <div className="topbar-title-wrap">
           <strong className="top-text">{titleText}</strong>
           <div className="tiny subtle">{subtitleText}</div>
         </div>

@@ -121,59 +121,21 @@ export default function GeminiStatusCapsule() {
       {/* ── Topbar Trigger Pill ── */}
       <button
         type="button"
+        className="gemini-status-btn"
         onClick={() => setIsOpen(!isOpen)}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 6,
-          padding: '5px 11px',
-          borderRadius: 20,
-          background: 'linear-gradient(135deg, rgba(23,107,86,0.08) 0%, rgba(16,85,63,0.12) 100%)',
-          border: '1px solid rgba(23,107,86,0.25)',
-          color: 'var(--green-dark)',
-          fontSize: 12,
-          fontWeight: 600,
-          cursor: 'pointer',
-          transition: 'all 0.2s ease',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.03)'
-        }}
         title={isBn ? `Gemini AI স্ট্যাটাস (${activeModelObj.name})` : `Gemini AI Status (${activeModelObj.nameEn})`}
       >
-        <span
-          style={{
-            width: 7,
-            height: 7,
-            borderRadius: '50%',
-            background: '#10b981',
-            boxShadow: '0 0 6px #10b981',
-            display: 'inline-block',
-            animation: 'pulse 2s infinite'
-          }}
-        />
-        <Zap size={12} color="#176b56" />
-        <span style={{ whiteSpace: 'nowrap' }}>
+        <span className="gemini-status-dot" />
+        <Zap size={12} color="#176b56" className="gemini-status-icon" />
+        <span className="gemini-label-full">
           {isBn ? 'Gemini AI সক্রিয়' : 'Gemini AI Active'}
         </span>
+        <span className="gemini-label-short">AI</span>
       </button>
 
       {/* ── Compact Minimal Dropdown ── */}
       {isOpen && (
-        <div
-          style={{
-            position: 'absolute',
-            top: 'calc(100% + 6px)',
-            right: 0,
-            width: 320,
-            maxWidth: '92vw',
-            background: '#ffffff',
-            borderRadius: 12,
-            border: '1px solid var(--line)',
-            boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
-            zIndex: 1050,
-            padding: 12,
-            color: 'var(--ink)'
-          }}
-        >
+        <div className="gemini-status-dropdown">
           {/* Compact Header */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 700, fontSize: 13, color: 'var(--deep)' }}>

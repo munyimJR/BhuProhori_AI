@@ -405,6 +405,15 @@ img {
   align-items: center;
   gap: 12px;
   min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+.topbar-title-wrap {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .top-text {
@@ -414,6 +423,7 @@ img {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: block;
 }
 .subtle { color: var(--muted); }
 .tiny { font-size: 11px; }
@@ -423,6 +433,66 @@ img {
   gap: 10px;
   align-items: center;
   flex-shrink: 0;
+}
+
+/* ── Gemini Status Capsule ── */
+.gemini-capsule-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.gemini-status-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(23,107,86,0.08) 0%, rgba(16,85,63,0.12) 100%);
+  border: 1px solid rgba(23,107,86,0.25);
+  color: var(--green-dark);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.gemini-status-btn:hover {
+  background: linear-gradient(135deg, rgba(23,107,86,0.14) 0%, rgba(16,85,63,0.2) 100%);
+  border-color: rgba(23,107,86,0.4);
+}
+
+.gemini-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 6px #10b981;
+  display: inline-block;
+  animation: pulse 2s infinite;
+  flex-shrink: 0;
+}
+
+.gemini-label-short {
+  display: none;
+}
+
+.gemini-status-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  width: 320px;
+  max-width: 92vw;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  z-index: 1050;
+  padding: 12px;
+  color: var(--ink);
 }
 
 .pill {
@@ -3472,13 +3542,45 @@ tr:last-child td { border-bottom: 0; }
 /* ── 4. Mobile Phones (< 600px) ────────────────────────────── */
 @media (max-width: 600px) {
   .topbar {
-    height: 58px;
-    padding: 0 12px;
-    gap: 10px;
+    height: 54px;
+    padding: 0 8px;
+    gap: 6px;
+    justify-content: space-between;
+    overflow: hidden;
+  }
+
+  .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+  }
+
+  .mobile-menu-btn {
+    width: 32px;
+    height: 32px;
+    padding: 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .topbar-title-wrap {
+    min-width: 0;
+    overflow: hidden;
+    flex: 1 1 auto;
   }
 
   .top-text {
-    font-size: 14px;
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    max-width: 110px;
   }
   .topbar .subtle.tiny {
     display: none;
@@ -3489,21 +3591,59 @@ tr:last-child td { border-bottom: 0; }
   }
 
   .right-tools {
-    gap: 6px;
+    gap: 4px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Compact Gemini AI capsule on smartphones */
+  .gemini-label-full {
+    display: none !important;
+  }
+  .gemini-label-short {
+    display: inline !important;
+    font-size: 10.5px;
+    font-weight: 700;
+  }
+  .gemini-status-btn {
+    padding: 4px 7px;
+    gap: 4px;
+    border-radius: 16px;
+  }
+
+  .gemini-status-dropdown {
+    position: fixed !important;
+    top: 58px !important;
+    left: 10px !important;
+    right: 10px !important;
+    width: auto !important;
+    max-width: calc(100vw - 20px) !important;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.22);
+    z-index: 1050;
+  }
+
+  .gemini-status-dropdown input,
+  .gemini-status-dropdown select {
+    min-height: 32px !important;
+    font-size: 11px !important;
   }
 
   .lang-toggle-control {
-    padding: 2px 3px 2px 5px;
-    gap: 3px;
+    padding: 2px 4px;
+    gap: 2px;
   }
-
+  .lang-globe-icon {
+    display: none !important;
+  }
   .lang-segment {
-    font-size: 11px;
+    font-size: 10.5px;
+    padding: 2px 5px;
   }
 
   .user-capsule-btn {
-    padding: 3px 6px 3px 8px;
-    gap: 5px;
+    padding: 3px 6px;
+    gap: 4px;
   }
 
   .capsule-name {
@@ -3514,9 +3654,23 @@ tr:last-child td { border-bottom: 0; }
     display: none;
   }
 
+  .capsule-role-badge {
+    font-size: 10px;
+  }
+
+  .capsule-chevron {
+    display: none;
+  }
+
   .capsule-dropdown-menu {
-    right: -4px;
-    width: 295px;
+    position: fixed !important;
+    top: 58px !important;
+    left: 10px !important;
+    right: 10px !important;
+    width: auto !important;
+    max-width: calc(100vw - 20px) !important;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.22);
+    z-index: 1050;
   }
 
   .showcase-grid {
@@ -3635,7 +3789,35 @@ tr:last-child td { border-bottom: 0; }
   }
 }
 
-/* ── 5. Small Touch Devices (< 380px) ──────────────────────── */
+/* ── 5. Extra small smartphones (< 420px like 375px iPhone, 360px Android) ── */
+@media (max-width: 420px) {
+  .topbar {
+    padding: 0 6px;
+    gap: 4px;
+  }
+  .topbar-left {
+    gap: 4px;
+  }
+  .top-text {
+    max-width: 85px;
+    font-size: 12px;
+  }
+  .gemini-label-short {
+    display: none !important;
+  }
+  .gemini-status-btn {
+    padding: 4px 6px;
+    gap: 0;
+  }
+  .capsule-role-badge {
+    display: none;
+  }
+  .user-capsule-btn {
+    padding: 3px 5px;
+  }
+}
+
+/* ── 6. Small Touch Devices (< 380px) ──────────────────────── */
 @media (max-width: 380px) {
   .hero-copy {
     padding: 20px 14px 16px;
@@ -3663,10 +3845,6 @@ tr:last-child td { border-bottom: 0; }
   .user-capsule-btn {
     padding: 3px 5px;
     gap: 4px;
-  }
-  .capsule-dropdown-menu {
-    right: -10px;
-    width: 275px;
   }
 }
 
